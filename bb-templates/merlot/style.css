@@ -1,0 +1,25 @@
+/*
+Theme Name: Merlot
+Theme URI: http://alumnos.dcc.uchile.cl/~egraells
+Description: A custom theme for bbPress, based on Kakumei, the <a href="http://tarskitheme.com">Tarski WordPress</a> theme, and the <a href="http://getvanilla.com">Lussumo Vanilla</a> discussion layout. This theme is licensed under the terms of the GPLv3. 
+Version: 1.0
+Author: Eduardo Graells (Detective)
+Author URI: http://alumnos.dcc.uchile.cl/~egraells
+*/
+
+
+body { padding-top: 2px; }
+td .pagination { margin: 0; }
+div.post { clear: both; }
+div.clearfix { clear: both; }
+div.post { padding-bottom: 17px;
+margin: 18px 0;
+border-bottom: 1px solid #EEE;}
+div.post_text { clear: both;}
+div.post_stuff { margin-bottom: 0.5em; }
+form.form_topic_move { margin-top: 1em; }
+td img.avatar { float: left; padding: 3px;}
+table.forum-topics td { vertical-align: middle; }
+td.topic-title a.page-numbers { font-weight: bold; text-decoration: underline; }
+.table.forum-list td, table.forum-topics { vertical-align: middle; }
+.table.forum-topics td.topic-posts, .table.forum-list td.forum-topics, .table.forum-list td.forum-posts { font-size: 1.4em; font-weight: bold; text-align: center; }

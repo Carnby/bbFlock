@@ -1,0 +1,562 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Genealogies\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-06-06 21:52-0300\n"
+"PO-Revision-Date: 2008-06-06 21:53-0300\n"
+"Last-Translator: \n"
+"Language-Team: Eduardo Graells <detective@ficciones.cl>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SearchPath-0: /home/egraells/workspace/genealogias/genealogias-bb\n"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:3
+msgid "Registration"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:8
+msgid "Profile Information"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:9
+msgid "Your password will be emailed to the address you provide."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:13
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:19
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:12
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:22
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:32
+#: /home/egraells/workspace/genealogias/genealogias-bb/login-form.php:5
+msgid "Username:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:15
+msgid "Your username was not valid, please try again"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:29
+msgid "<br />There was a problem with your email; please check it."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:31
+msgid "<br />The above field is required."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:37
+msgid "These items are <span class=\"required\">required</span>."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:43
+msgid "Register &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register.php:47
+msgid "You&#8217;re already logged in, why do you need to register?"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:3
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:5
+#: /home/egraells/workspace/genealogias/genealogias-bb/password-reset.php:3
+msgid "Log in"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:5
+msgid "Log in Failed"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:16
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:27
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:36
+#: /home/egraells/workspace/genealogias/genealogias-bb/login-form.php:8
+msgid "Password:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:18
+msgid "Incorrect password"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:24
+msgid "This username does not exist."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:24
+msgid "Register it?"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:41
+msgid "Remember me:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:48
+msgid "Try Again &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:48
+#: /home/egraells/workspace/genealogias/genealogias-bb/login-form.php:1
+#: /home/egraells/workspace/genealogias/genealogias-bb/login-form.php:17
+msgid "Log in &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:59
+msgid "If you would like to recover the password for this account, you may use the following button to start the recovery process:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login.php:65
+msgid "Recover Password &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search.php:4
+msgid "Search for"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search.php:8
+msgid "Recent Posts"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search.php:15
+msgid "Relevant posts"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search.php:22
+msgid "No results found."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search.php:25
+#, php-format
+msgid "You may also try your <a href=\"http://google.com/search?q=site:%1$s %2$s\">search at Google</a>"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search.php:36
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:59
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:62
+msgid "Search"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search-form.php:2
+msgid "Search:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search-form.php:6
+msgid "Search &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/search-form.php:8
+msgid "Search again &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/tags.php:3
+#: /home/egraells/workspace/genealogias/genealogias-bb/tag-single.php:3
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:107
+msgid "Tags"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/tags.php:5
+msgid "This is a collection of tags that are currently popular on the forums."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/view.php:7
+#: /home/egraells/workspace/genealogias/genealogias-bb/front-page.php:13
+#: /home/egraells/workspace/genealogias/genealogias-bb/tag-single.php:11
+#: /home/egraells/workspace/genealogias/genealogias-bb/forum.php:13
+msgid "Latest Discussions"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/stats.php:3
+msgid "Statistics"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/stats.php:6
+msgid "Registered Users"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/stats.php:8
+msgid "Posts"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/stats.php:13
+msgid "Most Popular Topics"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/edit-post.php:2
+msgid "Edit Post"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/tag-form.php:4
+msgid "Add &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/password-reset.php:5
+msgid "Password Reset"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/password-reset.php:8
+msgid "Your password has been reset and a new one has been mailed to you."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/password-reset.php:10
+msgid "An email has been sent to the address we have on file for you. If you don&#8217;t get anything within a few minutes, or your email has changed, you may want to get in touch with the webmaster or forum administrator here."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-form.php:2
+msgid "Please write the username of the receiver:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-form.php:8
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-user-form.php:7
+msgid "Message Title"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-form.php:14
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-user-form.php:13
+msgid "Message:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-form.php:19
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-user-form.php:18
+msgid "Send Message"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-form.php:22
+#: /home/egraells/workspace/genealogias/genealogias-bb/edit-form.php:19
+#: /home/egraells/workspace/genealogias/genealogias-bb/post-form.php:32
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-user-form.php:21
+msgid "Allowed markup:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-form.php:22
+#: /home/egraells/workspace/genealogias/genealogias-bb/post-form.php:32
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-user-form.php:21
+msgid "You can also put code in between backtick ( <code>`</code> ) characters."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login-form.php:4
+#, php-format
+msgid "<a href=\"%1$s\">Register</a> or log in"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/login-form.php:14
+msgid "Remember me"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/edit-form.php:4
+msgid "Topic:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/edit-form.php:10
+#: /home/egraells/workspace/genealogias/genealogias-bb/post-form.php:16
+msgid "Post:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/edit-form.php:15
+msgid "Edit Post &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/edit-form.php:19
+msgid "Put code in between <code>`backticks`</code>."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/postmsg.php:3
+#: /home/egraells/workspace/genealogias/genealogias-bb/privatemessages.php:6
+#: /home/egraells/workspace/genealogias/genealogias-bb/privatemessages.php:10
+msgid "Private Messages"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/postmsg.php:18
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:295
+#, php-format
+msgid "Posted %s ago"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/postmsg.php:18
+msgid "To"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile-edit.php:3
+msgid "Edit Profile"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile-edit.php:7
+msgid "Profile Info"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile-edit.php:13
+msgid "Administration"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile-edit.php:22
+msgid "Password"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile-edit.php:23
+msgid "To change your password, enter a new password twice below:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile-edit.php:28
+msgid "Update Profile &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/post-form.php:3
+msgid "Pick a section:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/post-form.php:10
+msgid "Topic title: (be brief and descriptive)"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/post-form.php:23
+#, php-format
+msgid "Enter a few words (called <a href=\"%s\">tags</a>) separated by commas to help someone find your topic:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/post-form.php:29
+msgid "Send Post &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/pm-user-form.php:2
+msgid "Your message will be sent to"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/privatemessages.php:26
+#: /home/egraells/workspace/genealogias/genealogias-bb/privatemessages.php:50
+msgid "Delete Message(s) &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/privatemessages.php:34
+msgid "Sent Messages"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/privatemessages.php:40
+msgid "n/a"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/topic.php:11
+#, php-format
+msgid "Started %1$s ago by %2$s"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/topic.php:13
+#, php-format
+msgid "<a href=\"%1$s\">Latest reply</a> from %2$s"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/topic.php:50
+msgid "Topic Closed"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/topic.php:51
+msgid "This topic has been closed to new replies."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/rss2.php:19
+msgid "on"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register-success.php:3
+msgid "Register"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register-success.php:5
+msgid "Great!"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/register-success.php:7
+#, php-format
+msgid "Your registration as <strong>%s</strong> was successful. Within a few minutes you should receive an email with your password."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:34
+msgid " Using <a href=\"http://alumnos.dcc.uchile.cl/~egraells/\">Genealogies bbPress Theme</a>."
+msgstr " Usando <a href=\"http://alumnos.dcc.uchile.cl/~egraells/\">Genealogies bbPress Theme</a>. "
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:38
+#, php-format
+msgid "%1$s is proudly powered by <a href=\"%2$s\">bbPress</a>."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:74
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:83
+msgid "RSS feed for this forum"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:76
+msgid "RSS feed for this topic"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:78
+msgid "RSS feed for this tag"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:80
+msgid "RSS feed for this view"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:97
+msgid "About"
+msgstr "Acerca de"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:100
+#, php-format
+msgid "You may <a href=\"%1$s\">edit this information</a>."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:106
+msgid "Front Page"
+msgstr "Portada de los Foros"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:124
+msgid "Forums"
+msgstr "Foros"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:129
+msgid "Discussions"
+msgstr "Discusiones"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:141
+msgid "Sub-Forums"
+msgstr "Sub-Foros"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:193
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:201
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:236
+msgid "In"
+msgstr "En"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:194
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:237
+msgid "Started By"
+msgstr "Iniciada Por"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:195
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:198
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:238
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:241
+msgid "Since"
+msgstr "Hace"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:196
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:239
+msgid "Comments"
+msgstr "Comentarios"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:197
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:240
+msgid "Last"
+msgstr "Último"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:197
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:240
+msgid "By"
+msgstr "Por"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:202
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:245
+#, php-format
+msgid "Started: %s ago"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:205
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:248
+#, php-format
+msgid "Most recent reply: %s ago."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:207
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:250
+msgid "No replies."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:263
+msgid "Posted"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:278
+#, php-format
+msgid "Welcome, %1$s!"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:280
+msgid "Edit Your Profile"
+msgstr "Editar tu perfil"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:281
+msgid "Your Favorites"
+msgstr "Tus Favoritos"
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/functions.php:355
+msgid "Hot Tags"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/favorites.php:5
+#: /home/egraells/workspace/genealogias/genealogias-bb/favorites.php:18
+msgid "Favorites"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/favorites.php:7
+msgid ""
+"Your Favorites allow you to create a custom <abbr title=\"Really Simple Syndication\">RSS</abbr> feed which pulls recent replies to the topics you specify.\n"
+"To add topics to your list of favorites, just click the \"Add to Favorites\" link found on that topic&#8217;s page."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/favorites.php:10
+#, php-format
+msgid "Subscribe to your favorites&#8217; <a href=\"%s\"><abbr title=\"Really Simple Syndication\">RSS</abbr> feed</a>."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/favorites.php:29
+msgid "You currently have no favorites."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/favorites.php:33
+msgid "currently has no favorites."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/topic-tags.php:5
+msgid "Tags:"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/topic-tags.php:15
+#, php-format
+msgid "No <a href=\"%s\">tags</a> yet."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:7
+msgid "Profile updated"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:7
+msgid "Edit again &raquo;"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:13
+msgid "Topics Started"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:19
+msgid "No more topics posted."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:21
+msgid "No topics posted yet."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:25
+msgid "User Activity"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:25
+msgid "Recent Replies"
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:32
+msgid "No more replies."
+msgstr ""
+
+#: /home/egraells/workspace/genealogias/genealogias-bb/profile.php:34
+msgid "No replies yet."
+msgstr ""
+
