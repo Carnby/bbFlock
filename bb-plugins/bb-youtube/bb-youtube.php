@@ -3,7 +3,7 @@
 Plugin Name: YouTube Embeds
 Description: Embeds videos from YouTube.
 Author: Eduardo Graells
-Author URI: http://www.naden.de/blog
+Author URI: http://about.me/egraells
 Version: 1.0
 */
 
