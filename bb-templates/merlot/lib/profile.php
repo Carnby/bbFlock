@@ -58,4 +58,9 @@ function gs_profile_header() {
 <?php
 }
 
+function gs_member_pagination() {
+    global $current_page;
+    gs_pagination_links(get_page_number_links($current_page, get_total_users(), 'array'));
+}
+
 

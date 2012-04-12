@@ -1,16 +1,16 @@
 <?php
 require_once('./bb-load.php');
-
+require_once( BB_PATH . BB_INC . 'statistics-functions.php');
 
 if ( isset($_GET['page']) ) {
-	$currentpage = intval($_GET['page']);
+	$current_page = intval($_GET['page']);
 } else { 
-	$currentpage = false;
+	$current_page = 1;
 }
 
-//$memberresult = get_memberlist($order, $currentpage, $usercount);
+$bb->static_title = __('Members');
 
 $members = bb_user_search(array('page' => $current_page));
 
-bb_load_template( 'memberlist.php', array('currentpage', 'members') );
+bb_load_template( 'memberlist.php', array('current_page', 'members') );
 ?>

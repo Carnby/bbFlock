@@ -1,29 +1,25 @@
 <?php bb_get_header(); ?>
 
+<h2><?php _e('Members'); ?></h2>
 
-<h2><?php _e('Member List'); ?></h2>
+<?php gs_member_pagination(); ?>
 
+<ul class="thumbnails">
 
-<table class="table table-bordered table-condensed table-striped">
-    <theader>
-	<tr>
-		<th><?php _e('User Name'); ?></th>
-		<th><?php _e('Home Page'); ?></th>
-		<th><?php _e('Join Date'); ?></th>
-	</tr>
-	</theader>
-	
-	<tbody>
-	
-	<?php foreach ( $members as $member ): ?>
-	<tr>
-		<td><center><?php echo "<a href=\"".get_user_profile_link($member->ID)."\">".$member->user_login."</a>"; ?><br><?php echo get_user_type($member->ID); ?></center></td>
-		<td><?php echo "<a href=\"".$member->user_url."\">".$member->user_url."</a>"; ?></td>
-		<td><?php echo $member->user_registered; ?></td>
-	</tr>
-	<?php endforeach; ?>
-	</tbody>
-</table>
+<?php foreach ($members as $member) { ?>
+    <li class="span2">
+	    <div class="thumbnail">
+	        <?php echo bb_get_avatar($member->ID, 140); ?>
+	    
+	        <h5><?php echo "<a href=\"".get_user_profile_link($member->ID)."\">".$member->user_login."</a>"; ?></h5>
+	        <p><span class="label label-info"><?php echo get_user_type($member->ID); ?></span></p>
+	    </div>
+    </li>
+<?php } ?>
+
+</ul>
+
+<?php gs_member_pagination(); ?>
 
 
 <?php bb_get_footer(); ?>
