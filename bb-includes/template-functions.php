@@ -149,7 +149,7 @@ function post_form( $h2 = '' ) {
 
 	do_action('pre_post_form');
 
-	if ( ( is_topic() && bb_current_user_can( 'write_post', $topic->topic_id ) && $page == $last_page ) || ( !is_topic() && bb_current_user_can( 'write_topic', $forum->forum_id ) ) ) {
+	if ( ( is_topic() && bb_current_user_can( 'write_post', $topic->topic_id ) ) || ( !is_topic() && bb_current_user_can( 'write_topic', $forum->forum_id ) ) ) {
 		echo '<form class="postform post-form" id="postform" method="post" action="' . bb_get_option('uri') . 'bb-post.php">' . "\n";
 		echo "<fieldset>\n";
 		bb_load_template( 'post-form.php', array('h2' => $h2) );
