@@ -9,11 +9,8 @@
 	<dd><strong><?php total_posts(); ?></strong></dd>
 </dl>
 
-<?php if ($popular) : ?>
 <h3><?php _e('Most Popular Topics'); ?></h3>
-<?php gs_topic_loop_start(); ?>
-<?php gs_topic_loop($popular); ?>
-<?php gs_topic_loop_end(); ?>
-<?php endif; ?>
+
+<?php gs_topic_loop($topics); ?>
 
 <?php bb_get_footer(); ?>

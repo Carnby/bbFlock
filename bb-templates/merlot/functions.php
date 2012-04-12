@@ -68,15 +68,8 @@ function gs_cache_users($not_used = 0) {
 add_action('bb_index.php', 'gs_cache_users');
 add_action('bb_forum.php', 'gs_cache_users');
 add_action('bb_view.php', 'gs_cache_users');
+add_action('bb_stats.php', 'gs_cache_users');
 add_action('bb_favorites.php', 'gs_cache_users');
 add_action('bb_tag-single.php', 'gs_cache_users');
 
-// custom views
-//bb_register_view('all-discussions', __('All Discussions'));
-/*
-if (bb_is_user_logged_in()) {
-    $user_info = bb_get_current_user_info();
-    bb_register_view('my-discussions', __('My Discussions'), array('topic_author' => $user_info->data->ID));
-}
-*/ 
 
