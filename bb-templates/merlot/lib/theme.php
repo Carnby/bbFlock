@@ -283,3 +283,20 @@ function ends_with($haystack, $needle) {
     return (substr($haystack, $start) === $needle);
 }
 
+
+function gs_pagination_links($page_links) {
+    if (!$page_links)
+        return;
+        
+    echo '<div class="pagination">';
+    echo '<ul>';
+    foreach ($page_links as &$link) {
+        if (starts_with($link, '<a'))
+            printf('<li>%s</li>', $link);
+        else 
+            printf('<li class="disabled"><a href="#">%s</a></li>', $link);
+    }
+    echo '</ul>';    
+    echo '</div>';
+}
+

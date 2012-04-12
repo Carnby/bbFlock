@@ -220,22 +220,7 @@ if ( bb_is_user_logged_in() ) {
 }
 
 function gs_topic_pagination() {
-    $page_links = get_topic_pages();
-    //var_dump($page_links);
-    
-    if (!$page_links)
-        return;
-        
-    echo '<div class="pagination">';
-    echo '<ul>';
-    foreach ($page_links as &$link) {
-        if (starts_with($link, '<a'))
-            printf('<li>%s</li>', $link);
-        else 
-            printf('<li class="disabled"><a href="#">%s</a></li>', $link);
-    }
-    echo '</ul>';    
-    echo '</div>';
+    gs_pagination_links(get_topic_pages());
 }
 
 
