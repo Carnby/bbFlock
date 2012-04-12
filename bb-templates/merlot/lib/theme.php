@@ -77,7 +77,7 @@ function gs_body_classes() {
 function gs_credits() {
 	echo '<p>';
 	printf(__('%1$s is proudly powered by <a href="%2$s">bbPress</a>.'), bb_option('name'), "http://bbpress.org");
-	_e(' Using <a href="http://alumnos.dcc.uchile.cl/~egraells/">Genealogies bbPress Theme</a>', 'genealogies');
+	_e(' Using <a href="http://alumnos.dcc.uchile.cl/~egraells/">Merlot</a> theme by Eduardo Graells and Twitter Bootstrap.', 'genealogies');
 	echo '</p>';
 }
 
@@ -134,6 +134,8 @@ function gs_nav_link_wrap($link, $context) {
         $class = $active;
     else if ($context == 'login' && bb_get_location() == 'login-page')
         $class = $active;
+    else if ($context == 'stats' && bb_get_location() == 'stats-page')
+        $class = $active;
         
     return sprintf('<li %s>%s</li>', $class, $link); 
 }
@@ -141,10 +143,20 @@ function gs_nav_link_wrap($link, $context) {
 function gs_navigation() {
 	$links = array();
 	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_option('uri'), __('Front Page', 'genealogies')), 'front-page');
+	
+	if ($admin_link = bb_get_admin_link()) {
+        $links[] = gs_nav_link_wrap($admin_link, 'admin');		
+    }
+	
 	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
 	
 	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_option('uri') . 'members.php', __('Members')), 'members');
 	
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_option('uri') . 'statistics.php', __('Statistics')), 'stats');
+	
+	printf('<ul class="nav">%s</ul>', implode('', apply_filters('gs_navigation_menu', $links)));
+	
+	$links = array();
 	
 	if (!bb_is_user_logged_in()) {
 	    $links[] = gs_nav_link_wrap(sprintf('<a class="login_link" data-toggle="modal" href="#modalLogin">%s</a>', __('Login')), 'login');
@@ -159,33 +171,31 @@ function gs_navigation() {
 		
 		$links[] = gs_nav_link_wrap('<a href="' . get_profile_tab_link(bb_get_current_user_info( 'id' ), 'favorites') . '" alt="'. __('Your Favorites') . '">' . __('Your Favorites') . '</a>', 'your-favorites');
 		
-		$admin_link = bb_get_admin_link();
-		if ($admin_link) {
-		    $links[] = gs_nav_link_wrap($admin_link, 'admin');
-		}
-		
 		$links[] = gs_nav_link_wrap(bb_get_logout_link(), 'logout');
 	}
+	
+	$links[] = '<li class="divider-vertical"></li>';
 
-    $search_value = '';
+    gs_nav_search_form();
+
+	printf('<ul class="nav pull-right">%s</ul>', implode('', apply_filters('gs_user_navigation_menu', $links)));
+}
+
+function gs_nav_search_form() {
+	$search_value = '';
     
     if (is_bb_search()) {
         global $q;
         $search_value = $q;
     }
 
-    $links[] = '<li class="pull-right"><form class="form-inline navbar-search" id="searchform" method="get" action="search.php">
-        <input type="text" class="input-medium search-query" name="search" id="s" size="15" placeholder="' . attribute_escape(__('Search')) . '" value="' . attribute_escape($search_value) . '"/></form></li>';
-
-	printf('<ul class="nav">%s</ul>', implode('', apply_filters('gs_navigation_menu', $links)));
+    $search = '<form class="navbar-search pull-right" id="searchform" method="get" action="search.php"><input type="text" class="input-medium search-query" name="search" id="s" size="15" placeholder="' . attribute_escape(__('Search')) . '" value="' . attribute_escape($search_value) . '"/></form>';
+	
+	printf('%s', $search);
 }
 
 function gs_site_title() {
-    if (function_exists('bb_header_image_output'))
-        return;
 	printf('<a class="brand" href="%s">%s</a>', bb_get_option('uri'), bb_get_option('name'));
-	//if ( bb_get_option('description') )
-	//	printf('<p id="tagline">%s</p>', bb_get_option('description'));
 }
 
 
