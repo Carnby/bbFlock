@@ -72,24 +72,24 @@ function get_registrations_per_day() {
 	return get_total_users() / ceil( ( time() - bb_get_inception( 'timestamp' ) ) / 3600 / 24 );
 }
 
-function registrations_per_day() {
-	echo apply_filters('registrations_per_day', bb_number_format_i18n(get_registrations_per_day(),3));
+function registrations_per_day($decimals = 3) {
+	echo apply_filters('registrations_per_day', bb_number_format_i18n(get_registrations_per_day(), $decimals));
 }
 
 function get_posts_per_day() {
 	return get_total_posts() / ceil( ( time() - bb_get_inception( 'timestamp' ) ) / 3600 / 24 );
 }
 
-function posts_per_day() {
-	echo apply_filters('posts_per_day', bb_number_format_i18n(get_posts_per_day(),3));
+function posts_per_day($decimals = 3) {
+	echo apply_filters('posts_per_day', bb_number_format_i18n(get_posts_per_day(), $decimals));
 }
 
 function get_topics_per_day() {
 	return get_total_topics() / ceil( ( time() - bb_get_inception( 'timestamp' ) ) / 3600 / 24 );
 }
 
-function topics_per_day() {
-	echo apply_filters('topics_per_day', bb_number_format_i18n(get_topics_per_day(),3));
+function topics_per_day($decimals = 3) {
+	echo apply_filters('topics_per_day', bb_number_format_i18n(get_topics_per_day(), $decimals));
 }
 
 ?>

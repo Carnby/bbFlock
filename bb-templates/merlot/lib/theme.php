@@ -15,7 +15,8 @@ function gs_header_breadcrumb() {
         gs_profile_breadcrumb();
     if (is_bb_tag())
         gs_tag_breadcrumb();
-        
+    if (is_bb_stats())
+        gs_stats_breadcrumb();
 }
 
 function gs_page_header() {

@@ -6,7 +6,7 @@ require_once( BB_PATH . BB_INC . 'statistics-functions.php');
 
 $topics = get_popular_topics();
 
-$bb->static_title = __('Statistics') . ' &laquo;';
+$bb->static_title = __('Statistics');
 
 do_action('bb_stats.php');
 
