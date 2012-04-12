@@ -896,6 +896,13 @@ function topic_pages( $id = 0 ) {
 	echo apply_filters( 'topic_pages', get_page_number_links( $page, $topic->topic_posts + $add ), $topic->topic_id );
 }
 
+function get_topic_pages( $id = 0 ) {
+	global $page;
+	$topic = get_topic( get_topic_id( $id ) );
+	$add = topic_pages_add( $topic->topic_id );
+	return apply_filters( 'get_topic_pages', get_page_number_links( $page, $topic->topic_posts + $add, 'array' ), $topic->topic_id );
+}
+
 function topic_pages_add( $id = 0 ) {
 	$topic = get_topic( get_topic_id( $id ) );
 	if ( isset($_GET['view']) && 'all' == $_GET['view'] && bb_current_user_can('browse_deleted') )
@@ -903,7 +910,7 @@ function topic_pages_add( $id = 0 ) {
 	return apply_filters( 'topic_pages_add', $add, $topic->topic_id );
 }
 
-function get_page_number_links($page, $total) {
+function get_page_number_links($page, $total, $type = 'plain') {
 	$args = array();
 	$uri = $_SERVER['REQUEST_URI'];
 	if ( bb_get_option('mod_rewrite') ) {
@@ -945,7 +952,8 @@ function get_page_number_links($page, $total) {
 		'format' => $format,
 		'total' => ceil($total/bb_get_option('page_topics')),
 		'current' => $page,
-		'add_args' => $args
+		'add_args' => $args,
+		'type' => $type
 	) );
 }
 

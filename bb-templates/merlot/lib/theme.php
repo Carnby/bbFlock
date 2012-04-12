@@ -269,4 +269,17 @@ function merlot_bootstrap_css() {
     printf('<link rel="stylesheet" href="%s" type="text/css" />', $css_url);
 }
 
+// auxiliary funcs
+// source: http://stackoverflow.com/questions/834303/php-startswith-and-endswith-functions
+
+function starts_with($haystack, $needle) {
+    $length = strlen($needle);
+    return (substr($haystack, 0, $length) === $needle);
+}
+
+function ends_with($haystack, $needle) {
+    $length = strlen($needle);
+    $start  = $length * -1; //negative
+    return (substr($haystack, $start) === $needle);
+}
 
