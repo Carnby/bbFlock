@@ -132,6 +132,7 @@ add_action('bb_view.php', 'ut_add_topic_unread_data');
 add_action('tag-single.php', 'ut_add_topic_unread_data');
 add_action('bb_index.php', 'ut_add_topic_unread_data');
 add_action('bb_favorites.php', 'ut_add_topic_unread_data');
+add_action('bb_stats.php', 'ut_add_topic_unread_data');
 //add_action('bb_profile.php', 'ut_add_topic_unread_data');
 
 // this function updates the table when a user reads a topic. we assume that on topic read, the user has read the whole topic 
