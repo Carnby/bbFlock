@@ -213,7 +213,7 @@ function gs_front_page_header() {
         <a class="btn btn-primary" href="<?php profile_tab_link(bb_get_current_user_info( 'id' ), 'edit'); ?>" alt="<?php _e('Edit Your Profile','genealogies'); ?>"><?php _e('Edit Your Profile','genealogies'); ?></a>
     </p>
     <?php } else if (!bb_is_user_logged_in()) { ?>
-    <p><?php printf(__('<a class="btn btn-primary" href="%1$s">Register</a>'), bb_get_option('uri').'register.php'); ?> <?php printf(__('<a class="btn btn-primary" href="%1$s">Login</a>'), bb_get_option('uri').'login.php'); ?>
+    <p><?php printf(__('<a class="btn btn-primary" href="%1$s">Register</a>'), bb_get_option('uri').'register.php'); ?> <?php printf(__('<a class="btn btn-primary" href="%1$s">Login</a>'), bb_get_option('uri').'bb-login.php'); ?>
     <?php } ?>
     </div>
     <?php
@@ -256,6 +256,15 @@ function gs_no_discussions() {
     } else {
         $text = 'other place holder';
     }
+?>
+<div class="well">
+<h2><?php echo $text; ?></h2>
+</div>
+<?php
+}
+
+function gs_no_members() {
+    $text = __('No users found.');
 ?>
 <div class="well">
 <h2><?php echo $text; ?></h2>
