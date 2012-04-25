@@ -7,7 +7,6 @@ Author URI: http://about.me/egraells
 Version: 1.0
 */
 
-
 $bb_youtube_template = '<iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/VIDEO_ID" frameborder="0"></iframe>';
 
 function bb_video_init() {
