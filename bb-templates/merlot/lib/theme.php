@@ -7,6 +7,12 @@ function human_filesize($size) {
 }
 
 function gs_header_breadcrumb() {
+
+    do_action('bb_header_breadcrumb');
+
+    if (apply_filters('bb_header_breadcrumb_override', false))
+        return;
+
     if (is_view())
         gs_view_breadcrumb();
     if (is_topic() or is_forum())
@@ -22,6 +28,12 @@ function gs_header_breadcrumb() {
 function gs_page_header() {
     //if (is_view())
     //    gs_view_breadcrumb();
+    
+    do_action('bb_page_header');
+    
+    if (apply_filters('bb_page_header_override', false))
+        return;
+    
     if (is_topic())
         gs_topic_header();
     
