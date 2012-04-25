@@ -1953,6 +1953,171 @@ function bb_offset_time( $time, $args = '' ) {
 
 /* Permalinking / URLs / Paths */
 
+/**
+ * BB_URI_CONTEXT_* - Bitwise definitions for bb_uri() and bb_get_uri() contexts
+ *
+ * @since 1.0
+ */
+define( 'BB_URI_CONTEXT_NONE',                 0 );
+define( 'BB_URI_CONTEXT_HEADER',               1 );
+define( 'BB_URI_CONTEXT_TEXT',                 2 );
+define( 'BB_URI_CONTEXT_A_HREF',               4 );
+define( 'BB_URI_CONTEXT_FORM_ACTION',          8 );
+define( 'BB_URI_CONTEXT_IMG_SRC',              16 );
+define( 'BB_URI_CONTEXT_LINK_STYLESHEET_HREF', 32 );
+define( 'BB_URI_CONTEXT_LINK_ALTERNATE_HREF',  64 );
+define( 'BB_URI_CONTEXT_LINK_OTHER',           128 );
+define( 'BB_URI_CONTEXT_SCRIPT_SRC',           256 );
+define( 'BB_URI_CONTEXT_IFRAME_SRC',           512 );
+define( 'BB_URI_CONTEXT_BB_FEED',              1024 );
+define( 'BB_URI_CONTEXT_BB_USER_FORMS',        2048 );
+define( 'BB_URI_CONTEXT_BB_ADMIN',             4096 );
+define( 'BB_URI_CONTEXT_BB_XMLRPC',            8192 );
+define( 'BB_URI_CONTEXT_WP_HTTP_REQUEST',      16384 );
+//define( 'BB_URI_CONTEXT_*',                    32768 );  // Reserved for future definitions
+//define( 'BB_URI_CONTEXT_*',                    65536 );  // Reserved for future definitions
+//define( 'BB_URI_CONTEXT_*',                    131072 ); // Reserved for future definitions
+//define( 'BB_URI_CONTEXT_*',                    262144 ); // Reserved for future definitions
+define( 'BB_URI_CONTEXT_AKISMET',              524288 );
+
+/**
+ * Echo a URI based on the URI setting
+ *
+ * @since 1.0
+ *
+ * @param $resource string The directory, may include a querystring
+ * @param $query mixed The query arguments as a querystring or an associative array
+ * @param $context integer The context of the URI, use BB_URI_CONTEXT_*
+ * @return void
+ */
+function bb_uri( $resource = null, $query = null, $context = BB_URI_CONTEXT_A_HREF )
+{
+	echo apply_filters( 'bb_uri', bb_get_uri( $resource, $query, $context ), $resource, $query, $context );
+}
+
+/**
+ * Return a URI based on the URI setting
+ *
+ * @since 1.0
+ *
+ * @param $resource string The directory, may include a querystring
+ * @param $query mixed The query arguments as a querystring or an associative array
+ * @param $context integer The context of the URI, use BB_URI_CONTEXT_*
+ * @return string The complete URI
+ */
+function bb_get_uri( $resource = null, $query = null, $context = BB_URI_CONTEXT_A_HREF )
+{
+	// If there is a querystring in the resource then extract it
+	if ( $resource && strpos( $resource, '?' ) !== false ) {
+		list( $_resource, $_query ) = explode( '?', trim( $resource ), 2 );
+		$resource = $_resource;
+		$_query = wp_parse_args( $_query );
+	} else {
+		// Make sure $_query is an array for array_merge()
+		$_query = array();
+	}
+
+	// $query can be an array as well as a string
+	if ( $query ) {
+		if ( is_string( $query ) ) {
+			$query = ltrim( trim( $query ), '?' );
+		}
+		$query = wp_parse_args( $query );
+	}
+
+	// Make sure $query is an array for array_merge()
+	if ( !$query ) {
+		$query = array();
+	}
+
+	// Merge the queries into a single array
+	$query = array_merge( $_query, $query );
+
+	// Make sure context is an integer
+	if ( !$context || !is_integer( $context ) ) {
+		$context = BB_URI_CONTEXT_A_HREF;
+	}
+
+	// Get the base URI
+	static $_uri;
+	if( !isset( $_uri ) ) {
+		$_uri = bb_get_option( 'uri' );
+	}
+	$uri = $_uri;
+
+	// Use https?
+	if (
+		( ( $context & BB_URI_CONTEXT_BB_USER_FORMS ) && force_ssl_login() ) // Force https when required on user forms
+	||
+		( ( $context & BB_URI_CONTEXT_BB_ADMIN ) && force_ssl_admin() ) // Force https when required in admin
+	) {
+		static $_uri_ssl;
+		if( !isset( $_uri_ssl ) ) {
+			$_uri_ssl = bb_get_option( 'uri_ssl' );
+		}
+		$uri = $_uri_ssl;
+	}
+
+	// Add the directory
+	$uri .= ltrim( $resource, '/' );
+
+	// Add the query string to the URI
+	$uri = add_query_arg( $query, $uri );
+
+	return apply_filters( 'bb_get_uri', $uri, $resource, $context );
+}
+
+/**
+ * Forces redirection to an SSL page when required
+ *
+ * @since 1.0
+ *
+ * @return void
+ */
+function bb_ssl_redirect()
+{
+	$page = bb_get_location();
+
+	do_action( 'bb_ssl_redirect' );
+
+	if ( BB_IS_ADMIN ) {
+		if ( !force_ssl_admin() ) {
+			return;
+		}
+	} else {
+		switch ( $page ) {
+			case 'login-page':
+			case 'register-page':
+				if ( !force_ssl_login() ) {
+					return;
+				}
+				break;
+			case 'profile-page':
+				global $self;
+				if ( $self == 'profile-edit.php' ) {
+					if ( !force_ssl_login() ) {
+						return;
+					}
+				} else {
+					return;
+				}
+				break;
+			default:
+				return;
+				break;
+		}
+	}
+
+	if ( is_ssl() ) {
+		return;
+	}
+
+	$uri_ssl = parse_url( bb_get_option( 'uri_ssl' ) );
+	$uri = $uri_ssl['scheme'] . '://' . $uri_ssl['host'] . $_SERVER['REQUEST_URI'];
+	bb_safe_redirect( $uri );
+	exit;
+}
+
 function get_path( $level = 1, $base = false, $request = false ) {
 	$request = $request ? $request : $_SERVER['REQUEST_URI'];
 	if ( is_string($request) )
