@@ -1625,4 +1625,59 @@ function wp_remote_fopen( $uri ) {
 }
 endif;
 
+if ( !function_exists( 'esc_js' ) ) :
+/**
+ * Escape single quotes, htmlspecialchar " < > &, and fix line endings.
+ *
+ * Escapes text strings for echoing in JS. It is intended to be used for inline JS
+ * (in a tag attribute, for example onclick="..."). Note that the strings have to
+ * be in single quotes. The filter 'js_escape' is also applied here.
+ *
+ * @since 2.8.0
+ *
+ * @param string $text The text to be escaped.
+ * @return string Escaped text.
+ */
+function esc_js( $text ) {
+	$safe_text = wp_check_invalid_utf8( $text );
+	$safe_text = _wp_specialchars( $safe_text, ENT_COMPAT );
+	$safe_text = preg_replace( '/&#(x)?0*(?(1)27|39);?/i', "'", stripslashes( $safe_text ) );
+	$safe_text = str_replace( "\r", '', $safe_text );
+	$safe_text = str_replace( "\n", '\\n', addslashes( $safe_text ) );
+	return apply_filters( 'js_escape', $safe_text, $text );
+}
+endif;
+
+if ( !function_exists( 'esc_html' ) ) :
+/**
+ * Escaping for HTML blocks.
+ *
+ * @since 2.8.0
+ *
+ * @param string $text
+ * @return string
+ */
+function esc_html( $text ) {
+	$safe_text = wp_check_invalid_utf8( $text );
+	$safe_text = wp_specialchars( $safe_text, ENT_QUOTES );
+	return apply_filters( 'esc_html', $safe_text, $text );
+}
+endif;
+
+if ( !function_exists( 'esc_attr' ) ) :
+/**
+ * Escaping for HTML attributes.
+ *
+ * @since 2.8.0
+ *
+ * @param string $text
+ * @return string
+ */
+function esc_attr( $text ) {
+	$safe_text = wp_check_invalid_utf8( $text );
+	$safe_text = wp_specialchars( $safe_text, ENT_QUOTES );
+	return apply_filters( 'attribute_escape', $safe_text, $text );
+}
+endif;
+
 ?>
