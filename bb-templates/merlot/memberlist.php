@@ -2,6 +2,7 @@
 
 <h2><?php _e('Members'); ?></h2>
 
+<?php if ($members) { ?>
 <?php gs_member_pagination(); ?>
 
 <ul class="thumbnails">
@@ -21,5 +22,8 @@
 
 <?php gs_member_pagination(); ?>
 
+<?php } else { 
+    gs_no_members();
+} ?>
 
 <?php bb_get_footer(); ?>
