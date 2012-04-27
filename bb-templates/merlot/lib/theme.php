@@ -219,14 +219,25 @@ function gs_front_page_header() {
     <h1><?php bb_option('name'); ?></h1>
     <p><?php bb_option('description'); ?></p>
 
-    <?php if (bb_is_user_logged_in() && bb_current_user_can('write_topics')) { ?>
     <p>
-        <?php new_topic_link(array('class' => 'btn btn-primary', 'text' => __('Add New Topic &raquo;'))); ?>
-        <a class="btn btn-primary" href="<?php profile_tab_link(bb_get_current_user_info( 'id' ), 'edit'); ?>" alt="<?php _e('Edit Your Profile','genealogies'); ?>"><?php _e('Edit Your Profile','genealogies'); ?></a>
+        <?php 
+        
+        do_action('template_before_header_buttons');
+        
+        if (bb_is_user_logged_in() && bb_current_user_can('write_topics')) { 
+            new_topic_link(array('class' => 'btn btn-primary', 'text' => __('Add New Topic &raquo;'))); 
+            ?>
+            <a class="btn btn-primary" href="<?php profile_tab_link(bb_get_current_user_info( 'id' ), 'edit'); ?>" alt="<?php _e('Edit Your Profile','genealogies'); ?>"><?php _e('Edit Your Profile','genealogies'); ?></a>
+
+        <?php } else if (!bb_is_user_logged_in()) { 
+        
+            printf(__('<a class="btn btn-primary" href="%1$s">Register</a>'), bb_get_option('uri').'register.php'); ?> <?php printf(__('<a class="btn btn-primary" href="%1$s">Login</a>'), bb_get_option('uri').'bb-login.php'); 
+        } 
+        
+        do_action('template_after_header_buttons');
+        
+        ?>
     </p>
-    <?php } else if (!bb_is_user_logged_in()) { ?>
-    <p><?php printf(__('<a class="btn btn-primary" href="%1$s">Register</a>'), bb_get_option('uri').'register.php'); ?> <?php printf(__('<a class="btn btn-primary" href="%1$s">Login</a>'), bb_get_option('uri').'bb-login.php'); ?>
-    <?php } ?>
     </div>
     <?php
     }

@@ -198,6 +198,9 @@ function gs_topic_header() {
   
 <?php 
 if ( bb_is_user_logged_in() ) { 
+        echo '<p>';
+        do_action('template_before_header_buttons');
+        
 	    user_favorites_link(
 	        array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star-empty"></i> ' . __('Add this topic to your favorites')),
 	        array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star"></i> ' . __('This topic is one of your favorites')),
@@ -206,7 +209,13 @@ if ( bb_is_user_logged_in() ) {
 	    topic_delete_link(array('before' => ' ', 'after' => ' ', 'class' => 'btn btn-small btn-danger'));  
 	    topic_close_link(array('before' => ' ', 'after' => ' ', 'class' => 'btn btn-small btn-warning')); 
 	    topic_sticky_link(array('before' => ' ', 'after' => ' ', 'class' => 'btn btn-small btn-primary')); 
+        
+        do_action('template_after_header_buttons');
+        echo '</p>';
+        
+        echo '<p>';
         topic_move_dropdown();
+        echo '</p>';
 } ?>
   
     <?php do_action('topicmeta'); ?>

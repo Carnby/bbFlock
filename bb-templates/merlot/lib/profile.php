@@ -23,20 +23,14 @@ function gs_profile_breadcrumb() {
 
 function gs_profile_data() {
 	global $user;
+	
 	if (function_exists('bb_get_photo'))
 	    echo bb_get_photo($user->ID);
 	else
 	    echo bb_get_avatar($user->ID);
 	
-	
 	echo '<div class="well">';
-	
 	bb_profile_data();
-	
-    if (bb_current_user_can( 'edit_user', $user->ID )) {
-		printf(__('<a class="btn" href="%1$s">Edit</a>'), attribute_escape(get_profile_tab_link($user->ID, 'edit')));
-	}
-	
 	echo '</div>';
 }
 
@@ -53,6 +47,21 @@ function gs_profile_header() {
 <div class="page-header">
     <h2><?php echo $user->user_login; ?><?php gs_profile_labels(); ?></h2>
   
+    <?php 
+    
+    if (bb_is_user_logged_in()) {
+        echo '<p>';
+        do_action('template_before_header_buttons');
+        
+        if (bb_current_user_can('edit_user', $user->ID)) {
+		    printf('<a class="btn btn-primary" href="%s">%s</a>', attribute_escape(get_profile_tab_link($user->ID, 'edit')), __('Edit Profile'));
+	    }
+         
+        do_action('template_after_header_buttons');
+        echo '</p>';
+    } 
+     
+    ?>
 
 </div>
 <?php
