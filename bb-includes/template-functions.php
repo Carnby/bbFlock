@@ -1087,7 +1087,7 @@ function topic_class( $class = '', $key = 'topic', $id = 0 ) {
 	alt_class( $key, $class );
 }
 
-function new_topic( $args = null ) {
+function get_new_topic_link( $args = null ) {
 	$defaults = array( 'text' => __('Add New &raquo;'), 'forum' => 0, 'tag' => '', 'class' => 'new_topic' );
 	if ( $args && is_string($args) && false === strpos($args, '=') )
 		$args = array( 'text' => $args );
@@ -1110,14 +1110,21 @@ function new_topic( $args = null ) {
 		$url = add_query_arg( 're', urlencode($url), bb_get_option( 'uri' ) . 'bb-login.php' );
 	elseif ( is_forum() || is_topic() ) {
 		if ( !bb_current_user_can( 'write_topic', get_forum_id() ) )
-			return;
+			return false;
 	} else {
 		if ( !bb_current_user_can( 'write_topics' ) )
-			return;
+			return false;
 	}
 
 	if ( $url = attribute_escape( apply_filters( 'new_topic_url', $url ) ) )
-		echo "<a href='$url' class='$class'>$text</a>\n";
+		return "<a href='$url' class='$class'>$text</a>\n";
+		
+	return false;
+}
+
+function new_topic_link( $args = null ) {
+    if ( $link = get_new_topic_link( $args ) )
+        echo $link;
 }
 
 function bb_new_topic_forum_dropdown() {

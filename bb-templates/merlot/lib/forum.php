@@ -23,7 +23,7 @@ function gs_forum_header() {
 
 <?php if (bb_is_user_logged_in() && bb_current_user_can('write_topics')) { ?>
     <p>
-        <?php new_topic(array('class' => 'btn btn-primary', 'text' => __('Add New Topic &raquo;'))); ?>
+        <?php new_topic_link(array('class' => 'btn btn-primary', 'text' => __('Add New Topic &raquo;'))); ?>
     </p>
 <?php } ?>
 

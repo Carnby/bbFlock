@@ -221,7 +221,7 @@ function gs_front_page_header() {
 
     <?php if (bb_is_user_logged_in() && bb_current_user_can('write_topics')) { ?>
     <p>
-        <?php new_topic(array('class' => 'btn btn-primary', 'text' => __('Add New Topic &raquo;'))); ?>
+        <?php new_topic_link(array('class' => 'btn btn-primary', 'text' => __('Add New Topic &raquo;'))); ?>
         <a class="btn btn-primary" href="<?php profile_tab_link(bb_get_current_user_info( 'id' ), 'edit'); ?>" alt="<?php _e('Edit Your Profile','genealogies'); ?>"><?php _e('Edit Your Profile','genealogies'); ?></a>
     </p>
     <?php } else if (!bb_is_user_logged_in()) { ?>
