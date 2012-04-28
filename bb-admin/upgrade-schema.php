@@ -61,7 +61,7 @@ $bb_queries['posts'] = "CREATE TABLE $bbdb->posts (
   KEY poster_time (poster_id,post_time),
   KEY post_time (post_time),
   FULLTEXT KEY post_text (post_text)
-) TYPE = MYISAM $charset_collate;";
+) ENGINE = MYISAM $charset_collate;";
 
 $bb_queries['topics'] = "CREATE TABLE $bbdb->topics (
   topic_id bigint(20) NOT NULL auto_increment,
