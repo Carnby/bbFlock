@@ -281,27 +281,25 @@ if ( !function_exists('bb_safe_redirect') ) : // based on [WP6145] (home is diff
  * @return void
  **/
 function bb_safe_redirect( $location, $status = 302 ) {
-	// Need to look at the URL the way it will end up in wp_redirect()
-	$location = trim( wp_sanitize_redirect( $location ) );
+    // Need to look at the URL the way it will end up in wp_redirect()
+    $location = wp_sanitize_redirect($location);
+	
+    // browsers will assume 'http' is your protocol, and will obey a redirect to a URL starting with '//'
+    if ( substr($location, 0, 2) == '//' )
+        $location = 'http:' . $location;
 
-	// browsers will assume 'http' is your protocol, and will obey a redirect to a URL starting with '//'
-	if ( substr($location, 0, 2) == '//' ) {
-		$location = 'http:' . $location;
-	}
+    // In php 5 parse_url may fail if the URL query part contains http://, bug #38143
+    $test = ( $cut = strpos($location, '?') ) ? substr( $location, 0, $cut ) : $location;
+	
+    $lp = parse_url($test);
+    $bp = parse_url(bb_get_uri());
 
-	// In php 5 parse_url may fail if the URL query part contains http://, bug #38143
-	$test = ( $cut = strpos( $location, '?' ) ) ? substr( $location, 0, $cut ) : $location;
+    $allowed_hosts = (array) apply_filters('allowed_redirect_hosts', array($bp['host']), isset($lp['host']) ? $lp['host'] : '');
 
-	$lp  = parse_url( $test );
-	$wpp = parse_url( bb_get_option( 'uri' ) );
+    if ( isset($lp['host']) && ( !in_array($lp['host'], $allowed_hosts) && $lp['host'] != strtolower($bp['host'])) )
+        $location = bb_get_uri(null, null, BB_URI_CONTEXT_HEADER);
 
-	$allowed_hosts = (array) apply_filters( 'allowed_redirect_hosts', array( $wpp['host'] ), isset( $lp['host'] ) ? $lp['host'] : '' );
-
-	if ( empty( $location ) || empty( $lp['host'] ) || !in_array( $lp['host'], $allowed_hosts ) ) {
-		$location = bb_get_option( 'uri' );
-	}
-
-	wp_redirect( $location, $status );
+    return wp_redirect($location, $status);
 }
 endif;
 
