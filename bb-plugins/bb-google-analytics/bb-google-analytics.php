@@ -13,27 +13,28 @@ add_action('bb_admin_menu_generator', 'bb_ga_configuration_page_add');
 add_action('bb_admin-header.php', 'bb_ga_configuration_page_process');
 
 function bb_ga_configuration_page_add() {
-	bb_admin_add_submenu(__('Google Analytics Configuration'), 'use_keys', 'bb_ga_configurtion_page');
+	bb_admin_add_submenu(__('Google Analytics Configuration'), 'use_keys', 'bb_ga_configuration_page');
 }
 
-function bb_ga_configurtion_page(){?>
+function bb_ga_configuration_page(){?>
 <h2><?php _e('Google Analytics Configuration'); ?></h2>
 
-<form class="options" method="post" action="">
+<form class="options form form-horizontal" method="post" action="">
 	<fieldset>
-		<label for="ga_key">
-			<?php _e('Google Analytics User Id:') ?>
-		</label>
-		<div>
-			<input class="text" name="ga_key" id="ga_key" value="<?php bb_form_option('ga_key'); ?>" />
-			<?php _e('Example: UA-12345-6'); ?>
+	    <div class="control-group">
+		    <label class="control-label" for="ga_key">
+			    <?php _e('Google Analytics User Id:') ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="ga_key" id="ga_key" value="<?php bb_form_option('ga_key'); ?>" />
+			    <p class="help-block"><?php _e('<strong>Example</strong>: UA-12345-6'); ?></p>
+		    </div>
 		</div>
-	</fieldset>
-	<fieldset>
+
 		<?php bb_nonce_field( 'ga-configuration' ); ?>
 		<input type="hidden" name="action" id="action" value="update-ga-configuration" />
-		<div class="spacer">
-			<input type="submit" name="submit" id="submit" value="<?php _e('Update Configuration &raquo;') ?>" />
+		<div class="spacer form-actions">
+			<input class="btn btn-primary" type="submit" name="submit" id="submit" value="<?php _e('Update Configuration &raquo;') ?>" />
 		</div>
 	</fieldset>
 </form>
