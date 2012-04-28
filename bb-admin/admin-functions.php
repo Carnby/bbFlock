@@ -141,24 +141,37 @@ function bb_admin_title() {
 
 function bb_admin_menu() {
 	global $bb_menu, $bb_submenu, $bb_current_menu, $bb_current_submenu;
-	$r = "<ul id='bb-admin-menu'>\n";
+	
+	$r = "<div class='well' style='padding: 8px 0;'>\n";
+	$r .= "<ul id='bb-admin-menu' class='nav nav-list'>\n";
 	foreach ( $bb_menu as $m ) :
 		if ( bb_current_user_can($m[1]) ) :
-			$class = ( $m[2] == $bb_current_menu[2] ) ? " class='current'" : '';
-			$r .= "\t<li$class><a href='" . bb_get_option('path') . 'bb-admin/' . bb_get_admin_tab_link($m) . "'>{$m[0]}</a></li>\n";
+			$class = ( $m[2] == $bb_current_menu[2] ) ? " class='nav-header'" : " class='nav-header'";
+			
+			//var_dump($m[2]);
+			
+			if (isset($bb_submenu[$m[2]])) {
+			    //var_dump($bb_submenu[$m[2]]);
+			    $r .= "\t<li class='nav-header active'>{$m[0]}</li>\n";
+			    
+			    foreach ( $bb_submenu[$m[2]] as $sm ) :
+			        if ( bb_current_user_can($sm[1]) ) :
+				        $class = ( $sm[2] == $bb_current_submenu[2] ) ? " class='active'" : '';
+				        $r .= "\t<li$class><a href='" . bb_get_option('path') . 'bb-admin/' . bb_get_admin_tab_link($sm) . "'>{$sm[0]}</a></li>\n";
+			        endif;
+		        endforeach;
+			    
+			} else {
+			    $class = ( $m[2] == $bb_current_menu[2] ) ? " class='nav-header active'" : " class='nav-header'";
+			    $r .= "\t<li$class><a href='" . bb_get_option('path') . 'bb-admin/' . bb_get_admin_tab_link($m) . "'>{$m[0]}</a></li>\n";
+			}
+			
+			$r .= "\t<li class='divider'></li>";
 		endif;
 	endforeach;
+	
 	$r .= '</ul>';
-	if ( $bb_current_submenu ) :
-		$r .= "\n\t<ul id='bb-admin-submenu'>\n";
-		foreach ( $bb_submenu[$bb_current_menu[2]] as $m ) :
-			if ( bb_current_user_can($m[1]) ) :
-				$class = ( $m[2] == $bb_current_submenu[2] ) ? " class='current'" : '';
-				$r .= "\t\t<li$class><a href='" . bb_get_option('path') . 'bb-admin/' . bb_get_admin_tab_link($m) . "'>{$m[0]}</a></li>\n";
-			endif;
-		endforeach;
-		$r .= "\t</ul>\n";
-	endif;
+	$r .= '</div>';
 	echo $r;
 }
 
@@ -227,7 +240,7 @@ function bb_user_row( $user_id, $role = '', $email = false ) {
 	$r .= "\t\t<td>" . date( 'Y-m-d H:i:s', bb_offset_time( bb_gmtstrtotime( $user->user_registered ) ) ) . "</td>\n";
 	$actions = '';
 	if ( bb_current_user_can( 'edit_user', $user_id ) )
-		$actions .= "<a href='" . attribute_escape( get_profile_tab_link( $user->ID, 'edit' ) ) . "'>" . __('Edit') . "</a>";
+		$actions .= "<a class='btn btn-mini btn-info' href='" . attribute_escape( get_profile_tab_link( $user->ID, 'edit' ) ) . "'>" . __('Edit') . "</a>";
 	$r .= "\t\t<td>$actions</td>\n\t</tr>";
 	return $r;
 }
@@ -368,7 +381,7 @@ class BB_User_Search {
 					$r .= "<h3>{$bb_roles->role_names[$role]}</h3>\n";
 				else
 					$r .= "<h3><em>" . __('Users with no role in these forums') . "</h3>\n";
-				$r .= "<table class='widefat'>\n";
+				$r .= "<table class='table table-striped table-bordered'>\n";
 				$r .= "<thead>\n";
 				$r .= "\t<tr>\n";
 				$r .= "\t\t<th style='width:10%;'>" . __('ID') . "</th>\n";
@@ -555,16 +568,16 @@ function bb_forum_row( $forum_id = 0, $echo = true, $close = false ) {
 	$r  = '';
 	if ( $close )
 		$r .= "\t<li id='forum-$_forum->forum_id'" . get_alt_class( 'forum', 'forum clear list-block' ) . ">\n";
-	$r .= "\t\t<div class='list-block posrel'>\n";
-	$r .= "\t\t\t<div class='alignright'>\n";
+	$r .= "\t\t<div class='clearfix'></div><div class='list-block posrel'>\n";
+	$r .= "\t\t\t<div class='alignright pull-right'>\n";
 	if ( bb_current_user_can( 'manage_forums' ) )
-		$r .= "\t\t\t\t<a class='edit' href='" . attribute_escape( bb_get_option('uri') . "bb-admin/content-forums.php?action=edit&id=$_forum->forum_id" ) . "'>" . __('Edit') . "</a>\n";
+		$r .= "\t\t\t\t<a class='btn btn-mini btn-warning edit' href='" . attribute_escape( bb_get_option('uri') . "bb-admin/content-forums.php?action=edit&id=$_forum->forum_id" ) . "'>" . __('Edit') . "</a>\n";
 	if ( bb_current_user_can( 'delete_forum', $_forum->forum_id ) && 1 < $forums_count )
-		$r .= "\t\t\t\t<a class='delete' href='" . attribute_escape( bb_get_option('uri') . "bb-admin/content-forums.php?action=delete&id=$_forum->forum_id" ) . "'>" . __('Delete') . "</a>\n";
+		$r .= "\t\t\t\t<a class='btn btn-mini btn-danger delete' href='" . attribute_escape( bb_get_option('uri') . "bb-admin/content-forums.php?action=delete&id=$_forum->forum_id" ) . "'>" . __('Delete') . "</a>\n";
 	$r .= "\t\t\t</div>\n";
 	$r .= "\t\t\t" . get_forum_name( $_forum->forum_id ) . ' &#8212; ' . get_forum_description( $_forum->forum_id ) . "\n\t\t</div>\n";
 	if ( $close )
-		$r .= "\t</li>\n";
+		$r .= "\t<div class='clearfix'></div></li>\n";
 
 	if ( $echo )
 		echo $r;

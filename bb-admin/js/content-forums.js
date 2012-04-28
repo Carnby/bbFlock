@@ -1,7 +1,7 @@
 jQuery( function($) { // In here $ is jQuery
 
 bbSortForums = {
-	handleText: 'drag',
+	handleText: 'drag me',
 	handle: '',
 	sortCfg: {
 		accept: 'forum',
@@ -56,7 +56,7 @@ bbSortForums = {
 	},
 
 	init: function() {
-		this.handle = "<strong class='sort-handle'>[" + this.handleText + "]&nbsp;</strong>";
+		this.handle = "<strong class='btn sort-handle'>" + this.handleText + "</strong>";
 		var div = document.createElement('div');
 		div.innerHTML = this.saveText; // Save the raquo!
 		this.saveText = div.childNodes[0].nodeValue;
@@ -82,7 +82,8 @@ bbSortForums = {
 
 		$('#forum-order-edit').toggle( function() {
 			$(this).val(bbSortForums.saveText);
-			$('#the-list li:gt(0) div.alignright').after(bbSortForums.handle);
+			$('.sort-handle').remove();
+			$('#the-list li:gt(0) > div > div.alignright').after(bbSortForums.handle);
 			$('#the-list').Sortable( bbSortForums.sortCfg );
 		}, function() {
 			$(this).val(bbSortForums.editText);

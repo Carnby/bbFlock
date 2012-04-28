@@ -51,39 +51,67 @@ bb_get_admin_header();
 
 <h2><?php _e('WordPress Integration'); ?></h2>
 
-<p>
-	<?php _e('Usually, you will have to specify both cookie sharing and user database sharing settings.'); ?>
-</p>
+<p><?php _e('Usually, you will have to specify both cookie sharing and user database sharing settings.'); ?></p>
 
-<p>
-	<?php _e('<strong>Note:</strong> updating these settings may cause you to be logged out!'); ?>
-</p>
+<p><?php _e('<strong>Note:</strong> updating these settings may cause you to be logged out!'); ?></p>
 
-<form class="options" method="post" action="<?php bb_option('uri'); ?>bb-admin/options-wordpress.php">
+<form class="options form form-horizontal" method="post" action="<?php bb_option('uri'); ?>bb-admin/options-wordpress.php">
 	<fieldset>
 		<legend><?php _e('Cookies'); ?></legend>
 		<p><?php _e('Cookie sharing allows users to log in to either your bbPress or your WordPress site, and have access to both.'); ?></p>
-		<label for="wp_siteurl">
-			<?php _e('WordPress address (URL):'); ?>
-		</label>
-		<div>
-			<input class="text" name="wp_siteurl" id="wp_siteurl" value="<?php bb_form_option('wp_siteurl'); ?>" />
-			<p><?php _e('This value should exactly match the <strong>WordPress address (URL)</strong> setting in your WordPress general settings.'); ?></p>
+		
+		<div class="control-group">
+		    <label class="control-label" for="wp_siteurl">
+			    <?php _e('WordPress address (URL):'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="wp_siteurl" id="wp_siteurl" value="<?php bb_form_option('wp_siteurl'); ?>" />
+			    <p class="help-block"><?php _e('This value should exactly match the <strong>WordPress address (URL)</strong> setting in your WordPress general settings.'); ?></p>
+		    </div>
+		
 		</div>
-		<label for="wp_home">
-			<?php _e('Blog address (URL):'); ?>
-		</label>
-		<div>
-			<input class="text" name="wp_home" id="wp_home" value="<?php bb_form_option('wp_home'); ?>" />
-			<p><?php _e('This value should exactly match the <strong>Blog address (URL)</strong> setting in your WordPress general settings.'); ?></p>
+		
+		
+		<div class="control-group">
+		    <label class="control-label" for="wp_home">
+			    <?php _e('Blog address (URL):'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="wp_home" id="wp_home" value="<?php bb_form_option('wp_home'); ?>" />
+			    <p class="help-block"><?php _e('This value should exactly match the <strong>Blog address (URL)</strong> setting in your WordPress general settings.'); ?></p>
+		    </div>
 		</div>
-		<label for="secret">
-			<?php _e('WordPress database secret'); ?>
-		</label>
-		<div>
-			<input class="text" name="secret" id="secret" value="<?php bb_form_option('secret'); ?>" />
-			<p><?php _e('This must match the value of the WordPress setting named "secret" in your WordPress installation. Look for the option labeled "secret" in <a href="#" id="getSecretOption" onclick="window.open(this.href); return false;">this WordPress admin page</a>.'); ?></p>
+		
+		<div class="control-group">
+		    <label class="control-label" for="secret">
+			    <?php _e('WordPress database secret'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="secret" id="secret" value="<?php bb_form_option('secret'); ?>" />
+			    <p class="help-block"><?php _e('This must match the value of the WordPress setting named "secret" in your WordPress installation. Look for the option labeled "secret" in <a href="#" id="getSecretOption" onclick="window.open(this.href); return false;">this WordPress admin page</a>.'); ?></p>
+			    
+			    <?php
+$cookie_settings = array(
+	'cookiedomain' => 'COOKIE_DOMAIN',
+	'cookiepath' => 'COOKIEPATH'
+);
+$wp_settings = '';
+foreach ($cookie_settings as $bb_setting => $wp_setting) {
+	if ( isset($bb->$bb_setting) ) {
+		$wp_settings .= 'define(\'' . $wp_setting . '\', \'' . $bb->$bb_setting . '\');' . "\n";
+	}
+}
+?>
+
+<p class="help-block"><?php _e('bbPress has automatically determined the best cookie settings for WordPress. In some cases integration may work without these settings, but if not add the following code to your <code>wp-config.php</code> file in the root directory of your WordPress installation.'); ?></p>
+
+<pre class="help-block"><?php echo($wp_settings); ?></pre>
+
+
+<p class="help-block"><?php _e('Also make sure that the "SECRET_KEY" in your WordPress <code>wp-config.php</code> file matches the "BB_SECRET_KEY" in your bbPress <code>bb-config.php</code> file.'); ?></p>
+		    </div>
 		</div>
+		
 		<script type="text/javascript" charset="utf-8">
 			function updateWordPressOptionURL () {
 				var siteURLInputValue = document.getElementById('wp_siteurl').value;
@@ -106,41 +134,30 @@ bb_get_admin_header();
 			siteURLInput.onclick = updateWordPressOptionURL;
 			siteURLInput.onchange = updateWordPressOptionURL;
 		</script>
-<?php
-$cookie_settings = array(
-	'cookiedomain' => 'COOKIE_DOMAIN',
-	'cookiepath' => 'COOKIEPATH'
-);
-$wp_settings = '';
-foreach ($cookie_settings as $bb_setting => $wp_setting) {
-	if ( isset($bb->$bb_setting) ) {
-		$wp_settings .= 'define(\'' . $wp_setting . '\', \'' . $bb->$bb_setting . '\');' . "\n";
-	}
-}
-?>
-		<div class="spacer">
-			<p><?php _e('bbPress has automatically determined the best cookie settings for WordPress. In some cases integration may work without these settings, but if not add the following code to your <code>wp-config.php</code> file in the root directory of your WordPress installation.'); ?></p>
-			<pre class="block"><?php echo($wp_settings); ?></pre>
-		</div>
-		<div class="spacer">
-			<p><?php _e('Also make sure that the "SECRET_KEY" in your WordPress <code>wp-config.php</code> file matches the "BB_SECRET_KEY" in your bbPress <code>bb-config.php</code> file.'); ?></p>
-		</div>
 	</fieldset>
+	
 	<fieldset>
 		<legend><?php _e('User database'); ?></legend>
 		<p><?php _e('User database sharing allows you to store user data in your WordPress database.'); ?></p>
-		<label for="wp_table_prefix">
-			<?php _e('User database table prefix:'); ?>
-		</label>
-		<div>
-			<input class="text" name="wp_table_prefix" id="wp_table_prefix" value="<?php bb_form_option('wp_table_prefix'); ?>" />
-			<p><?php _e('If your bbPress and WordPress installations share the same database, then this is the same value as <code>$wp_table_prefix</code> in your WordPress <code>wp-config.php</code> file.'); ?></p>
-			<p><?php _e('In any case, it is usually <strong>wp_</strong>'); ?></p>
+		
+		<div class="control-group">
+		
+		    <label class="control-label" for="wp_table_prefix">
+			    <?php _e('User database table prefix:'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="wp_table_prefix" id="wp_table_prefix" value="<?php bb_form_option('wp_table_prefix'); ?>" />
+			    <p class="help-block"><?php _e('If your bbPress and WordPress installations share the same database, then this is the same value as <code>$wp_table_prefix</code> in your WordPress <code>wp-config.php</code> file.'); ?></p>
+			    <p class="help-block"><?php _e('In any case, it is usually <strong>wp_</strong>'); ?></p>
+		    </div>
+		
 		</div>
-		<label for="user_bbdb_advanced">
-			<?php _e('Show advanced database settings:'); ?>
-		</label>
-		<div>
+		
+		<div class="control-group">
+		    <label class="control-label" for="user_bbdb_advanced">
+			    <?php _e('Show advanced database settings:'); ?>
+		    </label>
+		    <div class="controls">
 <?php
 $advanced_display = 'none';
 if ( bb_get_option('user_bbdb_advanced') ) {
@@ -148,136 +165,161 @@ if ( bb_get_option('user_bbdb_advanced') ) {
 	$checked = ' checked="checked"';
 }
 ?>
-			<script type="text/javascript" charset="utf-8">
-				function toggleAdvanced(checkedObj) {
-					var advanced1 = document.getElementById('advanced1');
-					var advanced2 = document.getElementById('advanced2');
-					if (checkedObj.checked) {
-						advanced1.style.display = 'block';
-						advanced2.style.display = 'block';
-					} else {
-						advanced1.style.display = 'none';
-						advanced2.style.display = 'none';
-					}
-				}
-			</script>
-			<input name="user_bbdb_advanced" id="user_bbdb_advanced" type="checkbox" value="1" onclick="toggleAdvanced(this);"<?php echo $checked; ?> />
-			<p><?php _e('If your bbPress and WordPress installation do not share the same database, then you will need to add advanced settings.'); ?></p>
+			    <script type="text/javascript" charset="utf-8">
+				    function toggleAdvanced(checkedObj) {
+					    var advanced1 = document.getElementById('advanced1');
+					    var advanced2 = document.getElementById('advanced2');
+					    if (checkedObj.checked) {
+						    advanced1.style.display = 'block';
+						    advanced2.style.display = 'block';
+					    } else {
+						    advanced1.style.display = 'none';
+						    advanced2.style.display = 'none';
+					    }
+				    }
+			    </script>
+			    <input name="user_bbdb_advanced" id="user_bbdb_advanced" type="checkbox" value="1" onclick="toggleAdvanced(this);"<?php echo $checked; ?> />
+			    <p class="help-block"><?php _e('If your bbPress and WordPress installation do not share the same database, then you will need to add advanced settings.'); ?></p>
+			</div>
 		</div>
 	</fieldset>
 	<fieldset id="advanced1" style="display:<?php echo $advanced_display; ?>">
 		<legend><?php _e('Separate user database settings'); ?></legend>
-		<div class="spacer">
-			<p><?php _e('Most of the time these settings are <em>not</em> required. Look before you leap!'); ?></p>
-			<p><?php _e('All settings except for the character set must be specified.'); ?></p>
+
+		<p><?php _e('Most of the time these settings are <em>not</em> required. Look before you leap!'); ?></p>
+		<p><?php _e('All settings except for the character set must be specified.'); ?></p>
+
+        <div class="control-group">
+		    <label class="control-label" for="user_bbdb_name">
+			    <?php _e('User database name:'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="user_bbdb_name" id="user_bbdb_name" value="<?php bb_form_option('user_bbdb_name'); ?>" />
+			    <p class="help-block"><?php _e('The name of the database in which your user tables reside.'); ?></p>
+		    </div>
+		
 		</div>
-		<label for="user_bbdb_name">
-			<?php _e('User database name:'); ?>
-		</label>
-		<div>
-			<input class="text" name="user_bbdb_name" id="user_bbdb_name" value="<?php bb_form_option('user_bbdb_name'); ?>" />
-			<p><?php _e('The name of the database in which your user tables reside.'); ?></p>
+		
+		<div class="control-group">
+		    <label class="control-label" for="user_bbdb_user">
+			    <?php _e('User database user:'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="user_bbdb_user" id="user_bbdb_user" value="<?php bb_form_option('user_bbdb_user'); ?>" />
+			    <p><?php _e('The database user that has access to that database.'); ?></p>
+		    </div>
 		</div>
-		<label for="user_bbdb_user">
-			<?php _e('User database user:'); ?>
-		</label>
-		<div>
-			<input class="text" name="user_bbdb_user" id="user_bbdb_user" value="<?php bb_form_option('user_bbdb_user'); ?>" />
-			<p><?php _e('The database user that has access to that database.'); ?></p>
+		
+		<div class="control-group">
+		    <label class="control-label" for="user_bbdb_password">
+			    <?php _e('User database password:'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" type="password" name="user_bbdb_password" id="user_bbdb_password" value="<?php bb_form_option('user_bbdb_password'); ?>" />
+			    <p class="help-block"><?php _e('That database user\'s password.'); ?></p>
+		    </div>
 		</div>
-		<label for="user_bbdb_password">
-			<?php _e('User database password:'); ?>
-		</label>
-		<div>
-			<input class="text" type="password" name="user_bbdb_password" id="user_bbdb_password" value="<?php bb_form_option('user_bbdb_password'); ?>" />
-			<p><?php _e('That database user\'s password.'); ?></p>
+		
+		<div class="control-group">
+		    <label class="control-label" for="user_bbdb_host">
+			    <?php _e('User database host:'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="user_bbdb_host" id="user_bbdb_host" value="<?php bb_form_option('user_bbdb_host'); ?>" />
+			    <p class="help-block"><?php _e('The domain name or IP address of the server where the database is located. If the database is on the same server as the web site, then this probably should remain <strong>localhost</strong>.'); ?></p>
+		    </div>
 		</div>
-		<label for="user_bbdb_host">
-			<?php _e('User database host:'); ?>
-		</label>
-		<div>
-			<input class="text" name="user_bbdb_host" id="user_bbdb_host" value="<?php bb_form_option('user_bbdb_host'); ?>" />
-			<p><?php _e('The domain name or IP address of the server where the database is located. If the database is on the same server as the web site, then this probably should remain <strong>localhost</strong>.'); ?></p>
-		</div>
-		<label for="user_bbdb_charset">
-			<?php _e('User database character set:'); ?>
-		</label>
-		<div>
-			<input class="text" name="user_bbdb_charset" id="user_bbdb_charset" value="<?php bb_form_option('user_bbdb_charset'); ?>" />
-			<p><?php _e('The best choice is <strong>utf8</strong>, but you will need to match the character set which you created the database with.'); ?></p>
+		
+		<div class="control-group">
+		    <label class="control-label" for="user_bbdb_charset">
+			    <?php _e('User database character set:'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="user_bbdb_charset" id="user_bbdb_charset" value="<?php bb_form_option('user_bbdb_charset'); ?>" />
+			    <p class="help-block"><?php _e('The best choice is <strong>utf8</strong>, but you will need to match the character set which you created the database with.'); ?></p>
+		    </div>
 		</div>
 	</fieldset>
+	
 	<fieldset id="advanced2" style="display:<?php echo $advanced_display; ?>">
 		<legend><?php _e('Custom user tables'); ?></legend>
-		<div class="spacer">
-			<p><?php _e('Only set these values if your user tables do not fit the usual mould of <strong>"wordpressprefix+user"</strong> and <strong>"wordpressprefix+usermeta"</strong>.'); ?></p>
+
+		<p><?php _e('Only set these values if your user tables do not fit the usual mould of <strong>"wordpressprefix+user"</strong> and <strong>"wordpressprefix+usermeta"</strong>.'); ?></p>
+		
+		<div class="control-group">
+		    <label class="control-label" for="custom_user_table">
+			    <?php _e('User database "user" table:'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="custom_user_table" id="custom_user_table" value="<?php bb_form_option('custom_user_table'); ?>" />
+			    <p class="help-block"><?php _e('The complete table name, including any prefix.'); ?></p>
+		    </div>
 		</div>
-		<label for="custom_user_table">
-			<?php _e('User database "user" table:'); ?>
-		</label>
-		<div>
-			<input class="text" name="custom_user_table" id="custom_user_table" value="<?php bb_form_option('custom_user_table'); ?>" />
-			<p><?php _e('The complete table name, including any prefix.'); ?></p>
-		</div>
-		<label for="custom_user_meta_table">
-			<?php _e('User database "user meta" table:'); ?>
-		</label>
-		<div>
-			<input class="text" name="custom_user_meta_table" id="custom_user_meta_table" value="<?php bb_form_option('custom_user_meta_table'); ?>" />
-			<p><?php _e('The complete table name, including any prefix.'); ?></p>
+		
+		<div class="control-group">
+		    <label class="control-label" for="custom_user_meta_table">
+			    <?php _e('User database "user meta" table:'); ?>
+		    </label>
+		    <div class="controls">
+			    <input class="text" name="custom_user_meta_table" id="custom_user_meta_table" value="<?php bb_form_option('custom_user_meta_table'); ?>" />
+			    <p class="help-block"><?php _e('The complete table name, including any prefix.'); ?></p>
+		    </div>
 		</div>
 	</fieldset>
 	<fieldset>
-		<label for="show_bb_config">
-			<?php _e('Show manual config settings:'); ?>
-		</label>
-		<div>
-			<script type="text/javascript" charset="utf-8">
-				function toggleConfig(checkedObj) {
-					var config1 = document.getElementById('config_paragraph');
-					var config2 = document.getElementById('config_code');
-					if (checkedObj.checked) {
-						config1.style.display = 'block';
-						config2.style.display = 'block';
-					} else {
-						config1.style.display = 'none';
-						config2.style.display = 'none';
-					}
-				}
-			</script>
-			<input name="show_bb_config" id="show_bb_config" type="checkbox" value="1" onclick="toggleConfig(this);" />
-<?php
-$cookie_settings = array(
-	'wp_siteurl',
-	'wp_home',
-	'wp_table_prefix',
-	'user_bbdb_name',
-	'user_bbdb_user',
-	'user_bbdb_password',
-	'user_bbdb_host',
-	'custom_user_table',
-	'custom_user_meta_table',
-	'authcookie',
-	'cookiedomain',
-	'cookiepath',
-	'sitecookiepath'
-);
-$bb_settings = '';
-foreach ($cookie_settings as $bb_setting) {
-	if ( isset($bb->$bb_setting) ) {
-		$bb_settings .= '$bb->' . $bb_setting . ' = \'' . $bb->$bb_setting . '\';' . "\n";
-	}
-}
-?>
-			<p id="config_paragraph" style="display:none"><?php _e('If your integration settings will not change, you can help speed up bbPress by adding the following code to your <code>bb-config.php</code> file in the root directory of your bbPress installation. Afterwards, the settings in this form will reflect the hard coded values, but you will not be able to edit them here.'); ?></p>
-			<pre id="config_code" class="block" style="display:none"><?php echo($bb_settings); ?></pre>
-		</div>
-		<?php bb_nonce_field( 'options-wordpress-update-options' ); ?>
-		<input type="hidden" name="action" value="update-options" />
-		<div class="spacer">
-			<input type="submit" name="submit" value="<?php _e('Update Settings &raquo;') ?>" />
+	    <div class="control-group">
+		    <label class="control-label" for="show_bb_config">
+			    <?php _e('Show manual config settings:'); ?>
+		    </label>
+		    <div class="controls">
+			    <script type="text/javascript" charset="utf-8">
+				    function toggleConfig(checkedObj) {
+					    var config1 = document.getElementById('config_paragraph');
+					    var config2 = document.getElementById('config_code');
+					    if (checkedObj.checked) {
+						    config1.style.display = 'block';
+						    config2.style.display = 'block';
+					    } else {
+						    config1.style.display = 'none';
+						    config2.style.display = 'none';
+					    }
+				    }
+			    </script>
+			    <input name="show_bb_config" id="show_bb_config" type="checkbox" value="1" onclick="toggleConfig(this);" />
+    <?php
+    $cookie_settings = array(
+	    'wp_siteurl',
+	    'wp_home',
+	    'wp_table_prefix',
+	    'user_bbdb_name',
+	    'user_bbdb_user',
+	    'user_bbdb_password',
+	    'user_bbdb_host',
+	    'custom_user_table',
+	    'custom_user_meta_table',
+	    'authcookie',
+	    'cookiedomain',
+	    'cookiepath',
+	    'sitecookiepath'
+    );
+    $bb_settings = '';
+    foreach ($cookie_settings as $bb_setting) {
+	    if ( isset($bb->$bb_setting) ) {
+		    $bb_settings .= '$bb->' . $bb_setting . ' = \'' . $bb->$bb_setting . '\';' . "\n";
+	    }
+    }
+    ?>
+			    <p class="help-block" id="config_paragraph" style="display:none"><?php _e('If your integration settings will not change, you can help speed up bbPress by adding the following code to your <code>bb-config.php</code> file in the root directory of your bbPress installation. Afterwards, the settings in this form will reflect the hard coded values, but you will not be able to edit them here.'); ?></p>
+			    <pre id="config_code" class="help-block" style="display:none"><?php echo($bb_settings); ?></pre>
+		    </div>
 		</div>
 	</fieldset>
+	
+	<?php bb_nonce_field( 'options-wordpress-update-options' ); ?>
+    <input type="hidden" name="action" value="update-options" />
+    <div class="spacer form-actions">
+	    <input class="btn btn-warning" type="submit" name="submit" value="<?php _e('Update Settings &raquo;') ?>" />
+    </div>
 </form>
 
 <h2><?php _e('User role map'); ?></h2>
@@ -318,13 +360,14 @@ $wpRoles = array(
 
 $wpRolesMap = bb_get_option('wp_roles_map');
 ?>
-<form class="options" method="post" action="<?php bb_option('uri'); ?>bb-admin/options-wordpress.php">
+<form class="options form form-horizontal" method="post" action="<?php bb_option('uri'); ?>bb-admin/options-wordpress.php">
 	<fieldset>
-		<table>
+	    <div class="span6 controls">
+		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
-					<th><?php _e('WordPress role'); ?></th>
-					<th><?php _e('bbPress role'); ?></th>
+					<th class="span3"><?php _e('WordPress role'); ?></th>
+					<th class="span3"><?php _e('bbPress role'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -347,14 +390,14 @@ foreach ($wpRoles as $wpRole => $wpRoleName) {
 ?>
 			</tbody>
 		</table>
-	</fieldset>
-	<fieldset>
-		<?php bb_nonce_field( 'options-wordpress-update-users' ); ?>
-		<input type="hidden" name="action" value="update-users" />
-		<div class="spacer">
-			<input type="submit" name="submit" value="<?php _e('Update User Role Map &raquo;') ?>" />
 		</div>
 	</fieldset>
+
+		<?php bb_nonce_field( 'options-wordpress-update-users' ); ?>
+		<input type="hidden" name="action" value="update-users" />
+		<div class="spacer form-actions">
+			<input class="btn btn-warning" type="submit" name="submit" value="<?php _e('Update User Role Map &raquo;') ?>" />
+		</div>
 </form>
 
 <?php

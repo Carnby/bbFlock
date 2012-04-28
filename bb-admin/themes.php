@@ -54,16 +54,17 @@ function bb_admin_theme_row( $theme ) {
 	$screen_shot = file_exists( $theme_directory . 'screenshot.png' ) ? clean_url( bb_get_theme_uri( $theme ) . 'screenshot.png' ) : false;
 	$activation_url = clean_url( bb_nonce_url( add_query_arg( 'theme', urlencode($theme), bb_get_option( 'uri' ) . 'bb-admin/themes.php' ), 'switch-theme' ) );
 ?>
-	<li<?php alt_class( 'theme', $class ); ?>>
-		<div class="screen-shot"><?php if ( $screen_shot ) : ?><a href="<?php echo $activation_url; ?>" title="<?php echo attribute_escape( __('Click to activate') ); ?>"><img alt="<?php echo attribute_escape( $theme_data['Title'] ); ?>" src="<?php echo $screen_shot; ?>" /></a><?php endif; ?></div>
-		<div class="description">
-			<h3><a href="<?php echo $activation_url; ?>" title="<?php echo attribute_escape( __('Click to activate') ); ?>"><?php echo $theme_data['Title']; ?></a></h3>
+	<li class="span4">
+	    <div class="thumbnail">
+		    <?php if ( $screen_shot ) : ?><a href="<?php echo $activation_url; ?>" title="<?php echo attribute_escape( __('Click to activate') ); ?>"><img alt="<?php echo attribute_escape( $theme_data['Title'] ); ?>" src="<?php echo $screen_shot; ?>" /></a><?php endif; ?>
+
+			<h4><a href="<?php echo $activation_url; ?>" title="<?php echo attribute_escape( __('Click to activate') ); ?>"><?php echo $theme_data['Title']; ?></a></h4>
 			<small class="version"><?php echo $theme_data['Version']; ?></small>
 			<?php printf(__('by <cite>%s</cite>'), $theme_data['Author']); if ( $theme_data['Porter'] ) printf(__(', ported by <cite>%s</cite>'), $theme_data['Porter']); ?>
 			<?php echo $theme_data['Description']; // Description is autop'ed ?>
 			<small><?php printf(__('Installed in: %s'), str_replace(array('core#', 'user#'), array(__('Core themes -&gt; '), __('User installed themes -&gt; ')), $theme)); ?></small>
 		</div>
-		<br class="clear" />
+		</div>
 	</li>
 <?php
 }
@@ -72,13 +73,13 @@ bb_get_admin_header();
 ?>
 
 <h2><?php _e('Current Theme'); ?></h2>
-<ul class="theme-list active">
+<ul class="theme-list active thumbnails">
 <?php bb_admin_theme_row( $themes[$activetheme] ); unset($themes[$activetheme] ); ?>
 </ul>
 <?php if ( !empty($themes) ) : ?>
 
 <h2><?php _e('Available Themes'); ?></h2>
-<ul class="theme-list">
+<ul class="theme-list thumbnails">
 <?php foreach ( $themes as $theme ) bb_admin_theme_row( $theme ); ?>
 </ul>
 

@@ -113,7 +113,7 @@ bb_get_admin_header();
 if ( $normal_plugins ) :
 ?> 
 
-<table class="widefat">
+<table class="table table-bordered table-striped">
 	<thead>
 		<tr>
 			<th><?php _e('Plugin'); ?></th>
@@ -130,11 +130,14 @@ if ( $normal_plugins ) :
 		$action = 'activate';
 		$action_class = 'edit';
 		$action_text = __('Activate');
+		$btn_class = 'btn-success';
+		
 		if ( in_array($plugin, $active_plugins) ) {
 			$class =  'active';
 			$action = 'deactivate';
 			$action_class = 'delete';
 			$action_text = __('Deactivate');
+            $btn_class = 'btn-danger';
 		}
 		$href = attribute_escape(
 			bb_nonce_url(
@@ -158,7 +161,7 @@ if ( $normal_plugins ) :
 				<cite><?php printf( __('By %s.'), $plugin_data['author_link'] ); ?></cite>
 			</td>
 			<td class="action">
-				<a class="<?php echo $action_class; ?>" href="<?php echo $href; ?>"><?php echo $action_text; ?></a>
+				<a class="btn btn-mini <?php echo $btn_class; ?>" href="<?php echo $href; ?>"><?php echo $action_text; ?></a>
 			</td>
 		</tr>
 
@@ -177,7 +180,7 @@ if ( $autoload_plugins ) :
 
 <h3><?php _e('Automatically loaded plugins'); ?></h3>
 
-<table class="widefat">
+<table class="table table-bordered table-striped">
 	<thead>
 		<tr>
 			<th><?php _e('Plugin'); ?></th>
