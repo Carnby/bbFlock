@@ -12,9 +12,8 @@ class BB_Scripts {
 
 	function default_scripts() {
 		$this->add( 'fat', '/' . BB_INC . 'js/fat.js', array('add-load-event'), '1.0-RC1_3660' );
-		$this->add( 'prototype', '/' . BB_INC . 'js/prototype.js', false, '1.5.0' );
-		$this->add( 'wp-ajax', '/' . BB_INC . 'js/wp-ajax-js.php', false, '2.1-beta2' );
-		$this->add( 'listman', '/' . BB_INC . 'js/list-manipulation-js.php', array('add-load-event', 'wp-ajax', 'fat'), '440' );
+		$this->add( 'class', '/' . BB_INC . 'js/class.js', false, '1.0.0' );
+		$this->add( 'listman', '/' . BB_INC . 'js/list-manipulation-js.php', array('add-load-event', 'fat', 'class'), '440' );
 		$this->add( 'topic', '/' . BB_INC . 'js/topic.js', array('add-load-event', 'listman', 'jquery'), '20080422' );
 		$this->add( 'jquery', '/' . BB_INC . 'js/jquery/jquery.js', false, '1.7.1');
 		$this->add( 'interface', '/' . BB_INC . 'js/jquery/interface.js', array('jquery'), '1.2.3');

@@ -11,8 +11,7 @@ addLoadEvent(function(){theList=new listMan();});
 function deleteSomething(what,id,message,obj){if(!obj)obj=theList;if(!message)message="<?php printf(__('Are you sure you want to delete this %s?'),"'+what+'"); ?>";if(confirm(message))return obj.ajaxDelete(what,id);else return false;}
 function dimSomething(what,id,dimClass,obj){if(!obj)obj=theList;return obj.ajaxDimmer(what,id,dimClass);}
 
-var listMan = Class.create();
-Object.extend(listMan.prototype, {
+var listMan = Class.extend({
 	ajaxRespEl: 'ajax-response',
 	ajaxHandler: false,
 	inputData: '',
@@ -27,7 +26,7 @@ Object.extend(listMan.prototype, {
 	dataStore: null,
 	formStore: null,
 
-	initialize: function(theListId) {
+	init: function(theListId) {
 		this.theList = $(theListId ? theListId : 'the-list');
 		if ( !this.theList )
 			return false;
