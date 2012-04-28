@@ -5,7 +5,16 @@ function bb_post_admin_links($post_id = 0, $class = 'admin_link') {
 
     $links = array();
 
-    $links[] = sprintf('<a href="#" class="%s">%s</a>', $class, sprintf(__('Posted %s ago'), bb_get_post_time()));
+    if (!$bb_post)
+        return $links;
+    
+    $post_time = bb_get_post_time(array('id' => $post_id));
+    if (!$post_time) {
+        $topic = get_topic($bb_post->topic_id);
+        $post_time = _bb_time_function_return($topic->topic_start_time, _bb_parse_time_function_args());
+    }
+
+    $links[] = sprintf('<a href="#" class="%s">%s</a>', $class, sprintf(__('Posted %s ago'), $post_time));
     $links[] = '<a class="' . $class . '" href="' . post_anchor_link() . '">#</a>';
 
 	if ($edit_link = post_edit_link($bb_post->post_id, $class)) {
