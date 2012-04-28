@@ -1,0 +1,3 @@
+<?php
+
+// I wonder why is so quiet over here...
