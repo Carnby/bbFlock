@@ -13,7 +13,7 @@ add_action('bb_admin_menu_generator', 'bb_ga_configuration_page_add');
 add_action('bb_admin-header.php', 'bb_ga_configuration_page_process');
 
 function bb_ga_configuration_page_add() {
-	bb_admin_add_submenu(__('Google Analytics Configuration'), 'use_keys', 'bb_ga_configuration_page');
+	bb_admin_add_submenu(__('Google Analytics'), 'use_keys', 'bb_ga_configuration_page');
 }
 
 function bb_ga_configuration_page(){?>
