@@ -133,7 +133,7 @@ function gs_login_header() {
 <?php
 }
 
-function gs_nav_link_wrap($link, $context) {
+function gs_nav_link_wrap($link, $context = '') {
     $class = '';
     $active = 'class="active"';
     
@@ -330,5 +330,15 @@ function gs_pagination_links($page_links) {
     }
     echo '</ul>';    
     echo '</div>';
+}
+
+function gs_modal_login() {
+    gs_login_form(); 
+    ?>
+    <script type="text/javascript">
+    $('.modal').modal({show: true});
+    $('.modal').modal('hide');
+    </script>
+    <?php 
 }
 

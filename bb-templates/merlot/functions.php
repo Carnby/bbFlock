@@ -8,7 +8,8 @@ foreach ($gs_sources as $gs_source) {
 }
 
 add_action('bb_foot', 'gs_credits');
-
+if (!bb_is_user_logged_in())
+    add_action('bb_foot', 'gs_modal_login');
 
 add_action('pre_post_form', 'gs_post_form_open');
 add_action('post_post_form', 'gs_post_form_close');
@@ -19,6 +20,7 @@ load_theme_textdomain('genealogies');
 
 
 bb_enqueue_script('bootstrap');
+
 
 // plugin support
 
