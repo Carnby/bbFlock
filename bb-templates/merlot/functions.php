@@ -10,6 +10,11 @@ foreach ($gs_sources as $gs_source) {
 add_action('bb_foot', 'gs_credits');
 if (!bb_is_user_logged_in())
     add_action('bb_foot', 'gs_modal_login');
+    
+if (bb_current_user_can('use_keys'))
+    add_action('bb_foot', 'gs_footer_system_info');
+
+add_action('bb_foot_right', 'gs_rss_link');
 
 add_action('pre_post_form', 'gs_post_form_open');
 add_action('post_post_form', 'gs_post_form_close');

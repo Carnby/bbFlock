@@ -89,34 +89,38 @@ function gs_body_classes() {
 
 function gs_credits() {
 	echo '<p>';
-	printf(__('%1$s is proudly powered by <a href="%2$s">bbPress</a>.'), bb_option('name'), "http://bbpress.org");
-	_e(' Using <a href="http://alumnos.dcc.uchile.cl/~egraells/">Merlot</a> theme by Eduardo Graells and Twitter Bootstrap.', 'genealogies');
+	printf(__('%1$s is proudly powered by <strong><a href="%2$s">Merlot</a></strong>.'), bb_option('name'), "http://github.com/Carnby/bbFlock");
 	echo '</p>';
+}
+
+function gs_rss_link() {
+	if (is_forum()) {
+		$link = '<a class="feed" href="'; bb_forum_topics_rss_link($forum_id); echo '">' . __('RSS feed for this forum') . '</a>';
+	} else if (is_topic()) {
+		$link = '<a href="' . get_topic_rss_link() . '" class="feed">' . __('RSS feed for this topic') . '</a>';	 
+	} else if (is_bb_tag()) {
+		$link = '<a href="' . bb_get_tag_rss_link() . '" class="feed">' . __('RSS feed for this tag') . '</a>';
+	} else if (is_view()) {
+		$link = '<a href="' . bb_get_view_rss_link() . '" class="feed">' . __('RSS feed for this view') . '</a>';
+	} else {
+	    $link = '<a href="' . bb_get_topics_rss_link() . '" class="feed">' . __('RSS feed for this site') . '</a>';
+    }
+    
+    echo $link;
 }
 
 function gs_do_footer() {
 	global $forum_id;
 	
 
-	echo '<div class="secondary">';
-	if (is_forum()) {
-		echo '<a class="feed" href="'; bb_forum_topics_rss_link($forum_id); echo '">' . __('RSS feed for this forum') . '</a>';
-	} else if (is_topic()) {
-		echo '<a href="' . get_topic_rss_link() . '" class="feed">' . __('RSS feed for this topic') . '</a>';	 
-	} else if (is_bb_tag()) {
-		echo '<a href="' . bb_get_tag_rss_link() . '" class="feed">' . __('RSS feed for this tag') . '</a>';
-	} else if (is_view()) {
-		echo '<a href="' . bb_get_view_rss_link() . '" class="feed">' . __('RSS feed for this view') . '</a>';
-	} 
-	else
-		echo '<a href="' . bb_get_topics_rss_link() . '" class="feed">' . __('RSS feed for this forum') . '</a>';
+	echo '<div class="span2 pull-right">';
+        do_action('bb_foot_right');
 	echo '</div>';
 	
-	echo '<div class="primary content">';
-	do_action('bb_foot', '');
+	echo '<div class="span10">';
+	    do_action('bb_foot', '');
 	echo '</div>';
 
-	
 }
 
 function gs_login_form() {
@@ -344,9 +348,8 @@ function gs_modal_login() {
 
 function gs_footer_system_info() {
     global $bbdb;
-    bb_timer_stop(1);
     ?>
-	<p><?php echo $bbdb->num_queries; ?> queries</p>
+	<p>Made <em><?php echo $bbdb->num_queries; ?></em> queries on <em><?php bb_timer_stop(1); ?></em> seconds.</p>
 	<?php
 }
 
