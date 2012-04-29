@@ -79,6 +79,37 @@ class BB_Cache {
 					$this->write_cache(BB_PATH . 'bb-cache/bb_user-' . $user_id, $bb_user_cache[$user_id]);
 		return;
 	}
+	
+	// NOT bbdb::prepared
+	function cache_topics( $ids, $use_cache = true ) {
+		global $bbdb, $bb_topic_cache;
+
+		$ids = array_map( 'intval', $ids );
+
+		if ( $use_cache && $this->use_cache ) :
+				foreach ( $ids as $i => $topic_id ) :
+				if ( file_exists(BB_PATH . 'bb-cache/bb_topic-' . $topic_id) ) :
+					$bb_topic_cache[$topic_id] = $this->read_cache(BB_PATH . 'bb-cache/bb_topic-' . $topic_id);
+					unset($ids[$i]);
+				endif;
+			endforeach;
+			if ( 0 < count($ids) ) :
+				$this->cache_topics( $ids, false ); // grab from DB what we don't have in hard cache
+				return;
+			endif;
+		elseif ( 0 < count($ids) ) :
+			$sids = join(',', $ids);
+			$where = apply_filters('bb_cache_get_topics_where', "t.topic_id IN ($sids) ");
+			if ( $topics = $bbdb->get_results("SELECT * FROM $bbdb->topics as t WHERE $where") )
+				bb_append_meta( $topics, 'topic' );
+		endif;
+
+		if ( $this->use_cache )
+			foreach ( $ids as $topic_id )
+				if ( $bb_topic_cache[$topic_id] )
+					$this->write_cache(BB_PATH . 'bb-cache/bb_topic-' . $topic_id, $bb_topic_cache[$topic_id]);
+		return;
+	}
 
 	// NOT bbdb::prepared
 	function get_topic( $topic_id, $use_cache = true ) {
