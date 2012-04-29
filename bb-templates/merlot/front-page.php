@@ -3,7 +3,7 @@
 <?php if ($forums) { ?>
 
     <?php 
-    if ( bb_forums("depth=1") ) 
+    if ( bb_forums("depth=2") ) 
         gs_forum_loop(); 
     ?>
 
