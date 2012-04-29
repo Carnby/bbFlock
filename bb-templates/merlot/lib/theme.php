@@ -95,7 +95,8 @@ function gs_credits() {
 
 function gs_rss_link() {
 	if (is_forum()) {
-		$link = '<a class="feed" href="'; bb_forum_topics_rss_link($forum_id); echo '">' . __('RSS feed for this forum') . '</a>';
+	    global $forum_id;
+		$link = '<a class="feed" href="' . bb_get_forum_topics_rss_link($forum_id) . '">' . __('RSS feed for this forum') . '</a>';
 	} else if (is_topic()) {
 		$link = '<a href="' . get_topic_rss_link() . '" class="feed">' . __('RSS feed for this topic') . '</a>';	 
 	} else if (is_bb_tag()) {
