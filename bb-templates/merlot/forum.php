@@ -1,7 +1,7 @@
 <?php bb_get_header(); ?>
 
 
-<?php if ( bb_forums( $forum_id ) ) { ?>
+<?php if ( bb_forums( array('child_of' => $forum_id, 'depth' => 2 ) ) ) { ?>
 	<?php gs_forum_loop(); ?>
 <?php }
 

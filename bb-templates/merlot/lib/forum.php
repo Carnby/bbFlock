@@ -35,43 +35,58 @@ function gs_forum_header() {
 <?php
 }
 
-function gs_forum_loop() { 
+function gs_forum_loop($not_used = 0) { 
 ?>
 	<h3><?php _e('Forums'); ?></h3>
 	
 	<table id="forumlist" class="forum-list table table-bordered table-condensed table-striped">
 	    <thead>
-	        <th class="span6">Forum</th>
+	        <th class="span6"><?php _e('Forum'); ?></th>
 	        <?php do_action('template_after_forum_title_header'); ?>
-	        <th class="span1">Topics</th>
-	        <th class="span1">Posts</th>
+	        <th class="span1"><?php _e('Topics'); ?></th>
+	        <th class="span1"><?php _e('Posts'); ?></th>
 	    </thead>
+        <tbody>
+	<?php 
+	
+	$forum_ids = array();
+	$parent = 0;
+	while ($depth = bb_forum()) {
+	    if ($depth == 1) {
+	        $parent = get_forum_id();
+	        $forum_ids[$parent] = array();
+	    } else if ($depth == 2) {
+	        $forum_ids[$parent][] = get_forum_id();
+	    } 
+	}
 
-	<?php while (bb_forum() ) { ?>
-		<tr <?php bb_forum_class(); ?>>
-			<td><a href="<?php forum_link(); ?>"><?php forum_name(); ?></a>
-			<?php forum_description(array('before' => '<br /><span class="forum_description">&#8211; ', 'after' => '</span>')); ?>
+
+    foreach ($forum_ids as $forum_id => $subforums) {
+	    ?>
+		<tr <?php bb_forum_class($forum_id); ?>>
+			<td class="forum-description">
+			    <a href="<?php forum_link($forum_id); ?>"><?php forum_name($forum_id); ?></a>
+			    <?php forum_description(array('id' => $forum_id, 'before' => '<br /><span class="forum_description">&#8211; ', 'after' => '</span>')); ?>
 			
-			<?php  
-				$forum = get_forum(get_forum_id());
-				$subforums = get_forums(array('child_of' => get_forum_id())); 
-				if ($subforums && !empty($subforums)) {
+			    <?php  
+
+				if (!empty($subforums)) {
 					$forum_links = array();
-					foreach ($subforums as $subforum)
-						if ($subforum->forum_parent == $forum->forum_id)
-							$forum_links[] = sprintf('<a href="%s">%s</a> (%s)', get_forum_link($subforum->forum_id), $subforum->forum_name, $subforum->topics);
+					foreach ($subforums as $subforum_id)
+						$forum_links[] = sprintf('<a href="%s">%s</a> (%s)', get_forum_link($subforum_id), get_forum_name($subforum_id), get_forum_topics($subforum_id));
 					
 					if (!empty($forum_links))
 						echo '<br /><span class="forum_childs">' . __('Sub-Forums', 'genealogies') . ': ' . implode(', ', $forum_links) . '</span>';
 				}
 			?>	
 			</td>
-			<?php do_action('template_after_forum_title'); ?>
-			<td class="forum-topics"><?php echo human_filesize(get_forum_topics()); ?></td>
-			<td class="forum-posts"><?php echo human_filesize(get_forum_posts()); ?></td>
+			<?php do_action('template_after_forum_title', $forum_id); ?>
+			<td class="forum-topics"><?php echo human_filesize(get_forum_topics($forum_id)); ?></td>
+			<td class="forum-posts"><?php echo human_filesize(get_forum_posts($forum_id)); ?></td>
 				
 		</tr>
 	<?php } ?>
+	    </tbody>
 	</table>
 	
 <?php 
