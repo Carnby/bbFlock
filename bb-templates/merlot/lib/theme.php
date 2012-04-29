@@ -342,3 +342,13 @@ function gs_modal_login() {
     <?php 
 }
 
+function gs_footer_system_info() {
+    global $bbdb;
+    bb_timer_stop(1);
+    ?>
+	<p><?php echo $bbdb->num_queries; ?> queries</p>
+	<?php
+}
+
+
+
