@@ -63,7 +63,7 @@ bbSortForums = {
 		div.innerHTML = this.editText; // Save the raquo!
 		this.editText = div.childNodes[0].nodeValue;
 		div = null;
-		$('#the-list').after("<p class='submit'><input type='button' id='forum-order-edit' value='" + this.editText + "' /></p>");
+		$('#the-list').before("<div class='form-actions'><input class='btn btn-info' type='button' id='forum-order-edit' value='" + this.editText + "' /></div>");
 
 		$('#forum-parent-row, #forum-position-row').remove();
 
