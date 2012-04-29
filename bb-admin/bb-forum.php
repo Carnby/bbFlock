@@ -30,8 +30,11 @@ case 'update' :
 
 	if ( !$forums = get_forums() )
 		bb_die(__('No forums to update!'));
-	if ( (int) $_POST['forum_id'] && isset($_POST['forum_name']) && '' !== $_POST['forum_name'] )
+	if ( (int) $_POST['forum_id'] && isset($_POST['forum_name']) && '' !== $_POST['forum_name'] ) {
 		bb_update_forum( $_POST );
+	    do_action('bb_update_forum', $_POST);	
+	}
+	
 	foreach ( array('action', 'id') as $arg )
 		$sent_from = remove_query_arg( $arg, $sent_from );
 	bb_safe_redirect( add_query_arg( 'message', 'updated', $sent_from ) );

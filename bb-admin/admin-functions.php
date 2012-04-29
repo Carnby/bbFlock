@@ -624,6 +624,8 @@ function bb_forum_form( $forum_id = 0 ) {
 		    </div>
         </div>
 <?php endif; ?>     
+
+    <?php do_action('bb_forum_form', $forum_id); ?>
         
     <div class="form-actions">
 <?php if ( $forum_id ) : ?>
