@@ -21,28 +21,35 @@ load_plugin_textdomain( 'bbpm', dirname( __FILE__ ) . '/translations' );
 bb_register_activation_hook(__FILE__, 'bbpm_install');
 
 function bbpm_install() {
-    /*
-	global $bbdb;
+    global $bbdb;
 	$bbdb->bbpm = $bbdb->prefix . 'bbpm';
 	$bbdb->bbpm_meta = $bbdb->prefix . 'bbpm_meta';
-
-	if ($bbdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-		$sql = "CREATE TABLE " . $table_name . " (
-			readtopic_id BIGINT (20) UNSIGNED NOT NULL AUTO_INCREMENT,
-			user_id BIGINT (20) UNSIGNED NOT NULL,
-			topic_id BIGINT (20) NOT NULL,
-			read_post_id BIGINT (20) NOT NULL DEFAULT '1',
-			next_post_id BIGINT (20) NOT NULL DEFAULT '1',
-			PRIMARY KEY  (readtopic_id),
-			KEY user_id (user_id),
-			KEY topic_id (topic_id)
-			);";
-		require_once(BBPATH . 'bb-admin/upgrade-functions.php');
-		bb_dbDelta($sql);
-
-		bb_update_option("utplugin_db_version", $utplugin_db_version);
-	}
-	*/
+	
+    $queries = array();
+    $queries['bbpm_meta'] = "CREATE TABLE {$bbdb->bbpm_meta} (
+      `meta_id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `bbpm_id` bigint(20) NOT NULL DEFAULT '0',
+      `meta_key` varchar(255) DEFAULT NULL,
+      `meta_value` longtext,
+      PRIMARY KEY (`meta_id`),
+      KEY `bbpm_id` (`bbpm_id`),
+      KEY `meta_key` (`meta_key`)
+    );";
+    
+    $queries['bbpm'] = "CREATE TABLE {$bbdb->bbpm} (
+        `ID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `pm_thread` BIGINT UNSIGNED NOT NULL,
+        `pm_from` BIGINT UNSIGNED NOT NULL,
+        `pm_text` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        `sent_on` INT( 10 ) NOT NULL,
+        `reply_to` BIGINT UNSIGNED DEFAULT NULL,
+        KEY ( `pm_from` ),
+        KEY ( `reply_to` ),
+        KEY ( `pm_thread` )
+    );";
+    
+    require_once(BBPATH . 'bb-admin/upgrade-functions.php');
+	bb_dbDelta($queries);
 }
 
 // adapted from core bb_update_meta
@@ -139,10 +146,12 @@ function bbpm_cache_flush($group = '') {
     $bbpm_cache = array();
 }
 
+$bbpm_dir = dirname(__FILE__);
 
-require_once('class.bbpm-message.php');
-require_once('class.bbpm.php');
-require_once('template-tags.php');
+require_once($bbpm_dir . '/class.bbpm-message.php');
+require_once($bbpm_dir . '/class.bbpm.php');
+require_once($bbpm_dir . '/template-tags.php');
+require_once($bbpm_dir . '/admin.php');
 
 /**
  * The bbPM object
@@ -161,7 +170,7 @@ function is_pm() {
 	return substr( ltrim( substr( $_SERVER['REQUEST_URI'] . '/', strlen( bb_get_option( 'path' ) ) ), '/' ), 0, 3 ) == 'pm/';
 }
 
-require_once('admin.php');
+
 
 function bbpm_load($not_used = '') {
     if (!is_front() or !isset($_GET['pm']))
@@ -188,6 +197,13 @@ function bbpm_override_page_header($override) {
 
 add_action('bb_index.php_pre_db', 'bbpm_load');
 
-// Emulate an actual page if pretty permalinks is off.
+add_action('bb_admin_menu_generator', 'bbpm_configure_admin');
+
+function bbpm_configure_admin() {
+	bb_admin_add_submenu('bbPM', 'use_keys', 'bbpm_admin_page', 'options-general.php' );
+}
+
+
+
 
 

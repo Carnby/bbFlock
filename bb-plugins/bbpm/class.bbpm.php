@@ -60,7 +60,7 @@ class bbPM {
 
 		add_filter( 'get_profile_info_keys', array( &$this, 'profile_edit_filter' ), 9, 2 );
 
-		add_action( 'bb_admin_menu_generator', array( &$this, 'admin_add' ) );
+		//add_action( 'bb_admin_menu_generator', array( &$this, 'admin_add' ) );
 
 		add_action( 'bb_recount_list', array( &$this, 'add_recount' ) );
 
