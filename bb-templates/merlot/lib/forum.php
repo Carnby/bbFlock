@@ -52,11 +52,16 @@ function gs_forum_loop($not_used = 0) {
 	$forum_ids = array();
 	$parent = 0;
 	while ($depth = bb_forum()) {
+	    
+	    if (apply_filters('merlot_skip_forum_in_forum_loop', false))
+	        continue;
+	    
 	    if ($depth == 1) {
 	        $parent = get_forum_id();
 	        $forum_ids[$parent] = array();
 	    } else if ($depth == 2) {
-	        $forum_ids[$parent][] = get_forum_id();
+	        if (isset($forum_ids[$parent]))
+	            $forum_ids[$parent][] = get_forum_id();
 	    } 
 	}
 
