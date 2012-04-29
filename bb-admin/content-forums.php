@@ -37,31 +37,29 @@ bb_get_admin_header();
 <?php bb_forum_form( (int) $_GET['id'] ); ?>
 <?php break; case 'delete' : ?>
 <div class="ays narrow">
-	<p><big><?php printf(__('Are you sure you want to delete the "<strong>%s</strong>" forum?'), $deleted_forum->forum_name); ?></big></p>
+	<p class="alert alert-danger"><strong><?php printf(__('Are you sure you want to delete the "<strong>%s</strong>" forum?'), $deleted_forum->forum_name); ?></strong></p>
 	<p><?php _e('This forum contains'); ?></p>
 	<ul>
 		<li><?php printf(__ngettext('%d topic', '%d topics', $deleted_forum->topics), $deleted_forum->topics); ?></li>
 		<li><?php printf(__ngettext('%d post', '%d posts', $deleted_forum->posts), $deleted_forum->posts); ?></li>
 	</ul>
 
-	<form method="post" id="delete-forums" action="<?php bb_option('uri'); ?>bb-admin/bb-forum.php">
-		<p>
-			<label for="move-topics-delete"><input type="radio" name="move_topics" id="move-topics-delete" value="delete" /> <?php _e('Delete all topics and posts in this forum. <em>This can never be undone.</em>'); ?></label><br />
-			<label for="move-topics-move"><input type="radio" name="move_topics" id="move-topics-move" value="move" checked="checked" /> <?php _e('Move topics from this forum into'); ?></label>
+	<form method="post" class="form-vertical" id="delete-forums" action="<?php bb_option('uri'); ?>bb-admin/bb-forum.php">
+		
+			<label class="radio" for="move-topics-delete"><input type="radio" name="move_topics" id="move-topics-delete" value="delete" /> <?php _e('Delete all topics and posts in this forum. <em>This can never be undone.</em>'); ?></label>
+			
+			<label class="radio" for="move-topics-move"><input type="radio" name="move_topics" id="move-topics-move" value="move" checked="checked" /> <?php _e('Move topics from this forum into'); ?></label>
 			<?php bb_forum_dropdown( array('id' => 'move_topics_forum', 'callback' => 'strcmp', 'callback_args' => array($deleted_forum->forum_id), 'selected' => $deleted_forum->forum_parent) ); ?>
-		</p>
-		<p class="submit alignright">
-			<input class="delete" name="Submit" type="submit" value="<?php _e('Delete forum &raquo;'); ?>" tabindex="10" />
+		
+		<div class="form-actions">
+			<input class="btn btn-danger" class="delete" name="Submit" type="submit" value="<?php _e('Delete forum &raquo;'); ?>" tabindex="10" />
+			<a class="btn btn-info" href="<?php bb_option('uri'); ?>bb-admin/bb-forum.php"><?php _e('&laquo; Go back'); ?></a>
 			<input type="hidden" name="action" value="delete" />
 			<input type="hidden" name="forum_id" value="<?php echo $deleted_forum->forum_id; ?>" />
-		</p>
+		</div>
 		<?php bb_nonce_field( 'delete-forums' ); ?>
 	</form>
-	<form method="get" action="<?php bb_option('uri'); ?>bb-admin/bb-forum.php">
-		<p class="submit alignleft">
-			<input type="submit" value="<?php _e('&laquo; Go back'); ?>" tabindex="10" />
-		</p>
-	</form>
+
 </div>
 <?php break; default : ?>
 
@@ -74,6 +72,8 @@ bb_get_admin_header();
 <?php endwhile; ?>
 <?php endif; // bb_forums() ?>
 </ul>
+
+<hr />
 
 <h3><?php _e('Add Forum'); ?></h3>
 <?php bb_forum_form(); ?>

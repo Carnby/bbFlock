@@ -26,6 +26,7 @@ bb_get_current_admin_menu();
 if ( $_check_callback ) {
 	if ( empty( $bb_registered_plugin_callbacks ) || empty( $bb_admin_page ) || !in_array( $bb_admin_page, $bb_registered_plugin_callbacks ) ) {
 		unset( $bb_admin_page );
+		die();
 	}
 }
 ?>

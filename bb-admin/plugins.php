@@ -58,7 +58,7 @@ if ( isset($_GET['action']) ) {
 				array(BB_CORE_PLUGIN_DIR, BB_PLUGIN_DIR),
 				$plugin
 			);
-			@include( $filename );
+			include( $filename );
 			
 			// Add to the active plugins array
 			$active_plugins[] = $plugin;

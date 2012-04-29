@@ -590,31 +590,50 @@ function bb_forum_form( $forum_id = 0 ) {
 		return;
 	$action = $forum_id ? 'update' : 'add';
 ?>
-<form method="post" id="<?php echo $action; ?>-forum" action="<?php bb_option('uri'); ?>bb-admin/bb-forum.php">
+<form method="post" class="form form-horizontal" id="<?php echo $action; ?>-forum" action="<?php bb_option('uri'); ?>bb-admin/bb-forum.php">
 	<fieldset>
-	<table><col /><col style="width: 80%" />
-		<tr><th scope="row"><label for="forum-name"><?php _e('Forum Name:'); ?></label></th>
-			<td><input type="text" name="forum_name" id="forum-name" value="<?php if ( $forum_id ) echo attribute_escape( get_forum_name( $forum_id ) ); ?>" tabindex="10" class="widefat" /></td>
-		</tr>
-		<tr><th scope="row"><label for="forum-desc"><?php _e('Forum Description:'); ?></label></th>
-			<td><input type="text" name="forum_desc" id="forum-desc" value="<?php if ( $forum_id ) echo attribute_escape( get_forum_description( $forum_id ) ); ?>" tabindex="11" class="widefat" /></td>
-		</tr>
-		<tr id="forum-parent-row"><th scope="row"><label for="forum_parent"><?php _e('Forum Parent:'); ?></label></th>
-			<td><?php bb_forum_dropdown( array('cut_branch' => $forum_id, 'id' => 'forum_parent', 'none' => true, 'selected' => $forum_id ? get_forum_parent( $forum_id ) : 0) ); ?></td>
-		</tr>
-		<tr id="forum-position-row"><th scope="row"><label for="forum-order"><?php _e('Position:'); ?></label></th>
-			<td><input type="text" name="forum_order" id="forum-order" value="<?php if ( $forum_id ) echo get_forum_position( $forum_id ); ?>" tabindex="12" maxlength="10" class="widefat" /></td>
-		</tr>
-	</table>
-	<p class="submit">
+
+        <div class="control-group">
+		    <label for="forum-name" class="control-label"><?php _e('Forum Name:'); ?></label>
+		    <div class="controls">
+			    <input type="text" name="forum_name" id="forum-name" value="<?php if ( $forum_id ) echo attribute_escape( get_forum_name( $forum_id ) ); ?>" tabindex="10" class="widefat" />
+			 </div>
+			
+		</div>
+			
+		<div class="control-group">
+		    <label for="forum-desc" class="control-label"><?php _e('Forum Description:'); ?></label>
+		    <div class="controls">
+		        <input type="text" name="forum_desc" id="forum-desc" value="<?php if ( $forum_id ) echo attribute_escape( get_forum_description( $forum_id ) ); ?>" tabindex="11" class="widefat" />
+		    </div>
+		</div>
+
+<?php if ( $forum_id ) : ?>
+		
+		<div class="control-group">
+		    <label for="forum_parent" class="control-label"><?php _e('Forum Parent:'); ?></label>
+		    <div class="controls">
+		        <?php bb_forum_dropdown( array('cut_branch' => $forum_id, 'id' => 'forum_parent', 'none' => true, 'selected' => $forum_id ? get_forum_parent( $forum_id ) : 0) ); ?>
+		    </div>
+		</div>
+		
+		<div class="control-group">
+		    <label for="forum-order" class="control-label"><?php _e('Position:'); ?></label>
+		    <div class="controls">
+		        <input type="text" name="forum_order" id="forum-order" value="<?php if ( $forum_id ) echo get_forum_position( $forum_id ); ?>" tabindex="12" maxlength="10" class="widefat" />
+		    </div>
+        </div>
+<?php endif; ?>     
+        
+    <div class="form-actions">
 <?php if ( $forum_id ) : ?>
 		<input type="hidden" name="forum_id" value="<?php echo $forum_id; ?>" />
 <?php endif; ?>
 		<?php bb_nonce_field( 'order-forums', 'order-nonce' ); ?>
 		<?php bb_nonce_field( "$action-forum" ); ?>
 		<input type="hidden" name="action" value="<?php echo $action; ?>" />
-		<input name="Submit" type="submit" value="<?php if ( $forum_id ) _e('Update Forum &#187;'); else _e('Add Forum &#187;'); ?>" tabindex="13" />
-	</p>
+		<input class="btn btn-primary" name="Submit" type="submit" value="<?php if ( $forum_id ) _e('Update Forum &#187;'); else _e('Add Forum &#187;'); ?>" tabindex="13" />
+	</div>
 	</fieldset> 
 </form>
 <?php
