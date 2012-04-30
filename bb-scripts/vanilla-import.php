@@ -120,7 +120,7 @@ foreach ($bbdb->get_results("SELECT *  FROM GDN_Discussion") as $discussion) {
     
     $vanilla_id = $discussion->DiscussionID;
     $forum_id = $forum_map[$discussion->CategoryID];
-    $author_id = $discussion->InsertUserID;
+    $author_id = $bbdb->get_var("SELECT user_id FROM $bbdb->usermeta WHERE meta_key = 'vanilla_id' AND meta_value = $discussion->InsertUserID");
     $title = $discussion->Name;
     $views = $discussion->CountViews;
     $closed = $discussion->Closed;
