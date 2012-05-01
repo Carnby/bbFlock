@@ -4,12 +4,13 @@ function bbpm_admin_page() {
 	global $bbpm;
 
 	if ( bb_verify_nonce( $_POST['_wpnonce'], 'bbpm-admin' ) ) {
-		$bbpm->settings['max_inbox']        = max( (int)$_POST['max_inbox'], 1 );
+		$bbpm->settings['max_inbox']        = max( (int)$_POST['max_inbox'], 0 );
 		$bbpm->settings['email_new']        = !empty( $_POST['email_new'] );
 		$bbpm->settings['email_reply']      = !empty( $_POST['email_reply'] );
 		$bbpm->settings['email_add']        = !empty( $_POST['email_add'] );
 		$bbpm->settings['threads_per_page'] = max( (int) $_POST['threads_per_page'], 0 );
 		$bbpm->settings['users_per_thread'] = max( (int) $_POST['users_per_thread'], 0 );
+		
 		if ( $bbpm->settings['users_per_thread'] == 1 )
 			$bbpm->settings['users_per_thread'] = 0;
 

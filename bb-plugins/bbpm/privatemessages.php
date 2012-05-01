@@ -10,6 +10,9 @@ global $bbpm;
 $uri = str_replace(bb_get_option('path'), '', $_SERVER['REQUEST_URI']);
 $url = explode('/', rtrim($uri, '/'));
 
+var_dump($_SERVER['REQUEST_URI']);
+var_dump($url);
+
 $get = $url[0];
 
 if ($get != 'pm')
@@ -20,12 +23,18 @@ if (count($url) > 1)
 else
     $action = 'viewall';
 
+if (count($url) >= 4) {
+    if ($url[2] == 'page' and !empty($url[3]))
+        $page = max(1, intval($url[3]));
+    else 
+        $page = 1;
+}
+
 
 if (!$action == 'viewall' or !$action == 'new')
     $action = intval($action);
 
 //TODO: handle invalid params
-//TODO: handle paging
 
 switch ($action) {
     case 'viewall':

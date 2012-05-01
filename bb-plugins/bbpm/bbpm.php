@@ -183,8 +183,15 @@ function bbpm_load($not_used = '') {
         
     global $bbpm;
         
+    $pm_param = empty($_GET['pm']) ? 'viewall' : $_GET['pm'];
+        
     if (!bb_get_option('mod_rewrite')) {
-	    $_SERVER['REQUEST_URI'] = bb_get_option('path') . rtrim('pm/' . $_GET['pm'], '/');
+	    $_SERVER['REQUEST_URI'] = bb_get_option('path') . rtrim('pm/' . $pm_param, '/');
+	    if (isset($_GET['page'])) {
+	        $page = intval($_GET['page']);
+	        if ($page > 1)
+	            $_SERVER['REQUEST_URI'] .= '/page/' . $page;
+	    }
     }
     
     require('privatemessages.php');

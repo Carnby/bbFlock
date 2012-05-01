@@ -2,7 +2,7 @@
 
 <div class="page-header">
 
-    <h2><?php _e( 'Private Messages', 'bbpm' ); ?> <?php if ( $get == 'page' && $action > 1 ) printf( __( '(Page %s)', 'bbpm' ), bb_number_format_i18n( $action ) ); ?></h2>
+    <h2><?php _e( 'Private Messages', 'bbpm' ); ?> <?php if ( $page > 1 ) printf( __( '(Page %s)', 'bbpm' ), bb_number_format_i18n($page) ); ?></h2>
 
     <p><a class="btn btn-primary" href="<?php $bbpm->new_pm_link(); ?>"><?php _e( 'Send New Message &raquo;', 'bbpm' ); ?></a></p>
 
@@ -19,7 +19,11 @@
 
     </thead>
     <tbody>
-<?php while ( $bbpm->have_pm( bb_get_option( 'page_topics' ) * max( $action - 1, 0 ), bb_get_option( 'page_topics' ) * max( $action, 1 ) ) ) { ?>
+<?php 
+    $start = $bbpm->threads_per_page() * max( $page - 1, 0 );
+    $end = $start + $bbpm->threads_per_page();
+    
+    while ($bbpm->have_pm($start, $end)) { ?>
         <tr<?php $bbpm->thread_alt_class(); ?>>
 	        <td><?php if ($label = $bbpm->get_thread_label())
 	            echo '<span class="label label-warning">' . $label . '</span>'; ?>
@@ -33,6 +37,6 @@
     </tbody>
 </table>
 
-<?php $bbpm->pm_pages( max( $get == 'page' ? $action : 1, 1 ) ); ?>
+<?php $bbpm->pm_pages( max( $page ? $page : 1, 1 ) ); ?>
 
 <?php bb_get_footer(); ?>

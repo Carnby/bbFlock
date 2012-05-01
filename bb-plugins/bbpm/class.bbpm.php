@@ -21,13 +21,6 @@ class bbPM {
 	var $version;
 
 	/**
-	 * @var int The maximum number of PM conversations per user
-	 * @since 0.1-alpha1
-	 * @deprecated use {@link bbPM::$settings}['max_inbox']
-	 */
-	var $max_inbox;
-
-	/**
 	 * @var array The current list of bbPM threads
 	 * @since 0.1-alpha6
 	 * @access private
@@ -74,8 +67,6 @@ class bbPM {
 
 		if ( defined( 'BBPM_STT_FIX' ) && BBPM_STT_FIX )
 			add_action( 'bb_init', array( &$this, 'subscribe_to_topic_fix' ) );
-
-		$this->max_inbox = $this->settings['max_inbox'];
 	}
 
 	/**
@@ -134,11 +125,11 @@ class bbPM {
 	function pm_pages( $current ) {
 		$total = ceil( $this->count_pm() / $this->threads_per_page() );
 
-		echo bb_paginate_links( array(
+		echo paginate_links( array(
 			'current' => $current,
 			'total' => $total,
 			'base' => $this->get_link() . '%_%',
-			'format' => bb_get_option( 'mod_rewrite' ) ? '/page/%#%' : '=page/%#%'
+			'format' => bb_get_option( 'mod_rewrite' ) ? '/page/%#%' : '&page=%#%'
 		) );
 	}
 
@@ -219,8 +210,10 @@ class bbPM {
 	 * @return string|bool The URL of the new message or false if any of the message boxes is full.
 	 */
 	function send_message( $id_reciever, $title, $message ) {
-		if ( $this->count_pm() > $this->max_inbox || $this->count_pm( $id_reciever ) > $this->max_inbox )
+	    if ($this->settings['max_inbox'] > 0) {
+		    if ( $this->count_pm() > $this->settings['max_inbox'] || $this->count_pm( $id_reciever ) > $this->settings['max_inbox'] )
 			return false;
+		}
 
 		global $bbdb;
 
