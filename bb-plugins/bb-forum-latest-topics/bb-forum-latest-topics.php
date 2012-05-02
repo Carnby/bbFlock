@@ -162,7 +162,7 @@ function bb_latest_forum_topics_get_last_topic($forum_id) {
 	if (!$topic)
 	    return;
 	
-	printf('<strong><a href="%s">%s</a></strong><br /><a href="%s">%s</a> %s', get_topic_last_post_link($topic->topic_id), $topic->topic_title, get_user_profile_link($topic->topic_last_poster), $topic->topic_last_poster_name, 'chao');
+	printf('<strong><a href="%s">%s</a></strong><br /><a href="%s">%s</a> %s', get_topic_last_post_link($topic->topic_id), $topic->topic_title, get_user_profile_link($topic->topic_last_poster), $topic->topic_last_poster_name, get_topic_time(array('id' => $topic_id)));
 	
 }
 
