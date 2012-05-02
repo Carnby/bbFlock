@@ -8,6 +8,10 @@ Version: 1.0
 License: GPLv3
 */
 
+
+$bb_forum_permissions_allowed_ids = array();
+
+
 function bb_forum_permissions($forum_id = 0) {
     global $bb_current_user;
     global $bb_roles;
@@ -42,7 +46,6 @@ function bb_forum_permissions($forum_id = 0) {
     </div>
     <?php
 }
-
 add_action('bb_forum_form', 'bb_forum_permissions');
 
 
@@ -74,10 +77,8 @@ function bb_forum_permissions_process_form($args) {
     else 
         bb_delete_forummeta($forum_id, 'allowed_roles');
 }
-
 add_action('bb_update_forum', 'bb_forum_permissions_process_form');
 
-$bb_forum_permissions_allowed_ids = array();
 
 function bb_forum_permissions_configure_user() {
     global $bb_current_user;
@@ -98,7 +99,6 @@ function bb_forum_permissions_configure_user() {
         }
     }    
 }
-
 add_action('bb_init', 'bb_forum_permissions_configure_user');
 
 
@@ -112,9 +112,20 @@ function bb_forum_permissions_topics_where($sql) {
 
     return $sql;
 }
-
 add_filter('get_topics_where', 'bb_forum_permissions_topics_where');
 
+
+function bb_forum_permissions_posts_where($sql) {
+    if (is_bb_admin())
+        return $sql;
+        
+    global $bb_forum_permissions_allowed_ids;
+    
+    $sql .= sprintf(" AND p.forum_id IN (%s)", implode(',', $bb_forum_permissions_allowed_ids));
+        
+    return $sql;
+}
+add_filter('get_posts_where', 'bb_forum_permissions_posts_where');
 
 
 function bb_forum_permissions_protect_topic($topic_id) {
@@ -129,7 +140,6 @@ function bb_forum_permissions_protect_topic($topic_id) {
         exit;
     }
 }
-
 add_action('bb_topic.php_pre_db', 'bb_forum_permissions_protect_topic');
 
 
