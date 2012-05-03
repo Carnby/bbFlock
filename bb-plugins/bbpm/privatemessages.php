@@ -8,15 +8,12 @@ bb_auth( 'logged_in' ); // Is the user logged in?
 global $bbpm;
 
 $uri = str_replace(bb_get_option('path'), '', $_SERVER['REQUEST_URI']);
-$url = explode('/', rtrim($uri, '/'));
-
-var_dump($_SERVER['REQUEST_URI']);
-var_dump($url);
+$url = explode('/', trim($uri, '/'));
 
 $get = $url[0];
 
 if ($get != 'pm')
-    bb_die(__('?', 'bbpm'));
+    bb_die(__('Incorrect page.', 'bbpm'));
 
 if (count($url) > 1)
     $action = $url[1];
