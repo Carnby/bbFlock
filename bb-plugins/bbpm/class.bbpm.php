@@ -239,13 +239,13 @@ class bbPM {
 			bb_mail( bb_get_user_email( $id_reciever ),
 				sprintf(
 					__( '%1$s has sent you a private message on %2$s: "%3$s"', 'bbpm' ),
-					get_user_display_name( bb_get_current_user_info( 'ID' ) ),
+					get_user_name( bb_get_current_user_info( 'ID' ) ),
 					bb_get_option( 'name' ),
 					$title
 				), sprintf(
 					__( "Hello, %1\$s!\n\n%2\$s has sent you a private message entitled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s", 'bbpm' ),
-					get_user_display_name( $id_reciever ),
-					get_user_display_name( bb_get_current_user_info( 'ID' ) ),
+					get_user_name( $id_reciever ),
+					get_user_name( bb_get_current_user_info( 'ID' ) ),
 					$title,
 					bb_get_option( 'name' ),
 					$msg->read_link
@@ -298,21 +298,21 @@ class bbPM {
 					bb_mail( bb_get_user_email( $recipient ),
 						sprintf(
 							__( '%1$s has sent you a private message on %2$s: "%3$s"', 'bbpm' ),
-							get_user_display_name( bb_get_current_user_info( 'ID' ) ),
+							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							bb_get_option( 'name' ),
 							$this->get_thread_title( $msg->thread )
 						), $this->settings['email_message'] ? sprintf(
 							__( "Hello, %1\$s!\n\n%2\$s has sent you a private message entitled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s\n\nDo NOT reply to this message.\n\nThe contents of the message are:\n\n%6\$s", 'bbpm' ),
-							get_user_display_name( $recipient ),
-							get_user_display_name( bb_get_current_user_info( 'ID' ) ),
+							get_user_name( $recipient ),
+							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							$this->get_thread_title( $msg->thread ),
 							bb_get_option( 'name' ),
 							$msg->read_link,
 							strip_tags( $msg->text )
 						) : sprintf(
 							__( "Hello, %1\$s!\n\n%2\$s has sent you a private message entitled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s", 'bbpm' ),
-							get_user_display_name( $recipient ),
-							get_user_display_name( bb_get_current_user_info( 'ID' ) ),
+							get_user_name( $recipient ),
+							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							$this->get_thread_title( $msg->thread ),
 							bb_get_option( 'name' ),
 							$msg->read_link
@@ -533,13 +533,13 @@ class bbPM {
 					bb_mail( bb_get_user_email( $user ),
 						sprintf(
 							__( '%1$s has added you to a conversation on %2$s: "%3$s"', 'bbpm' ),
-							get_user_display_name( bb_get_current_user_info( 'ID' ) ),
+							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							bb_get_option( 'name' ),
 							$this->get_thread_title( $ID )
 						), sprintf(
 							__( "Hello, %1\$s!\n\n%2\$s has added you to a private message conversation titled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s", 'bbpm' ),
-							get_user_display_name( $user ),
-							get_user_display_name( bb_get_current_user_info( 'ID' ) ),
+							get_user_name( $user ),
+							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							$this->get_thread_title( $ID ),
 							bb_get_option( 'name' ),
 							bb_get_option( 'mod_rewrite' ) ? bb_get_uri( 'pm/' . $ID ) : bb_get_uri( '', array( 'pm' => $ID ) )
