@@ -7,7 +7,7 @@ bb_auth( 'logged_in' ); // Is the user logged in?
 
 global $bbpm;
 
-$uri = str_replace(bb_get_option('path'), '', $_SERVER['REQUEST_URI']);
+$uri = substr($_SERVER['REQUEST_URI'], strlen(bb_get_option('path')));
 $url = explode('/', trim($uri, '/'));
 
 $get = $url[0];
