@@ -89,6 +89,8 @@ function bb_register_default_views() {
 	// no posts (besides the first one), older than 2 hours
 	bb_register_view( 'no-replies', __('Topics with no replies'), array( 'post_count' => 1, 'started' => '<' . gmdate( 'YmdH', time() - 7200 ) ) );
 	bb_register_view( 'untagged'  , __('Topics with no tags')   , array( 'tag_count'  => 0 ) );
+	
+	bb_register_view( 'popular', __('Popular Topics'), array('per_page' => $num, 'order_by' => 'topic_posts', 'append_meta' => 1) );
 }
 add_action( 'bb_init', 'bb_register_default_views' );
 
