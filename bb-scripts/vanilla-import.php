@@ -156,7 +156,7 @@ foreach ($bbdb->get_results("SELECT *  FROM GDN_Discussion") as $discussion) {
 	
 	print $title . "...";
 	
-	foreach ($bbdb->get_results("SELECT * from GDN_Comment where DiscussionID = $vanilla_id and DeleteUserID IS NULL and CommentID > $last_post_vanilla_id") as $comment) {
+	foreach ((array) $bbdb->get_results("SELECT * from GDN_Comment where DiscussionID = $vanilla_id and DeleteUserID IS NULL and CommentID > $last_post_vanilla_id") as $comment) {
 	    //var_dump($comment);
 	    
 	    $poster_id = $bbdb->get_var("SELECT user_id FROM $bbdb->usermeta WHERE meta_key = 'vanilla_id' AND meta_value = $comment->InsertUserID");
