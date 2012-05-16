@@ -298,6 +298,15 @@ function is_bb_profile() {
 	return 'profile-page' == bb_get_location();
 }
 
+function is_bb_profile_tab($tab) {
+    if (!is_bb_profile())
+        return false;
+        
+    // from bb_repermalink
+    $current_tab = isset($_GET['tab']) ? $_GET['tab'] : get_path(2);
+    return $current_tab == $tab;
+}
+
 function is_bb_favorites() {
 	return 'favorites-page' == bb_get_location();
 }
