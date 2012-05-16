@@ -63,51 +63,6 @@ function gs_topic_loop_start($id = "latest") {
 	<?php
 }
 
-// based on code by _ck_
-function gs_topic_page_links() {
-    $title = '';
-	global $topic; static $perPage, $mod_rewrite;  // speedup
-	
-	$posts = $topic->topic_posts; 	//  + topic_pages_add($topic->topic_id);  //  no need for pages_add on  topic tables
-	
-	if (!isset($perPage)) {	// speedup by static and avoiding extra query if front-page-topics not installed
-		if (function_exists('front_page_topics') && $perPage = bb_get_option('front_page_topics')) { $perPage = $perPage['topic-page']; }
-		elseif (function_exists('topics_per_page')) { global $topics_per_page; $perPage = $topics_per_page['topic-page']; }		
-		if (empty($perPage)) { $perPage = bb_get_option('page_topics'); }
-	}
-	
-	if ($posts<=$perPage) {return $title;}	// speedup
-
-	$uri = get_topic_link();
-	if (!isset($mod_rewrite)) {$mod_rewrite=bb_get_option('mod_rewrite');}	// speedup
-	if ($mod_rewrite) {
-		$uri = (false === $pos = strpos($uri, '?')) ? $uri . '%_%' : substr_replace($uri, '%_%', $pos, 0); 
-	} else { 
-		$uri = add_query_arg('page', '%_%', $uri);
-	}
-	
-	$links = paginate_links(
-		array(
-			'base' => $uri,
-			'format' => $mod_rewrite ? '/page/%#%' : '%#%',
-			'total' => ceil($posts/$perPage),
-			'current' => ceil($posts/$perPage) + 1,
-			'show_all' => false,
-			'type' => 'array',
-			'end_size' => 3,
-			'mid_size' => 3
-		)
-	);
-	
-	if ($links) { unset($links[0]); unset($links[1]); }		// no previous/first page links
-	if (count($links)>2) { unset($links[2]); }			// no dots
-	
-	//var_dump($links);
-	if ($links) {
-	    echo join($links, '&nbsp;');
-	}
-}
-
 function gs_topic_link() {
     if (bb_is_user_logged_in() and function_exists('ut_get_topic_unread_post_link')) {
         echo ut_get_topic_unread_post_link();
