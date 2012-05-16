@@ -21,16 +21,6 @@ function gs_forum_header() {
 <?php } ?>
 <?php do_action('forum_page_after_forum_description'); ?>
 
-<?php if (bb_is_user_logged_in() && bb_current_user_can('write_topics')) { ?>
-    <p>
-        <?php 
-        do_action('template_before_header_buttons');
-        new_topic_link(array('class' => 'btn btn-primary', 'text' => __('Add New Topic &raquo;'))); 
-        do_action('template_after_header_buttons');
-        ?>
-    </p>
-<?php } ?>
-
 </div>
 <?php
 }
@@ -39,12 +29,12 @@ function gs_forum_loop($not_used = 0) {
 ?>
 	<h3><?php _e('Forums'); ?></h3>
 	
-	<table id="forumlist" class="forum-list table table-bordered table-condensed table-striped">
+	<table id="forumlist" class="forum-list table">
 	    <thead>
-	        <th class="span6"><?php _e('Forum'); ?></th>
+	        <th><?php _e('Forum'); ?></th>
 	        <?php do_action('template_after_forum_title_header'); ?>
-	        <th class="span1"><?php _e('Topics'); ?></th>
-	        <th class="span1"><?php _e('Posts'); ?></th>
+	        <th><?php _e('Topics'); ?></th>
+	        <th><?php _e('Posts'); ?></th>
 	    </thead>
         <tbody>
 	<?php 
@@ -70,8 +60,8 @@ function gs_forum_loop($not_used = 0) {
 	    ?>
 		<tr <?php bb_forum_class($forum_id); ?>>
 			<td class="forum-description">
-			    <a href="<?php forum_link($forum_id); ?>"><?php forum_name($forum_id); ?></a>
-			    <?php forum_description(array('id' => $forum_id, 'before' => '<br /><span class="forum_description">&#8211; ', 'after' => '</span>')); ?>
+			    <h4><a href="<?php forum_link($forum_id); ?>"><?php forum_name($forum_id); ?></a></h4>
+			    <?php forum_description(array('id' => $forum_id, 'before' => '<p class="forum-description">', 'after' => '</p>')); ?>
 			
 			    <?php  
 
@@ -81,7 +71,7 @@ function gs_forum_loop($not_used = 0) {
 						$forum_links[] = sprintf('<a href="%s">%s</a> (%s)', get_forum_link($subforum_id), get_forum_name($subforum_id), get_forum_topics($subforum_id));
 					
 					if (!empty($forum_links))
-						echo '<br /><span class="forum_childs">' . __('Sub-Forums', 'genealogies') . ': ' . implode(', ', $forum_links) . '</span>';
+						echo '<p class="forum_childs">' . __('Sub-Forums', 'genealogies') . ': ' . implode(', ', $forum_links) . '</p>';
 				}
 			?>	
 			</td>

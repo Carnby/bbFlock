@@ -1,10 +1,9 @@
 /*
 Theme Name: Merlot
-Theme URI: http://alumnos.dcc.uchile.cl/~egraells
-Description: A custom theme for bbPress, based on Kakumei, the <a href="http://tarskitheme.com">Tarski WordPress</a> theme, and the <a href="http://getvanilla.com">Lussumo Vanilla</a> discussion layout. This theme is licensed under the terms of the GPLv3. 
-Version: 1.0
+Theme URI: http://github.com/Carnby/bbFlock
+Description: Default theme for Merlot Forums.
 Author: Eduardo Graells (Detective)
-Author URI: http://alumnos.dcc.uchile.cl/~egraells
+Author URI: http://about.me/egraells
 */
 
 
@@ -15,7 +14,7 @@ div.clearfix { clear: both; }
 div.post { padding-bottom: 17px;
 margin: 18px 0;
 border-bottom: 1px solid #EEE;}
-div.post_text { clear: both;}
+div.post_text { clear: both; margin-top: 1em; }
 div.post_stuff { margin-bottom: 0.5em; }
 form.form_topic_move { margin-top: 1em; }
 td img.avatar { float: left; padding: 3px;}
@@ -23,7 +22,10 @@ table.forum-topics td { vertical-align: middle; }
 td.topic-title a.page-numbers { font-weight: bold; text-decoration: underline; }
 .table.forum-list td, table.forum-topics { vertical-align: middle; }
 .table.forum-topics td.topic-posts, .table.forum-list td.forum-topics, .table.forum-list td.forum-posts { font-size: 1.4em; font-weight: bold; text-align: center; }
-div.single-stat { text-align: center; }
-div.stat-group { margin-top: 2em; margin-bottom: 1em; }
-.single-stat .value { font-size: 2.5em; line-height: 1.2em; }
-.single-stat .label { font-weight: bold; }
+
+div.post_author_info { margin: 0.25em; }
+h4.profile_topic_title { margin-bottom: 0.5em; }
+
+
+
+

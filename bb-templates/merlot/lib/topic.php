@@ -50,13 +50,13 @@ function gs_topic_class($classes, $topic_id) {
 
 function gs_topic_loop_start($id = "latest") {
 	?>
-	<table id="<?php echo $id; ?>" class="forum-topics table table-bordered table-condensed table-striped">
+	<table id="<?php echo $id; ?>" class="forum-topics table">
 	<thead>
 	    <tr>
-	        <th class="span5">Title</th>
-	        <th class="span3">Author</th>
-	        <th class="span3">Last Reply</th>
-	        <th class="span1">Comments</th>
+	        <th>Title</th>
+	        <th>Author</th>
+	        <th>Last Reply</th>
+	        <th>Comments</th>
 	    </tr>
 	</thead>
 	<tbody>
@@ -129,12 +129,12 @@ function gs_topic_loop(&$discussions) {
 	        <tr <?php topic_class(); ?>>
 
 			    <td class="topic-title">
+			        
+			        <h4><a href="<?php gs_topic_link(); ?>"><?php topic_title(); ?></a></h4>
 			        <?php gs_topic_labels(); ?>
-			        <a href="<?php gs_topic_link(); ?>"><?php topic_title(); ?></a>
-			        <?php gs_topic_page_links(); ?>
+			        <?php // gs_topic_page_links(); ?>
 			        
 			        <?php if (!is_forum()) { ?>
-			            <br />
 			            <span><?php _e('In', 'genealogies'); ?> </span><?php gs_topic_forum_link(); ?>
 			        <?php } ?>
 			    </td>
@@ -196,31 +196,7 @@ function gs_topic_header() {
     <h2 <?php topic_class('topictitle title' ); ?>><?php topic_title(); ?><?php gs_topic_labels(); ?></h2>
     <?php do_action('under_title', ''); ?>
   
-<?php 
-if ( bb_is_user_logged_in() ) { 
-        echo '<p>';
-        do_action('template_before_header_buttons');
-        
-	    user_favorites_link(
-	        array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star-empty"></i> ' . __('Add this topic to your favorites')),
-	        array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star"></i> ' . __('This topic is one of your favorites')),
-	        'btn btn-small'); 
-	        
-	    topic_delete_link(array('before' => ' ', 'after' => ' ', 'class' => 'btn btn-small btn-danger'));  
-	    topic_close_link(array('before' => ' ', 'after' => ' ', 'class' => 'btn btn-small btn-warning')); 
-	    topic_sticky_link(array('before' => ' ', 'after' => ' ', 'class' => 'btn btn-small btn-primary')); 
-        
-        do_action('template_after_header_buttons');
-        echo '</p>';
-        
-        echo '<p>';
-        topic_move_dropdown();
-        echo '</p>';
-} ?>
-  
     <?php do_action('topicmeta'); ?>
-
-    <?php topic_tags(); ?>
     
     <div class="clearfix"></div>
     

@@ -19,7 +19,7 @@ function gs_header_breadcrumb() {
         gs_forum_breadcrumb();
     if (is_bb_profile())
         gs_profile_breadcrumb();
-    if (is_bb_tag())
+    if (is_bb_tags())
         gs_tag_breadcrumb();
     if (is_bb_stats())
         gs_stats_breadcrumb();
@@ -64,6 +64,9 @@ function gs_page_header() {
         
     if (bb_get_location() == 'login-page')
         gs_login_header();
+        
+    if (is_view())
+        gs_view_header();
 }
 
 function gs_breadcrumb($links) {
@@ -93,6 +96,13 @@ function gs_credits() {
 	echo '</p>';
 }
 
+function gs_do_full_width() {
+    $do = in_array(bb_get_location(), array('register-page', 'login-page'));
+    
+    $do = $do || (is_bb_tags() && !is_bb_tag());
+    return apply_filters('gs_do_full_width', $do);
+}
+
 function gs_rss_link() {
 	if (is_forum()) {
 	    global $forum_id;
@@ -110,18 +120,76 @@ function gs_rss_link() {
     echo $link;
 }
 
-function gs_do_footer() {
-	global $forum_id;
-	
+function gs_sidebar_buttons() {
+    $buttons = array();
+    
+    if (!bb_is_user_logged_in()) {
+        printf('<h3>%s</h3>', __('Hi, Stranger!'));
+        printf('<p>%s</p>', __('It looks like you\'re new here. If you want to get involved, click one of these buttons!'));
+        
+        $buttons[] = sprintf('<a class="btn btn-primary pull-left" href="%s">%s</a>', bb_get_uri('register.php'), __('Register'));
+        $buttons[] = sprintf(__('<a class="btn btn-primary" href="%1$s">Login</a>'), bb_get_option('uri').'bb-login.php');
+    } else {
+        if (is_front() || is_forum()) {                    
+            if (bb_current_user_can('write_topics')) { 
+                $buttons[] = get_new_topic_link(array('class' => 'btn btn-primary btn-large', 'text' => __('Add New Topic &raquo;'))); 
+            } 
+        }
+        
+        if (is_topic()) {
+            $link = get_user_favorites_link(array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star-empty"></i> ' . __('Add this topic to your favorites')), array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star"></i> ' . __('This topic is one of your favorites')), 'btn btn-large');
+            
+            if ($link)
+                $buttons[] = $link;
+        }
+        
+        if (is_bb_profile()) {
+            if (bb_current_user_can('edit_user', $user->ID)) {
+		        $buttons[] = sprintf('<a class="btn btn-primary" href="%s"><i class="icon-pencil icon-white"></i> %s</a>', attribute_escape(get_profile_tab_link($user->ID, 'edit')), __('Edit Profile'));
+	        }
+        }
+    }
+ 
+    $buttons = apply_filters('merlot_sidebar_buttons', $buttons);
+    
+    if ($buttons) {
+        printf('<p>%s</p>', implode(' &nbsp; ', $buttons));
+    }
+}
 
-	echo '<div class="span2 pull-right">';
-        do_action('bb_foot_right');
-	echo '</div>';
-	
-	echo '<div class="span10">';
-	    do_action('bb_foot', '');
-	echo '</div>';
-
+function gs_sidebar() {
+    do_action('merlot_before_sidebar');
+    
+    if (is_bb_profile()) {
+        gs_profile_image();
+        gs_profile_data();
+    }
+    
+    gs_sidebar_buttons();
+        
+    if (is_topic()) {      
+        $topic = get_topic(get_topic_id(0));
+                
+	    if (bb_current_user_can('move_topic', $topic->topic_id)) {
+            printf('<h3>%s</h3>', __('Move Topic to Another Forum'));
+            topic_move_dropdown();
+        }   
+      
+        topic_tags();
+    }
+    
+    
+    
+    if (is_bb_tag()) {
+        gs_manage_tags_form();
+    }
+    
+    if (!is_bb_profile() && !is_topic()) {
+        printf('<h3>%s</h3>', __('Views'));
+        gs_views_tabs();
+    }
+    
+    do_action('merlot_after_sidebar');
 }
 
 function gs_login_form() {
@@ -160,7 +228,7 @@ function gs_nav_link_wrap($link, $context = '') {
 
 function gs_navigation() {
 	$links = array();
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_option('uri'), __('Front Page', 'genealogies')), 'front-page');
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_uri(), __('Front Page', 'genealogies')), 'front-page');
 	
 	if ($admin_link = bb_get_admin_link()) {
         $links[] = gs_nav_link_wrap($admin_link, 'admin');		
@@ -168,9 +236,7 @@ function gs_navigation() {
 	
 	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
 	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_option('uri') . 'members.php', __('Members')), 'members');
-	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_option('uri') . 'statistics.php', __('Statistics')), 'stats');
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_uri('members.php'), __('Members')), 'members');
 	
 	printf('<ul class="nav">%s</ul>', implode('', apply_filters('gs_navigation_menu', $links)));
 	
@@ -180,13 +246,7 @@ function gs_navigation() {
 	    $links[] = gs_nav_link_wrap(sprintf('<a class="login_link" data-toggle="modal" href="#modalLogin">%s</a>', __('Login')), 'login');
 	    $links[] = gs_nav_link_wrap(sprintf(__('<a class="register_link" href="%1$s">Register</a>'), bb_get_option('uri').'register.php'), 'register');
 	} else {
-	    $links[] = gs_nav_link_wrap(bb_get_profile_link(bb_get_current_user_info( 'name' )), 'profile');
-		/*
-		<li><a href="<?php profile_tab_link(bb_get_current_user_info( 'id' ), 'edit'); ?>" alt="<?php _e('Edit Your Profile','genealogies'); ?>"><?php _e('Edit Your Profile','genealogies'); ?></a></li>
-
-		<?php if (function_exists('pm_fp_link')) pm_fp_link('<li>', '</li>'); ?>
-		*/
-		
+	    $links[] = gs_nav_link_wrap(bb_get_profile_link(array('text' => bb_get_current_user_info( 'name' ))), 'profile');		
 		$links[] = gs_nav_link_wrap('<a href="' . get_profile_tab_link(bb_get_current_user_info( 'id' ), 'favorites') . '" alt="'. __('Your Favorites') . '">' . __('Your Favorites') . '</a>', 'your-favorites');
 		
 		$links[] = gs_nav_link_wrap(bb_get_logout_link(), 'logout');
@@ -197,6 +257,7 @@ function gs_navigation() {
     gs_nav_search_form();
 
 	printf('<ul class="nav pull-right">%s</ul>', implode('', apply_filters('gs_user_navigation_menu', $links)));
+
 }
 
 function gs_nav_search_form() {
@@ -223,26 +284,6 @@ function gs_front_page_header() {
     <div class="page-header">
     <h1><?php bb_option('name'); ?></h1>
     <p><?php bb_option('description'); ?></p>
-
-    <p>
-        <?php 
-        
-        do_action('template_before_header_buttons');
-        
-        if (bb_is_user_logged_in() && bb_current_user_can('write_topics')) { 
-            new_topic_link(array('class' => 'btn btn-primary', 'text' => __('Add New Topic &raquo;'))); 
-            ?>
-            <a class="btn btn-primary" href="<?php profile_tab_link(bb_get_current_user_info( 'id' ), 'edit'); ?>" alt="<?php _e('Edit Your Profile','genealogies'); ?>"><?php _e('Edit Your Profile','genealogies'); ?></a>
-
-        <?php } else if (!bb_is_user_logged_in()) { 
-        
-            printf(__('<a class="btn btn-primary" href="%1$s">Register</a>'), bb_get_option('uri').'register.php'); ?> <?php printf(__('<a class="btn btn-primary" href="%1$s">Login</a>'), bb_get_option('uri').'bb-login.php'); 
-        } 
-        
-        do_action('template_after_header_buttons');
-        
-        ?>
-    </p>
     </div>
     <?php
     }

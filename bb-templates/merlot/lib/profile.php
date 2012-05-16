@@ -4,8 +4,8 @@ function gs_profile_breadcrumb() {
     global $user;
     $links = array();
     
-    $links[] = '<a href="' . bb_get_option('uri') . '">' . bb_get_option('name') . '</a>';
-    $links[] = '<a href="' . bb_get_option('uri') . 'members.php' . '">' . __('Members') . '</a>';
+    $links[] = '<a href="' . bb_get_uri() . '">' . bb_get_option('name') . '</a>';
+    $links[] = '<a href="' . bb_get_uri('members.php') . '">' . __('Members') . '</a>';
     $links[] = '<a href="' . get_user_profile_link($user->ID) . '">' . get_user_name($user->ID) . '</a>';
 
     $tab = $_GET['tab'];
@@ -21,17 +21,26 @@ function gs_profile_breadcrumb() {
     gs_breadcrumb($links);
 }
 
-function gs_profile_data() {
-	global $user;
+function gs_profile_image() {
+    global $user;
 	
 	if (function_exists('bb_get_photo'))
-	    echo bb_get_photo($user->ID);
+	    $avatar = bb_get_photo($user->ID);
 	else
-	    echo bb_get_avatar($user->ID);
+	    $avatar = bb_get_avatar($user->ID, 160);
+	    
+    if ($avatar)
+        printf('<p class="avatar">%s</p>', $avatar);
+}
+
+function gs_profile_data() {
+	global $user;
+		    
+	echo '<p>';
+	gs_profile_labels();
+	echo '</p>';
 	
-	echo '<div class="well">';
 	bb_profile_data();
-	echo '</div>';
 }
 
 function gs_profile_labels() {
@@ -45,24 +54,7 @@ function gs_profile_header() {
     global $user;
 ?>
 <div class="page-header">
-    <h2><?php echo $user->user_login; ?><?php gs_profile_labels(); ?></h2>
-  
-    <?php 
-    
-    if (bb_is_user_logged_in()) {
-        echo '<p>';
-        do_action('template_before_header_buttons');
-        
-        if (bb_current_user_can('edit_user', $user->ID)) {
-		    printf('<a class="btn btn-primary" href="%s">%s</a>', attribute_escape(get_profile_tab_link($user->ID, 'edit')), __('Edit Profile'));
-	    }
-         
-        do_action('template_after_header_buttons');
-        echo '</p>';
-    } 
-     
-    ?>
-
+    <h2><?php echo $user->user_login; ?></h2>
 </div>
 <?php
 }
@@ -70,6 +62,15 @@ function gs_profile_header() {
 function gs_member_pagination() {
     global $current_page;
     gs_pagination_links(get_page_number_links($current_page, get_total_users(), 'array'));
+}
+
+function gs_profile_pagination() {
+    gs_pagination_links(get_profile_pages());
+}
+
+function gs_profile_actions() {
+    user_update_button();
+	user_delete_button();
 }
 
 

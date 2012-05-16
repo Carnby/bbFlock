@@ -20,7 +20,7 @@
       
 
     ?><h3><?php _e('Discussions'); ?></h3>
-    <?php gs_views_tabs(); ?>
+    
     <?php gs_topic_loop($merged); ?>
 
 <?php } else { // $forums ?>

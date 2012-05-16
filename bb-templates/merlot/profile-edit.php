@@ -25,8 +25,7 @@
 	<?php endif; ?>
 		
 	<div class="form-actions">
-	    <?php user_update_button(); ?>
-	    <?php user_delete_button(); ?>
+	    <?php gs_profile_actions(); ?>
 	</p>
 <?php bb_nonce_field( 'edit-profile_' . $user->ID ); ?>
 </form>

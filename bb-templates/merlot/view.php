@@ -1,9 +1,5 @@
 <?php bb_get_header(); ?>
 
-
-<h3><?php view_name(); ?></h3>
-
-
 <?php 
 
 if ($stickies and $topics)

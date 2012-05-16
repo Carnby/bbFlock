@@ -16,11 +16,6 @@ if (bb_current_user_can('use_keys'))
 
 add_action('bb_foot_right', 'gs_rss_link');
 
-add_action('pre_post_form', 'gs_post_form_open');
-add_action('post_post_form', 'gs_post_form_close');
-add_action('pre_edit_form', 'gs_post_form_open');
-add_action('post_edit_form', 'gs_post_form_close');
-
 load_theme_textdomain('genealogies');
 
 
@@ -73,8 +68,18 @@ function gs_cache_users($not_used = 0) {
 add_action('bb_index.php', 'gs_cache_users');
 add_action('bb_forum.php', 'gs_cache_users');
 add_action('bb_view.php', 'gs_cache_users');
+add_action('bb_profile.php', 'gs_cache_users');
 add_action('bb_stats.php', 'gs_cache_users');
 add_action('bb_favorites.php', 'gs_cache_users');
 add_action('bb_tag-single.php', 'gs_cache_users');
 
+// test
+
+add_profile_tab('Comentarios', 'participate', 'participate', 'profile_comments', 'comments');
+//var_dump($profile_hooks);
+//var_dump($profile_menu);
+
+function profile_comments() {
+    echo 'chao malo';
+}
 

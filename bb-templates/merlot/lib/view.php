@@ -2,7 +2,7 @@
 
 function gs_views_tabs() {
     echo '<div class="tabbable">';
-    echo '<ul class="nav nav-pills">';
+    echo '<ul class="nav nav-tabs nav-stacked">';
     foreach (bb_get_views() as $the_view => $title) {
         $class = '';
         if (is_view() && get_view_name() == get_view_name($the_view))
@@ -17,6 +17,15 @@ function gs_views_tabs() {
 function gs_view_breadcrumb() {
     $links = array();
     $links[] = sprintf('<a href="%s">%s</a>', bb_get_option('uri'), bb_get_option('name'));
+    $links[] = sprintf('<a href="#">%s</a>', __('Views'));
     $links[] = get_view_name();
     gs_breadcrumb($links);
+}
+
+function gs_view_header() {
+?>
+<div class="page-header">
+    <h2><?php view_name(); ?></h2>
+</div>
+<?php
 }

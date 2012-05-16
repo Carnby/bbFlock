@@ -2,7 +2,8 @@
 
 function bb_post_admin_links($post_id = 0, $class = 'admin_link') {
 	$bb_post = bb_get_post(get_post_id($post_id));
-
+	$topic = get_topic($bb_post->topic_id);
+	
     $links = array();
 
     if (!$bb_post)
@@ -15,17 +16,30 @@ function bb_post_admin_links($post_id = 0, $class = 'admin_link') {
     }
 
     $links[] = sprintf('<a href="#" class="%s">%s</a>', $class, sprintf(__('Posted %s ago'), $post_time));
-    $links[] = '<a class="' . $class . '" href="' . post_anchor_link() . '">#</a>';
+    
+    if ($ip_link = post_ip_link($bb_post->post_id, $class))
+		$links[] = $ip_link;
+		
+    $links[] = '<a class="' . $class . ' btn-success" href="' . post_anchor_link() . '">#</a>';
 
-	if ($edit_link = post_edit_link($bb_post->post_id, $class)) {
+	if ($edit_link = post_edit_link($bb_post->post_id, "$class btn-warning")) {
 	    $links[] = $edit_link;
 	}
 	
-	if ($del_link = post_delete_link($bb_post->post_id, $class))
-	    $links[] = $del_link;
+	if ($bb_post->post_position > 1) {
+	    if ($del_link = post_delete_link($bb_post->post_id, "$class btn-danger"))
+	        $links[] = $del_link;
+	} else {
+	    $links[] = get_topic_delete_link(array('before' => ' ', 'after' => ' ', 'class' => "$class btn-danger"));
+	    
+	    if ($sticky_link = get_topic_sticky_link(array('before' => ' ', 'after' => ' ', 'class' => "$class btn-primary")))
+	        $links[] = $sticky_link;
+	        
+	    if ($close_link = get_topic_close_link(array('before' => ' ', 'after' => ' ', 'class' => "$class btn-inverse")))
+	        $links[] = $close_link;
+	}
 	
-	if ($ip_link = post_ip_link($bb_post->post_id, $class))
-		$links[] = $ip_link;
+	
 	
 	return apply_filters('bb_post_admin', $links, $class);	
 }
@@ -43,13 +57,6 @@ function gs_post_info($post_id = 0) {
 	echo '</div>';
 }
 
-function gs_post_form_open() { 
-    echo '<div class="well">'; 
-}
-
-function gs_post_form_close() { 
-    echo '</div>'; 
-}
 
 function gs_post_form_help() {
 ?>

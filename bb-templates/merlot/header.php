@@ -18,17 +18,17 @@
     <?php endif; ?>
 
     <?php bb_head(); ?>
+        
     </head>
 
-    <body id="<?php bb_location(); ?>" class="<?php gs_body_classes(); ?>">
+    <body id="<?php bb_location(); ?>" style="margin-top: 43px;">
 	
 	    <?php do_action('before_header'); ?>
-	    <div class="container">
 	        <?php do_action('before_navbar'); ?>
 	            
-            <div class="navbar">
+            <div class="navbar navbar-fixed-top">
                 <div class="navbar-inner">
-                    <div class="container">
+                    <div class="container-fluid">
                         <?php do_action('before_navigation'); ?>
 			            <?php gs_navigation(); ?>
 			            <?php do_action('after_navigation'); ?>
@@ -38,13 +38,21 @@
             </div>
             
             <?php do_action('after_navbar'); ?>
-        </div>    
-        
+         
         <?php do_action('after_header'); ?>
 
-	    <div class="container">	
-	
-		    <div class="row">
+	    <div class="container-fluid">
+	        <div class="row-fluid">
+	            <div class="span12">
+		            <?php gs_header_breadcrumb(); ?>
+		        </div>
+	        </div>	
+		    <div class="row-fluid">
+		        <?php if (!gs_do_full_width()) { ?>
+		        <div class="span9">
+		        <?php } else { ?>
 		        <div class="span12">
-		        <?php gs_header_breadcrumb(); ?>
+		        <?php } ?>
+		        
 		        <?php gs_page_header(); ?>
+		        

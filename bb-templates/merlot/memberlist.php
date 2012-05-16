@@ -1,9 +1,10 @@
 <?php bb_get_header(); ?>
 
-<h2><?php _e('Members'); ?></h2>
+<div class="page-header">
+    <h2><?php _e('Members'); ?></h2>
+</div>
 
 <?php if ($members) { ?>
-<?php gs_member_pagination(); ?>
 
 <ul class="thumbnails">
 
