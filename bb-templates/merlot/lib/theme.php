@@ -106,7 +106,7 @@ function gs_credits() {
 
 function gs_do_full_width() {
     $do = in_array(bb_get_location(), array('register-page', 'login-page'));    
-    $do = $do || (is_bb_tags() && !is_bb_tag());
+    $do = $do || (is_front() && isset($_GET['new']));
     $do = $do || is_bb_profile_tab('edit');
     return apply_filters('gs_do_full_width', $do);
 }
