@@ -126,18 +126,19 @@ function gs_topic_loop(&$discussions) {
 }
 
 function gs_discussion_pages() {
-    echo '<div class="discussions-pages">';
+    $links = array();
     
     if (is_forum())
-        forum_pages();
+        $links = get_forum_pages();
     else if (is_bb_favorites())
-        favorite_pages();
+        $links = get_favorites_pages();
     else if (is_bb_tag())
-        tag_pages();
+        $links = get_tag_pages();
     else if (is_view())
-        view_pages();
-    
-    echo '</div>';
+        $links = get_view_pages();
+        
+    if ($links)    
+        gs_pagination_links($links);
 }
 
 function gs_topic_loop_end() {

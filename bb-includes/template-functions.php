@@ -586,6 +586,12 @@ function forum_pages( $forum_id = 0 ) {
 	echo apply_filters( 'forum_pages', get_page_number_links( $page, $forum->topics ), $forum->forum_topics );
 }
 
+function get_forum_pages( $forum_id = 0 ) {
+	global $page;
+	$forum = get_forum( get_forum_id( $forum_id ) );
+	return apply_filters( 'get_forum_pages', get_page_number_links( $page, $forum->topics, 'array' ), $forum->forum_topics );
+}
+
 function bb_forum_posts_rss_link( $forum_id = 0 ) {
 	echo apply_filters('bb_forum_posts_rss_link', bb_get_forum_posts_rss_link( $forum_id ) );
 }
@@ -2185,6 +2191,11 @@ function tag_pages() {
 	echo apply_filters( 'topic_pages', get_page_number_links( $page, $tagged_topic_count ) );
 }
 
+function get_tag_pages() {
+	global $page, $tagged_topic_count;
+	return apply_filters( 'get_topic_pages', get_page_number_links( $page, $tagged_topic_count, 'array' ) );
+}
+
 function bb_forum_dropdown( $args = '' ) {
 	if ( $args && is_string($args) && false === strpos($args, '=') )
 		$args = array( 'callback' => $args );
@@ -2309,6 +2320,12 @@ function favorites_pages() {
 	echo apply_filters( 'favorites_pages', get_page_number_links( $page, $favorites_total ), $user->user_id );
 }
 
+
+function get_favorites_pages() {
+	global $page, $user, $favorites_total;
+	return apply_filters( 'get_favorites_pages', get_page_number_links( $page, $favorites_total, 'array' ), $user->user_id );
+}
+
 //VIEWS
 function view_name( $view = '' ) { // Filtration should be done at bb_register_view()
 	echo get_view_name( $view );
@@ -2328,6 +2345,11 @@ function get_view_name( $_view = '' ) {
 function view_pages() {
 	global $page, $view_count;
 	echo apply_filters( 'view_pages', get_page_number_links( $page, $view_count ) );
+}
+
+function get_view_pages() {
+	global $page, $view_count;
+	return apply_filters( 'get_view_pages', get_page_number_links( $page, $view_count, 'array' ) );
 }
 
 function view_link( $_view = false, $page = 1 ) {
