@@ -30,6 +30,19 @@ h4.profile_topic_title { margin-bottom: 0.5em; }
 
 body.merlot-content-full-width div.merlot-page-content { max-width: 740px; margin: auto; }
 
+div.merlot-tag-cloud ul { list-style-type: none; margin: 0; margin-bottom: 1em; }
 
+div.merlot-tag-cloud li {
+   display: inline-block;
+   background: #F7F7F7;
+   padding: 4px;
+   line-height: 100%;
+   -moz-border-radius: 3px;
+   -webkit-border-radius: 3px;
+   border-radius: 3px;
+   border: solid 1px #CCCCCC;
+   margin: 2px;
+   margin-bottom: 5px;
+}
 
 

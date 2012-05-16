@@ -2,21 +2,23 @@
 
 <?php if ( $public_tags ) {
 
-    echo '<div class="btn-toolbar">';
-
-    foreach ( $public_tags as $tag ) {
+    echo '<div class="merlot-tag-cloud">';
     
-        echo '<div class="btn-group">';
-                
-        printf('<a class="btn btn-info btn-mini" href="%s" rel="tag"><i class="icon-tag icon-white"></i> %s</a>', bb_get_tag_link(), bb_get_tag_name()); 
+    echo '<ul>';
+    
+    foreach ( $public_tags as $tag ) {
         
-        if ($remove_link = bb_get_tag_remove_link('btn btn-mini btn-danger')) {
-            echo $remove_link;
+        $tag_link = sprintf('<span><a href="%s" rel="tag"><i class="icon-tag"></i> %s</a></span>', bb_get_tag_link(), bb_get_tag_name()); 
+            
+        if ($remove_link = bb_get_tag_remove_link('label label-important')) {
+            $tag_link .= '&nbsp' . $remove_link;
+            
         }
         
-        echo '</div>';
+        printf('<li>%s</li>', $tag_link);
     }
     
+    echo '</ul>';
     echo '</div>';
        
 } else { 
