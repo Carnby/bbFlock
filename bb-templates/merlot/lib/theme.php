@@ -83,23 +83,31 @@ function gs_body_classes() {
 	$classes = array();
 
 	if (bb_is_user_logged_in())
-		$classes[] = 'logged-in';
+		$classes[] = 'merlot-user-logged-in';
 	else
-		$classes[] = 'not-logged-in'; 
+		$classes[] = 'merlot-user-not-logged-in'; 
+		
+	$classes[] = sprintf('merlot-%s', bb_get_location());
+	
+	if (gs_do_full_width())
+	    $classes[] = 'merlot-content-full-width';
+	else 
+	    $classes[] = 'merlot-content-non-full-width';
 		
 	echo implode(' ', apply_filters('gs_body_classes', $classes));
 }
 
 function gs_credits() {
 	echo '<p>';
-	printf(__('%1$s is proudly powered by <strong><a href="%2$s">Merlot</a></strong>.'), bb_option('name'), "http://github.com/Carnby/bbFlock");
+	printf(__('%1$s is proudly powered by <strong><a href="%2$s">Merlot</a></strong>.'), bb_get_option('name'), "http://github.com/Carnby/bbFlock");
 	echo '</p>';
 }
 
+
 function gs_do_full_width() {
-    $do = in_array(bb_get_location(), array('register-page', 'login-page'));
-    
+    $do = in_array(bb_get_location(), array('register-page', 'login-page'));    
     $do = $do || (is_bb_tags() && !is_bb_tag());
+    $do = $do || is_bb_profile_tab('edit');
     return apply_filters('gs_do_full_width', $do);
 }
 

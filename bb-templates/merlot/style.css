@@ -7,7 +7,7 @@ Author URI: http://about.me/egraells
 */
 
 
-body { padding-top: 2px; }
+body { padding-top: 2px; margin-top: 43px; }
 td .pagination { margin: 0; }
 div.post { clear: both; }
 div.clearfix { clear: both; }
@@ -25,6 +25,10 @@ td.topic-title a.page-numbers { font-weight: bold; text-decoration: underline; }
 
 div.post_author_info { margin: 0.25em; }
 h4.profile_topic_title { margin-bottom: 0.5em; }
+
+
+
+body.merlot-content-full-width div.merlot-page-content { max-width: 740px; margin: auto; }
 
 
 

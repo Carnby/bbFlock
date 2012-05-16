@@ -21,7 +21,7 @@
         
     </head>
 
-    <body id="<?php bb_location(); ?>" style="margin-top: 43px;">
+    <body id="<?php bb_location(); ?>" class="<?php gs_body_classes(); ?>">
 	
 	    <?php do_action('before_header'); ?>
 	        <?php do_action('before_navbar'); ?>
@@ -40,13 +40,16 @@
             <?php do_action('after_navbar'); ?>
          
         <?php do_action('after_header'); ?>
-
-	    <div class="container-fluid">
-	        <div class="row-fluid">
+        
+        <div class="merlot-page-header container-fluid">
+            <div class="row-fluid">
 	            <div class="span12">
 		            <?php gs_header_breadcrumb(); ?>
 		        </div>
-	        </div>	
+	        </div>
+        </div>
+
+	    <div class="merlot-page-content container-fluid">	
 		    <div class="row-fluid">
 		        <?php if (!gs_do_full_width()) { ?>
 		        <div class="span9">
