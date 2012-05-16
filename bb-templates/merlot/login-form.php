@@ -6,20 +6,20 @@
         <h3><?php _e('Log in &raquo;') ?></h3>
     </div>
     
-<form class="form-horizontal" method="post" action="<?php bb_option('uri'); ?>bb-login.php">
+<form class="form form-horizontal" method="post" action="<?php bb_option('uri'); ?>bb-login.php">
     <div class="modal-body">
 
         <div class="control-group">
             <label class="control-label"><?php _e('Username or E-mail:'); ?></label>
             <div class="controls">
-	        <input class="span2" name="user_login" type="text" id="user_login" size="13" maxlength="40" value="<?php if (!is_bool($user_login)) echo $user_login; ?>" tabindex="1" />
+	        <input class="input-medium" name="user_login" type="text" id="user_login" size="13" maxlength="40" value="<?php if (!is_bool($user_login)) echo $user_login; ?>" tabindex="1" />
 	        </div>
 	    </div>
 	
 	    <div class="control-group">
 	        <label class="control-label"><?php _e('Password:'); ?></label>
 	        <div class="controls">
-                <input class="span2" name="password" type="password" id="password" size="13" maxlength="40" tabindex="2" />
+                <input class="input-medium" name="password" type="password" id="password" size="13" maxlength="40" tabindex="2" />
             </div>
         </div>
 

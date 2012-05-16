@@ -1,8 +1,6 @@
 <?php bb_get_header(); ?>
 
-<h2 class="bbcrumb"><a href="<?php bb_option('uri'); ?>"><?php bb_option('name'); ?></a> &raquo; <?php _e('Log in'); ?></h2>
-
-<h4><?php _e('Password Reset'); ?></h4>
+<h2><?php _e('Password Reset'); ?></h2>
 
 <?php if ( $reset ) : ?>
 <p><?php _e('Your password has been reset and a new one has been mailed to you.'); ?></p>

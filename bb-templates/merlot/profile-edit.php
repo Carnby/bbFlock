@@ -1,6 +1,6 @@
 <?php bb_get_header(); ?>
 
-<form id="your-profile" method="post" action="<?php profile_tab_link($user->ID, 'edit');  ?>" enctype="multipart/form-data" class="form-horizontal">
+<form id="your-profile" method="post" action="<?php profile_tab_link($user->ID, 'edit');  ?>" enctype="multipart/form-data" class="form form-horizontal">
 	
 	<fieldset>
 	    <legend><?php _e('Profile Info'); ?></legend>
@@ -26,7 +26,7 @@
 		
 	<div class="form-actions">
 	    <?php gs_profile_actions(); ?>
-	</p>
+	</div>
 <?php bb_nonce_field( 'edit-profile_' . $user->ID ); ?>
 </form>
 

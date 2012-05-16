@@ -255,6 +255,9 @@ function bb_get_location() { // Not for display.  Do not internationalize.
 	case 'members.php' :
 	    return 'members-page';
 	    break;
+	case 'bb-reset-password.php':
+	    return 'password-reset';
+	    break;
 	default:
 		return apply_filters( 'bb_get_location', '', $file );
 		break;
@@ -1451,7 +1454,7 @@ function user_delete_button() {
 }
 
 function get_user_delete_button() {
-	$r  = '<input type="submit" class="btn delete" name="delete-user" value="' . __('Delete User &raquo;') . '" ';
+	$r  = '<input type="submit" class="btn btn-danger" name="delete-user" value="' . __('Delete User &raquo;') . '" ';
 	$r .= 'onclick="return confirm(\'' . js_escape(__('Are you sure you want to delete this user?')) . '\')" />';
 	return apply_filters( 'get_user_delete_button', $r);
 }
@@ -1461,7 +1464,7 @@ function user_update_button() {
 }
 
 function get_user_update_button() {
-    $r = '<input type="submit" class="btn" name="Submit" value="' . attribute_escape(__('Update Profile &raquo;')) . '" />';
+    $r = '<input type="submit" class="btn btn-primary" name="Submit" value="' . attribute_escape(__('Update Profile &raquo;')) . '" />';
     return apply_filters('get_user_update_button', $r);
 }
 
@@ -1664,10 +1667,13 @@ function bb_profile_data_form( $id = 0 ) {
 
 ?>
     <div class="control-group <?php echo $class; ?>">
-	    <label for="<?php echo $name; ?>"><?php echo $title; ?></label>
+	    <label class="control-label" for="<?php echo $name; ?>"><?php echo $title; ?></label>
 	    <div class="controls">
 		    <input name="<?php echo $name; ?>" type="<?php echo $type; ?>" id="<?php echo $name; ?>" value="<?php echo $value; ?>"<?php echo $checked; ?> />
-		    <?php echo $message; ?>
+		    <?php 
+		    if (!empty($message)) 
+		        echo $message;
+		    ?>
 	    </div>
 	</div>
 
@@ -1675,8 +1681,9 @@ function bb_profile_data_form( $id = 0 ) {
 
 
 
-<?php bb_nonce_field( 'edit-profile_' . $user->ID ); if ( $required ) : ?>
-<div class="alert alert-info">
+<?php bb_nonce_field( 'edit-profile_' . $user->ID ); 
+if ( $required ) : ?>
+<div class="alert alert-warning">
 <p><sup class="required">*</sup> <?php _e('These items are <span class="required">required</span>.') ?></p>
 </div>
 <?php
@@ -1712,7 +1719,7 @@ function bb_profile_admin_form( $id = 0 ) {
 
 
 <div class='control-group form-field<?php if ( in_array( 'role', $error_codes ) ) echo ' error'; ?>'>
-	<label><?php _e('User Type'); ?></label>
+	<label class="control-label"><?php _e('User Type'); ?></label>
 	<div class="controls">
 		<select name="role">
 <?php foreach( $roles as $r => $n ) : ?>
@@ -1724,7 +1731,7 @@ function bb_profile_admin_form( $id = 0 ) {
 </div>
 
 <div class="control-group extra-caps-row">
-	<label><?php _e('Allow this user to'); ?></label>
+	<label class="control-label"><?php _e('Allow this user to'); ?></label>
 	<div class="controls">
 <?php
 	foreach( $assignable_caps as $cap => $label ) :
@@ -1733,7 +1740,7 @@ function bb_profile_admin_form( $id = 0 ) {
 		$label = wp_specialchars( $label );
 ?>
 
-		<label><input name="<?php echo $name; ?>" value="1" type="checkbox"<?php echo $checked; ?> /> <?php echo $label; ?></label><br />
+		<input name="<?php echo $name; ?>" value="1" type="checkbox"<?php echo $checked; ?> /> <?php echo $label; ?><br />
 
 <?php endforeach; ?>
 
@@ -1775,7 +1782,7 @@ function bb_profile_admin_form( $id = 0 ) {
 				}
 
 				$message = wp_specialchars( $errors->get_error_message( $key ) );
-				$message = "<p class='error'>$message</p>";
+				$message = "<p class='help-block error'>$message</p>";
 			} else {
 				if ( 'checkbox' == $type ) {
 					$checked = $user->$key == $label[3] || $label[4] == $label[3];
@@ -1792,19 +1799,22 @@ function bb_profile_admin_form( $id = 0 ) {
 ?>
 
 <div class="control-group <?php echo $class; ?>">
-	<label><?php echo $title ?></label>
+	<label class="control-label"><?php echo $title ?></label>
 	<div class="controls">
 		<?php if ( 'checkbox' == $type && isset($label[5]) ) echo "<label for='$name'>"; ?>
 		<input name="<?php echo $name; ?>" id="<?php echo $name; ?>" type="<?php echo $type; ?>"<?php echo $checked; ?> value="<?php echo $value; ?>" />
 		<?php if ( 'checkbox' == $type && isset($label[5]) ) echo wp_specialchars( $label[5] ) . "</label>"; ?>
-		<?php echo $message; ?>
+		<?php 
+		    if (!empty($message)) 
+		        echo $message;
+		?>
 	</div>
 </div>
 
 <?php endforeach; endif; // $profile_admin_keys; $profile_admin_keys ?>
 
 <?php if ( $required ) : ?>
-<div class="alert alert-info">
+<div class="alert alert-warning">
 <p><sup class="required">*</sup> <?php _e('These items are <span class="required">required</span>.') ?></p>
 </div>
 <?php endif; 
@@ -1813,7 +1823,8 @@ do_action('bb_profile_admin_form', $user->ID);
 
 
 ?>
-<div class="alert alert-info"><p><?php _e('Inactive users can login and look around but not do anything.
+<div class="alert alert-info">
+    <p><?php _e('Inactive users can login and look around but not do anything.
 Blocked users just see a simple error message when they visit the site.</p>
 <p><strong>Note</strong>: Blocking a user does <em>not</em> block any IP addresses.'); ?></p>
 </div>
@@ -1839,11 +1850,14 @@ function bb_profile_password_form( $id = 0 ) {
 ?>
 
 <div class="control-group <?php echo $class; ?>">
-	<label for="pass1"><?php _e('New password'); ?></label>
+	<label for="pass1" class="control-label"><?php _e('New password'); ?></label>
 	<div class="controls">
 	    <p><input name="pass1" type="password" id="pass1" autocomplete="off" /></p>
 		<p><input name="pass2" type="password" id="pass2" autocomplete="off" /></p>
-		<?php echo $message; ?>
+		<?php 
+		if (!empty($message))
+		    echo $message; 
+		?>
 	</div>
 </div>
 

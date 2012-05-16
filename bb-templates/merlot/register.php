@@ -1,21 +1,21 @@
 <?php bb_get_header(); ?>
 
 <?php if ( !bb_is_user_logged_in() ) { ?>
-<form method="post" class="form form-horizontal" action="<?php bb_option('uri'); ?>register.php">
+<form method="post" class="form form-horizontal" action="<?php bb_uri('register.php'); ?>">
 <fieldset>
 <legend><?php _e('Profile Information'); ?></legend>
 
 <div class="control-group<?php if ($user_safe === false) echo ' error'; ?>">
     <?php if ( $user_safe === false ) { ?>
 
-    <label><sup class="required">*</sup><?php _e('Username:'); ?></label>
+    <label class="control-label"><sup class="required">*</sup><?php _e('Username:'); ?></label>
     <div class="controls">
         <input name="user_login" type="text" id="user_login" size="30" maxlength="30" />
         <span class="help-inline"><?php _e('Your username was not valid, please try again'); ?></span>
     </div>
     <?php } else { ?>
 
-    <label><sup class="required">*</sup> <?php _e('Username:'); ?></label>
+    <label class="control-label"><sup class="required">*</sup> <?php _e('Username:'); ?></label>
     <div class="controls">
         <input name="user_login" type="text" id="user_login" size="30" maxlength="30" value="<?php if (!is_bool($user_login)) echo $user_login; ?>" />
     </div>
@@ -24,7 +24,7 @@
 
     <?php if ( is_array($profile_info_keys) ) : foreach ( $profile_info_keys as $key => $label ) : ?>
 <div class="control-group<?php if ($$key === false) echo ' error'; ?>">
-        <label><?php 
+        <label class="control-label"><?php 
         if ($label[0]) 
             echo '<sup class="required">*</sup>';
         echo _e($label[1]); ?>:</label>

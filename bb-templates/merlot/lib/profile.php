@@ -70,6 +70,7 @@ function gs_profile_pagination() {
 
 function gs_profile_actions() {
     user_update_button();
+    echo '&nbsp';
 	user_delete_button();
 }
 
