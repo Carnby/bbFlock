@@ -8,6 +8,14 @@ if ( !$bb_table_prefix )
 
 if ( !defined('BB_PATH') )
 	die('This file cannot be called directly.');
+	
+// Block long queries. Code by _ck_
+if (isset($_SERVER['REQUEST_URI']) && (strlen($_SERVER['REQUEST_URI']) > 255 || preg_match('@(eval|base64)[^a-zA-Z0-9]@si', $_SERVER['REQUEST_URI']))) {
+	header('HTTP/1.1 414 Request-URI Too Long');
+	header('Status: 414 Request-URI Too Long');
+	header('Connection: Close');
+	exit;
+}
 
 // Turn register globals off
 function bb_unregister_GLOBALS() {
