@@ -29,7 +29,7 @@
 	            echo '<span class="label label-warning">' . $label . '</span>'; ?>
 	            
 	        </td>
-	        <td><?php bbpm_user_links($bbpm); ?><br /><?php $bbpm->thread_freshness(); ?></td>
+	        <td><?php bbpm_user_links($bbpm->the_pm['id']); ?><br /><?php $bbpm->thread_freshness(); ?></td>
 	        <td><a class="btn btn-danger btn-mini" href="<?php $bbpm->thread_unsubscribe_url($bbpm->the_pm['id']); ?>"><?php _e( 'Unsubscribe', 'bbpm' ); ?></a></td>
         </tr>
 <?php } ?>

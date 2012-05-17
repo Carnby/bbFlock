@@ -62,8 +62,10 @@ function bbpm_pm_link($pm_id) {
     echo bbpm_get_pm_link($pm_id);
 }
 
-function bbpm_user_links($pm) {
-    $links = $pm->get_thread_member_links();
+function bbpm_user_links($pm_id) {
+    global $bbpm;
+    
+    $links = $bbpm->get_thread_member_links($pm_id);
     echo implode(', ', $links);
 }
 
@@ -109,7 +111,6 @@ function bbpm_add_unsubscribe_button($links) {
         $links[] = sprintf('<a class="btn btn-primary" href="%s">%s</a>', $bbpm->get_new_pm_link(), __( 'Send New Message &raquo;', 'bbpm' ));
     }
     
-    
     return $links;
 }
 
@@ -125,5 +126,13 @@ function is_pm() {
 	return substr( ltrim( substr( $_SERVER['REQUEST_URI'] . '/', strlen( bb_get_option( 'path' ) ) ), '/' ), 0, 3 ) == 'pm/';
 }
 
+function bbpm_add_profile_message_link($links) {
+    global $user_id, $bbpm;
 
+    if (is_bb_profile() && bb_current_user_can('write_posts')) {
+        $links[] = sprintf('<a class="btn btn-primary" href="%s"><i class="icon-envelope icon-white"></i> %s</a>', $bbpm->get_send_link($user_id), __('Send Private Message', 'bbpm'));
+    }
+    
+    return $links;
+}
 

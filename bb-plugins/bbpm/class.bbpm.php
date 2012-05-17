@@ -62,9 +62,6 @@ class bbPM {
 
 		if ( !$this->version || $this->version != '1.0.1' )
 			$this->update();
-
-		if ( defined( 'BBPM_STT_FIX' ) && BBPM_STT_FIX )
-			add_action( 'bb_init', array( &$this, 'subscribe_to_topic_fix' ) );
 			
 		$this->location = 'bb-plugins/bbpm/privatemessages.php';
 	}
@@ -573,16 +570,7 @@ class bbPM {
 	function pm_buttons( $buttons ) {
 	    if (!bb_is_user_logged_in())
 	        return $buttons;
-	        
-	    /*
-	    if (is_bb_profile() && !isset($_GET['tab'])) {
-		    global $user_id;
-		    if ( bb_get_current_user_info( 'ID' ) != $user_id && bb_current_user_can( 'write_posts' ) ) {
-			    echo ' <a class="btn btn-primary" href="' . $this->get_send_link($user_id) . '">' . __('PM this user', 'bbpm') . '</a> ';
-		    }
-		}
-		*/
-		
+	        		
 		$buttons[] =  sprintf('<a class="btn btn-primary" href="%s">%s</a>', $this->get_messages_url(), __('Private Messages', 'bbpm'));
 		
 		return $buttons;
@@ -601,16 +589,7 @@ class bbPM {
 		return $keys;
 	}
 
-	/**
-	 * @access private
-	 */
-	function post_title_filter( $text, $post_id = 0 ) {
-		if ( $post_id && ( $user_id = get_post_author_id( $post_id ) ) && bb_current_user_can( 'write_posts' ) ) {
-			$text .= "<br/>\n";
-			$text .= '<a href="' . $this->get_send_link( $user_id ) . '">' . __( 'PM this user', 'bbpm' ) . '</a>';
-		}
-		return $text;
-	}
+
 
 	/**
 	 * @access private
@@ -781,20 +760,6 @@ class bbPM {
         return $links;
     }
 
-	/**
-	 * Compatibility with {@link http://bbpress.org/plugins/topic/subscribe-to-topic/ Subscribe to Topic}.
-	 *
-	 * Used when {@link bbPM::unsubscribe()} is called from {@link pm.php} so
-	 * {@link http://bbpress.org/plugins/topic/subscribe-to-topic/ Subscribe to Topic}
-	 * doesn't remove the unsubscribe parameter from the URL, and so topics aren't
-	 * unsubscribed from unknowingly.
-	 *
-	 * @since 0.1-alpha6b
-	 * @see BBPM_STT_FIX
-	 */
-	function subscribe_to_topic_fix() {
-		remove_action( 'bb_init', 'stt_init', 150 );
-	}
 
 	/**
 	 * @see bbPM::recount()
@@ -879,9 +844,5 @@ class bbPM {
 		return $result;
 	}
 
-	function post_author_id_filter( $id ) {
-		global $the_pm;
-		return $the_pm->from->ID;
-	}
 }
 

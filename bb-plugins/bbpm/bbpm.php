@@ -69,14 +69,27 @@ require_once($bbpm_dir . '/admin.php');
  */
 $GLOBALS['bbpm'] = new bbPM;
 
+add_action('bb_init', 'bbpm_configure');
 
-add_action('bb_admin_menu_generator', 'bbpm_configure_admin');
+function bbpm_configure() {
+    add_filter('merlot_sidebar_buttons', 'bbpm_add_profile_message_link');
+    add_action('bb_admin_menu_generator', 'bbpm_configure_admin');
+
+    if (!defined('BBPM_PAGE'))
+        return;
+        
+    // configure templates
+    add_filter('bb_page_header_override', 'bbpm_override_page_header'); 
+    add_filter('bb_header_breadcrumb', 'bbpm_breadcrumb');
+    add_filter('bb_header_breadcrumb_override', 'bbpm_override_page_header');
+
+    add_action('merlot_after_sidebar', 'bbpm_pm_members');
+    add_filter('merlot_sidebar_buttons', 'bbpm_add_unsubscribe_button');
+    add_filter('gs_do_full_width', 'bbpm_do_full_width');
+}
 
 function bbpm_configure_admin() {
 	bb_admin_add_submenu('bbPM', 'use_keys', 'bbpm_admin_page', 'options-general.php' );
 }
-
-
-
 
 
