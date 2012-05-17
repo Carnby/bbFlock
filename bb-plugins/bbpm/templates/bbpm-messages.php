@@ -8,13 +8,12 @@
 
 </div>
 
-<table id="bbpm-message-table" class="table table-condensed table-striped table-bordered">
+<table id="bbpm-message-table" class="table">
     <thead>
         <tr>
-	        <th><?php _e( 'Subject', 'bbpm' ); ?></th>
-	        <th><?php _e( 'Members', 'bbpm' ); ?></th>
-	        <th><?php _e( 'Freshness' ); ?></th>
-	        <th><?php _e( 'Actions', 'bbpm' ); ?></th>
+	        <th width="50%"><?php _e( 'Subject', 'bbpm' ); ?></th>
+	        <th width="35%"><?php _e( 'Members', 'bbpm' ); ?></th>
+	        <th width="15%"><?php _e( 'Actions', 'bbpm' ); ?></th>
         </tr>
 
     </thead>
@@ -25,13 +24,15 @@
     
     while ($bbpm->have_pm($start, $end)) { ?>
         <tr<?php $bbpm->thread_alt_class(); ?>>
-	        <td><?php if ($label = $bbpm->get_thread_label())
+	        <td>
+	        
+	        <h4><a href="<?php bbpm_pm_link($bbpm->the_pm['id']); ?>"><?php echo esc_html( $bbpm->the_pm['title'] ); ?></a></h4>
+	        <?php if ($label = $bbpm->get_thread_label())
 	            echo '<span class="label label-warning">' . $label . '</span>'; ?>
-	            <a href="<?php bbpm_pm_link($bbpm->the_pm['id']); ?>"><?php echo esc_html( $bbpm->the_pm['title'] ); ?></a>
+	            
 	        </td>
-	        <td><?php bbpm_user_links($bbpm); ?></td>
-	        <td><?php $bbpm->thread_freshness(); ?></td>
-	        <td><a class="btn btn-danger" href="<?php $bbpm->thread_unsubscribe_url($bbpm->the_pm['id']); ?>"><?php _e( 'Unsubscribe', 'bbpm' ); ?></a></td>
+	        <td><?php bbpm_user_links($bbpm); ?><br /><?php $bbpm->thread_freshness(); ?></td>
+	        <td><a class="btn btn-danger btn-mini" href="<?php $bbpm->thread_unsubscribe_url($bbpm->the_pm['id']); ?>"><?php _e( 'Unsubscribe', 'bbpm' ); ?></a></td>
         </tr>
 <?php } ?>
     </tbody>

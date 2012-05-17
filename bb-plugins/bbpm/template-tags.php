@@ -54,7 +54,8 @@ function bbpm_breadcrumb() {
 }
 
 function bbpm_get_pm_link($pm_id) {
-    return bb_get_option('mod_rewrite') ? bb_get_uri('pm/' . $pm_id) : bb_get_uri('', array('pm' => $pm_id));
+    global $bbpm;
+    return bb_get_option('mod_rewrite') ? bb_get_uri('pm/' . $pm_id) : bb_get_uri($bbpm->location, array('pm' => $pm_id));
 }
 
 function bbpm_pm_link($pm_id) {

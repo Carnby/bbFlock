@@ -2,13 +2,13 @@
 
 <div class="page-header">
 
-<h2 class="title topictitle"><?php echo esc_html($bbpm->get_thread_title($action)); ?></h2>
+    <h2 class="title topictitle"><?php echo esc_html($bbpm->get_thread_title($action)); ?></h2>
 
 <p><a class="btn btn-danger" href="<?php $bbpm->thread_unsubscribe_url($action); ?>"><?php _e( 'Unsubscribe', 'bbpm' ); ?></a></p>
 
 </div>
 
-<div id="thread" class="row">
+<div id="thread" class="row-fluid">
 
     <div class="span4 pull-right bbpm-memberlist">
         <h3><?php _e('Members'); ?></h3>

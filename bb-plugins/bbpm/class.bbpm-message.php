@@ -103,8 +103,8 @@ class bbPM_Message {
 			$this->read_link    = bb_get_uri( 'pm/' . $row->pm_thread ) . '#pm-' . $row->ID;
 			$this->reply_link   = bb_get_uri( 'pm/' . $row->ID . '/reply' );
 		} else {
-			$this->read_link    = bb_get_uri( '', array( 'pm' => $row->pm_thread ) ) . '#pm-' . $row->ID;
-			$this->reply_link   = bb_get_uri( '', array( 'pm' => $row->ID . '/reply' ) );
+			$this->read_link    = bb_get_uri( $bbpm->location, array( 'pm' => $row->pm_thread ) ) . '#pm-' . $row->ID;
+			$this->reply_link   = bb_get_uri( $bbpm->location, array( 'pm' => $row->ID . '/reply' ) );
 		}
 		
 		$this->ID           = (int)$row->ID;

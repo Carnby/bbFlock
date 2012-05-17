@@ -38,6 +38,7 @@ class bbPM {
 	 */
 	var $_profile_context;
 
+    var $location;
 	/**
 	 * Initializes bbPM
 	 *
@@ -48,12 +49,9 @@ class bbPM {
 		$bbdb->bbpm = $bbdb->prefix . 'bbpm';
 		$bbdb->bbpm_meta = $bbdb->prefix . 'bbpm_meta';
 
-		add_action('template_after_header_buttons', array(&$this, 'pm_buttons'));
 		add_filter('gs_user_navigation_menu', array(&$this, 'header_link'));
 
 		add_filter( 'get_profile_info_keys', array( &$this, 'profile_edit_filter' ), 9, 2 );
-
-		//add_action( 'bb_admin_menu_generator', array( &$this, 'admin_add' ) );
 
 		add_action( 'bb_recount_list', array( &$this, 'add_recount' ) );
 
@@ -67,6 +65,8 @@ class bbPM {
 
 		if ( defined( 'BBPM_STT_FIX' ) && BBPM_STT_FIX )
 			add_action( 'bb_init', array( &$this, 'subscribe_to_topic_fix' ) );
+			
+		$this->location = 'bb-plugins/bbpm/privatemessages.php';
 	}
 
 	/**
@@ -75,8 +75,7 @@ class bbPM {
 	function update() {
 	
 	}
-
-
+	
 	/**
 	 * @global BPDB_Multi Accessing the database
 	 * @param int $user_id The user to get a count of private message threads from (default current user)
@@ -542,7 +541,7 @@ class bbPM {
 							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							$this->get_thread_title( $ID ),
 							bb_get_option( 'name' ),
-							bb_get_option( 'mod_rewrite' ) ? bb_get_uri( 'pm/' . $ID ) : bb_get_uri( '', array( 'pm' => $ID ) )
+							bb_get_option( 'mod_rewrite' ) ? bb_get_uri( 'pm/' . $ID ) : bb_get_uri( $this->location, array( 'pm' => $ID ) )
 						)
 					);
 				}
@@ -558,27 +557,29 @@ class bbPM {
 		if ( bb_get_option( 'mod_rewrite' ) )
 			bb_uri( 'pm/new' );
 		else
-			bb_uri( '', array( 'pm' => 'new' ) );
+			bb_uri( $this->location, array( 'pm' => 'new' ) );
 	}
 
 
 	/**
 	 * @access private
 	 */
-	function pm_buttons( $keys ) {
+	function pm_buttons( $buttons ) {
 	    if (!bb_is_user_logged_in())
-	        return;
+	        return $buttons;
 	        
+	    /*
 	    if (is_bb_profile() && !isset($_GET['tab'])) {
 		    global $user_id;
 		    if ( bb_get_current_user_info( 'ID' ) != $user_id && bb_current_user_can( 'write_posts' ) ) {
 			    echo ' <a class="btn btn-primary" href="' . $this->get_send_link($user_id) . '">' . __('PM this user', 'bbpm') . '</a> ';
 		    }
 		}
+		*/
 		
-		if (is_front()) {
-		    printf(' <a class="btn btn-primary" href="%s">%s</a> ', $this->get_messages_url(), __('Private Messages', 'bbpm'));
-		}
+		$buttons[] =  sprintf('<a class="btn btn-primary" href="%s">%s</a>', $this->get_messages_url(), __('Private Messages', 'bbpm'));
+		
+		return $buttons;
 	}
 
 	/**
@@ -622,7 +623,7 @@ class bbPM {
 	function get_link() {
 		if ( bb_get_option( 'mod_rewrite' ) )
 			return bb_get_uri( 'pm' );
-		return bb_get_uri( '?pm' );
+		return bb_get_uri( $this->location );
 	}
 	
 	/**
@@ -651,7 +652,7 @@ class bbPM {
 
 		if ( bb_get_option( 'mod_rewrite' ) )
 			return bb_get_uri( 'pm/new/' . $user_name );
-		return bb_get_uri( '', array( 'pm' => 'new', 'to' => $user_name ) );
+		return bb_get_uri( $this->location, array( 'pm' => 'new', 'to' => $user_name ) );
 	}
 
 	/**
@@ -661,10 +662,15 @@ class bbPM {
 	    if (!bb_is_user_logged_in())
 	        return $links;
 	        
+	    $link = $this->get_link();
+	        
 		if ($count = $this->count_pm( bb_get_current_user_info( 'ID' ), true )) {
-			$link = gs_nav_link_wrap(sprintf('<a href="%s"><span class="badge badge-warning">%s</span></a>', $this->get_messages_url(), bb_number_format_i18n($count)));
-			array_splice($links, 1, 0, $link);
+			$link = gs_nav_link_wrap(sprintf('<a href="%s"><span class="badge badge-warning">%s</span> %s</a>', $this->get_messages_url(), bb_number_format_i18n($count), __('Inbox', 'bbpm')));
+		} else {
+		    $link = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', $this->get_messages_url(), __('Inbox', 'bbpm')));
 		}
+		
+		array_splice($links, 1, 0, $link);
 		
 		return $links;
 	}

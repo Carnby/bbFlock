@@ -1,11 +1,32 @@
 <?php
 
-if (!defined('BB_CORE_PLUGIN_URL'))
-    die();
+/**
+ * Load the bbPress core
+ */
+require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/bb-load.php';
 
 bb_auth( 'logged_in' ); // Is the user logged in?
 
-global $bbpm;
+//global $bbpm;
+
+// we configure templates
+add_filter('bb_page_header_override', 'bbpm_override_page_header'); 
+add_filter('bb_header_breadcrumb', 'bbpm_breadcrumb');
+add_filter('bb_header_breadcrumb_override', 'bbpm_override_page_header');
+    
+//global $bbpm, $bbpm_dir;
+    
+$pm_param = empty($_GET['pm']) ? 'viewall' : $_GET['pm'];
+    
+if (!bb_get_option('mod_rewrite')) {
+    $_SERVER['REQUEST_URI'] = bb_get_option('path') . rtrim('pm/' . $pm_param, '/');
+    if (isset($_GET['page'])) {
+        $page = intval($_GET['page']);
+        if ($page > 1)
+            $_SERVER['REQUEST_URI'] .= '/page/' . $page;
+    }
+}
+
 
 $uri = substr($_SERVER['REQUEST_URI'], strlen(bb_get_option('path')));
 $url = explode('/', trim($uri, '/'));
