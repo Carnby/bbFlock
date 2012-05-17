@@ -60,8 +60,8 @@ function gs_profile_header() {
 }
 
 function gs_member_pagination() {
-    global $current_page;
-    gs_pagination_links(get_page_number_links($current_page, get_total_users(), 'array'));
+    global $page, $count_found_users;
+    gs_pagination_links(get_page_number_links($page, $count_found_users, 'array'));
 }
 
 function gs_profile_pagination() {
