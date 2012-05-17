@@ -279,8 +279,7 @@ class bbPM {
 			'pm_text'      => apply_filters( 'pre_post', $message, 0, 0 ),
 			'sent_on'      => bb_current_time( 'timestamp' ),
 			'pm_thread'    => (int)$reply_to->thread,
-			'reply_to'     => (int)$reply_to->ID,
-			'thread_depth' => $reply_to->thread_depth + 1
+			'reply_to'     => (int)$reply_to->ID
 		);
 
 		$bbdb->insert( $bbdb->bbpm, $pm );
@@ -559,6 +558,13 @@ class bbPM {
 		else
 			bb_uri( $this->location, array( 'pm' => 'new' ) );
 	}
+	
+	function get_new_pm_link() {
+		if ( bb_get_option( 'mod_rewrite' ) )
+			return bb_get_uri( 'pm/new' );
+		else
+			return bb_get_uri( $this->location, array( 'pm' => 'new' ) );
+	}
 
 
 	/**
@@ -745,7 +751,11 @@ class bbPM {
 	 * @since 0.1-alpha6
 	 */
 	function thread_unsubscribe_url($ID) {
-		echo bb_nonce_url(BB_CORE_PLUGIN_URL . basename( dirname( __FILE__ ) ) . '/pm.php?unsubscribe=' . $ID, 'bbpm-unsubscribe-' . $ID);
+		echo $this->get_thread_unsubscribe_url($ID);
+	}
+	
+	function get_thread_unsubscribe_url($ID) {
+		return bb_nonce_url(BB_CORE_PLUGIN_URL . basename( dirname( __FILE__ ) ) . '/pm.php?unsubscribe=' . $ID, 'bbpm-unsubscribe-' . $ID);
 	}
 
 	/**

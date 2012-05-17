@@ -4,8 +4,6 @@
 
     <h2><?php _e( 'Private Messages', 'bbpm' ); ?> <?php if ( $page > 1 ) printf( __( '(Page %s)', 'bbpm' ), bb_number_format_i18n($page) ); ?></h2>
 
-    <p><a class="btn btn-primary" href="<?php $bbpm->new_pm_link(); ?>"><?php _e( 'Send New Message &raquo;', 'bbpm' ); ?></a></p>
-
 </div>
 
 <table id="bbpm-message-table" class="table">

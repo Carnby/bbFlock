@@ -67,3 +67,63 @@ function bbpm_user_links($pm) {
     echo implode(', ', $links);
 }
 
+// for merlot hooks
+
+function bbpm_pm_members() {
+    global $action, $bbpm;
+    
+    if (!is_numeric($action) || intval($action) <= 0)
+        return;
+        
+    ?>
+    <h3><?php _e('Members'); ?></h3>
+
+    <ul class="unstyled">
+        <?php
+        $links = $bbpm->get_thread_member_links($action);
+
+        foreach ($links as $link ) {
+	            printf('<li>%s</li>', $link);
+        }
+        ?>
+    </ul>
+    
+    <?php if ( $bbpm->settings['users_per_thread'] == 0 || $bbpm->settings['users_per_thread'] > count( $members ) ) { ?>
+        <form class="form form-inline" action="<?php bbpm_form_handler_url(); ?>" method="post">
+        <p>
+        <input type="text" id="user_name" name="user_name"/>
+        <input type="hidden" id="pm_thread" name="pm_thread" value="<?php echo $action; ?>"/>
+        <?php bb_nonce_field( 'bbpm-add-member-' . $action ); ?>
+        <input class="btn btn-primary" type="submit" value="<?php _e( 'Add &raquo;' ); ?>"/>
+        </p>
+        </form>
+    <?php } 
+}
+
+function bbpm_add_unsubscribe_button($links) {
+    global $action, $bbpm;
+    
+    if (is_numeric($action) && intval($action) > 0) {
+        $links[] = sprintf('<a class="btn btn-danger" href="%s">%s</a>',  $bbpm->get_thread_unsubscribe_url($action), __( 'Unsubscribe', 'bbpm' ));
+    } else {
+        $links[] = sprintf('<a class="btn btn-primary" href="%s">%s</a>', $bbpm->get_new_pm_link(), __( 'Send New Message &raquo;', 'bbpm' ));
+    }
+    
+    
+    return $links;
+}
+
+function bbpm_do_full_width($do) {
+    return $do || (isset($_GET['pm']) && $_GET['pm'] == 'new');
+}
+
+function bbpm_override_page_header($override) {
+    return true;
+}
+
+function is_pm() {
+	return substr( ltrim( substr( $_SERVER['REQUEST_URI'] . '/', strlen( bb_get_option( 'path' ) ) ), '/' ), 0, 3 ) == 'pm/';
+}
+
+
+

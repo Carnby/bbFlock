@@ -63,11 +63,7 @@ class bbPM_Message {
 	 * @since 0.1-alpha1
 	 */
 	var $reply_to;
-	/**
-	 * @var int The depth of this message in the thread. 0 for the first message, 1 for direct replies, 2 for replies to direct replies, etc.
-	 * @since 0.1-alpha1
-	 */
-	var $thread_depth;
+
 	/**
 	 * @var bool True if this message exists, false if this message does not
 	 * @since 0.1-alpha1
@@ -114,7 +110,6 @@ class bbPM_Message {
 		$this->date         = (int)$row->sent_on;
 		$this->reply        = (bool)(int)$row->reply_to;
 		$this->reply_to     = (int)$row->reply_to;
-		$this->thread_depth = (int)$row->thread_depth;
 		$this->thread       = (int)$row->pm_thread;
 		$this->exists       = true;
 	}

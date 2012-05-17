@@ -7,15 +7,16 @@ require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/bb-load.php';
 
 bb_auth( 'logged_in' ); // Is the user logged in?
 
-//global $bbpm;
-
-// we configure templates
+// configure templates
 add_filter('bb_page_header_override', 'bbpm_override_page_header'); 
 add_filter('bb_header_breadcrumb', 'bbpm_breadcrumb');
 add_filter('bb_header_breadcrumb_override', 'bbpm_override_page_header');
-    
-//global $bbpm, $bbpm_dir;
-    
+
+add_action('merlot_after_sidebar', 'bbpm_pm_members');
+add_filter('merlot_sidebar_buttons', 'bbpm_add_unsubscribe_button');
+add_filter('gs_do_full_width', 'bbpm_do_full_width');
+   
+// parse actions from the query string. 
 $pm_param = empty($_GET['pm']) ? 'viewall' : $_GET['pm'];
     
 if (!bb_get_option('mod_rewrite')) {

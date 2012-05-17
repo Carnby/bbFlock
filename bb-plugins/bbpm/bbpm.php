@@ -69,46 +69,6 @@ require_once($bbpm_dir . '/admin.php');
  */
 $GLOBALS['bbpm'] = new bbPM;
 
-/**
- * @since 0.1-alpha1
- * @return bool true if the current page is the private messaging page, false otherwise.
- */
-function is_pm() {
-	return substr( ltrim( substr( $_SERVER['REQUEST_URI'] . '/', strlen( bb_get_option( 'path' ) ) ), '/' ), 0, 3 ) == 'pm/';
-}
-
-function bbpm_load($not_used = '') {
-
-    if (!is_front() or !isset($_GET['pm']))
-        return;
-        
-    add_filter('bb_page_header_override', 'bbpm_override_page_header');
-        
-    add_filter('bb_header_breadcrumb', 'bbpm_breadcrumb');
-    add_filter('bb_header_breadcrumb_override', 'bbpm_override_page_header');
-        
-    global $bbpm, $bbpm_dir;
-        
-    $pm_param = empty($_GET['pm']) ? 'viewall' : $_GET['pm'];
-        
-    if (!bb_get_option('mod_rewrite')) {
-	    $_SERVER['REQUEST_URI'] = bb_get_option('path') . rtrim('pm/' . $pm_param, '/');
-	    if (isset($_GET['page'])) {
-	        $page = intval($_GET['page']);
-	        if ($page > 1)
-	            $_SERVER['REQUEST_URI'] .= '/page/' . $page;
-	    }
-    }
-    
-    require($bbpm_dir . '/privatemessages.php');
-    exit;
-}
-
-function bbpm_override_page_header($override) {
-    return true;
-}
-
-//add_action('bb_index.php_pre_db', 'bbpm_load');
 
 add_action('bb_admin_menu_generator', 'bbpm_configure_admin');
 

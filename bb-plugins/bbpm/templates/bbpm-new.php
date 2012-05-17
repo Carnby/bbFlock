@@ -7,19 +7,32 @@
 <form class="form form-vertical" method="post" action="<?php bbpm_form_handler_url(); ?>">
 <fieldset>
 
-	<label for="title"><?php _e( 'Message title: (be brief and descriptive)', 'bbpm' ); ?>
-	    <input name="title" type="text" id="title" size="50" maxlength="80" tabindex="1" />
-	</label>
+    <div class="control-group">
+	    <label for="title"><?php _e( 'Message title: (be brief and descriptive)', 'bbpm' ); ?></label>
+	    <div class="controls">    
+	        <input name="title" type="text" id="title" class="input-xlarge" size="50" maxlength="80" tabindex="1" />
+	    </div>
+    </div>
 
-	<label for="to"><?php _e( 'Send to:', 'bbpm' ); ?>
-	    <input name="to" type="text" id="to" size="50" maxlength="80" tabindex="2"<?php echo ' value="' . esc_attr(urldecode($recipient)) . '"'; ?> />
-	</label>
+    <div class="control-group">
+    	<label for="to"><?php _e( 'Send to:', 'bbpm' ); ?></label>
+        <div class="controls">    
+    	    <input name="to" class="input-medium" type="text" id="to" size="50" maxlength="80" tabindex="2"<?php echo ' value="' . esc_attr(urldecode($recipient)) . '"'; ?> />
+        </div>
+    </div>
 
-	<label for="message"><?php _e( 'Content:', 'bbpm' ); ?>
-	    <textarea class="span10" name="message" cols="50" rows="8" id="message" tabindex="3"></textarea>
-	</label>
+	
+    <div class="control-group">
+    	<label for="message"><?php _e( 'Content:', 'bbpm' ); ?></label>
+        <div class="controls">
+    	    <textarea class="span10" name="message" cols="50" rows="8" id="message" tabindex="3"></textarea>
+        </div>
+    </div>
+	
 
-	<input class="btn btn-primary" type="submit" id="postformsub" name="Submit" value="<?php echo attribute_escape( __( 'Send Message &raquo;', 'bbpm' ) ); ?>" tabindex="4" />
+    <div class="form-actions">
+	    <input class="btn btn-primary" type="submit" id="postformsub" name="Submit" value="<?php echo attribute_escape( __( 'Send Message &raquo;', 'bbpm' ) ); ?>" tabindex="4" />
+	</div>
 
 </fieldset>
 
