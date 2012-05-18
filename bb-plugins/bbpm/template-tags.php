@@ -69,6 +69,12 @@ function bbpm_user_links($pm_id) {
     echo implode(', ', $links);
 }
 
+function bbpm_thread_alt_class() {
+    global $bbpm;
+	alt_class( 'bbpm_threads', $bbpm->the_pm['last_message'] == $bbpm->get_last_read( $bbpm->the_pm['id'] ) ? '' : 'unread_posts_row' );
+}
+
+
 // for merlot hooks
 
 function bbpm_pm_members() {
@@ -102,13 +108,15 @@ function bbpm_pm_members() {
     <?php } 
 }
 
-function bbpm_add_unsubscribe_button($links) {
+function bbpm_add_sidebar_buttons($links) {
     global $action, $bbpm;
     
     if (is_numeric($action) && intval($action) > 0) {
         $links[] = sprintf('<a class="btn btn-danger" href="%s">%s</a>',  $bbpm->get_thread_unsubscribe_url($action), __( 'Unsubscribe', 'bbpm' ));
     } else {
-        $links[] = sprintf('<a class="btn btn-primary" href="%s">%s</a>', $bbpm->get_new_pm_link(), __( 'Send New Message &raquo;', 'bbpm' ));
+        if (bb_current_user_can('write_posts')) {
+            $links[] = sprintf('<a class="btn btn-primary" href="%s">%s</a>', $bbpm->get_new_pm_link(), __( 'Send New Message &raquo;', 'bbpm' ));
+        }
     }
     
     return $links;
@@ -134,5 +142,24 @@ function bbpm_add_profile_message_link($links) {
     }
     
     return $links;
+}
+
+function bbpm_header_link( $links ) {
+    if (!bb_is_user_logged_in())
+        return $links;
+        
+    global $bbpm;
+    
+    $link = $bbpm->get_link();
+        
+	if ($count = $bbpm->count_pm( bb_get_current_user_info( 'ID' ), true )) {
+		$link = gs_nav_link_wrap(sprintf('<a href="%s"><span class="badge badge-warning">%s</span> %s</a>', $bbpm->get_messages_url(), bb_number_format_i18n($count), __('Inbox', 'bbpm')));
+	} else {
+	    $link = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', $bbpm->get_messages_url(), __('Inbox', 'bbpm')));
+	}
+	
+	array_splice($links, 1, 0, $link);
+	
+	return $links;
 }
 

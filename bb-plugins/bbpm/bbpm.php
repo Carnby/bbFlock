@@ -74,6 +74,7 @@ add_action('bb_init', 'bbpm_configure');
 function bbpm_configure() {
     add_filter('merlot_sidebar_buttons', 'bbpm_add_profile_message_link');
     add_action('bb_admin_menu_generator', 'bbpm_configure_admin');
+    add_filter('gs_user_navigation_menu', 'bbpm_header_link');
 
     if (!defined('BBPM_PAGE'))
         return;
@@ -84,7 +85,7 @@ function bbpm_configure() {
     add_filter('bb_header_breadcrumb_override', 'bbpm_override_page_header');
 
     add_action('merlot_after_sidebar', 'bbpm_pm_members');
-    add_filter('merlot_sidebar_buttons', 'bbpm_add_unsubscribe_button');
+    add_filter('merlot_sidebar_buttons', 'bbpm_add_sidebar_buttons');
     add_filter('gs_do_full_width', 'bbpm_do_full_width');
 }
 

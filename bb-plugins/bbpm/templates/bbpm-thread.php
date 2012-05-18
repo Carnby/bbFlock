@@ -5,7 +5,7 @@
 </div>
 
 <?php
-foreach ( $messagechain as $i => $the_pm ) { ?>
+foreach ( $messages as $i => $the_pm ) { ?>
 
 <div class="row-fluid post" id="pm-<?php echo $the_pm->ID; ?>" <?php alt_class('bbpm', 'post span12 bbpm-post number-' . $i++); ?>>
     <div class="row-fluid">

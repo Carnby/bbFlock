@@ -9,6 +9,12 @@ require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/bb-load.php';
 
 bb_auth( 'logged_in' ); 
 
+// banned and inactive members cannot use this plugin
+if (!bb_current_user_can('read')) {
+    wp_redirect(bb_get_uri());
+    exit;
+}
+
 // parse actions from the query string. 
 $pm_param = empty($_GET['pm']) ? 'viewall' : $_GET['pm'];
     
@@ -46,14 +52,22 @@ if (count($url) >= 4) {
 if (!$action == 'viewall' or !$action == 'new')
     $action = intval($action);
 
-//TODO: handle invalid params
 
 switch ($action) {
     case 'viewall':
         $base_template = 'bbpm-messages.php';
+        
+        $start = $bbpm->threads_per_page() * max( $page - 1, 0 );
+        $end = $start + $bbpm->threads_per_page();
+        
         break;
         
     case 'new':
+        if (!bb_current_user_can('write_posts')) {
+            wp_redirect($bbpm->get_messages_url());
+            exit;
+        }
+        
         $base_template = 'bbpm-new.php';
         
         if (isset($_GET['to'])) 
@@ -65,10 +79,17 @@ switch ($action) {
             
     default:
         $base_template = 'bbpm-thread.php'; 
-        global $the_pm;
 
-        $bbpm->have_pm($action);
-        $messagechain = $bbpm->get_thread($action);
+        if (!$messages = $bbpm->get_thread($action)) {
+            bb_die(__('The message does not exists.', 'bbpm'));
+            exit;
+        }
+        
+        if (!$bbpm->can_read_thread($action)) {
+            bb_die(__('You can\'t read the specified message.', 'bbpm'));
+            exit;
+        }
+        
         $members = $bbpm->get_thread_members($action);
         $bbpm->mark_read($action);
         break;

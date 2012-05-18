@@ -49,8 +49,6 @@ class bbPM {
 		$bbdb->bbpm = $bbdb->prefix . 'bbpm';
 		$bbdb->bbpm_meta = $bbdb->prefix . 'bbpm_meta';
 
-		add_filter('gs_user_navigation_menu', array(&$this, 'header_link'));
-
 		add_filter( 'get_profile_info_keys', array( &$this, 'profile_edit_filter' ), 9, 2 );
 
 		add_action( 'bb_recount_list', array( &$this, 'add_recount' ) );
@@ -183,6 +181,15 @@ class bbPM {
 		if ( $this->the_pm = next( $this->current_pm[$start . '_' . $end] ) )
 			return true;
 		return false;
+	}
+	
+	function reset_loop($start, $end) {
+	    if (isset($this->current_pm[$start . '_' . $end])) {
+	        $this->the_pm = reset($this->current_pm[$start . '_' . $end]);
+			return true;
+	    } 
+	    
+	    return false;
 	}
 
 	/**
@@ -362,8 +369,6 @@ class bbPM {
 	 * @return void
 	 */
 	function cache_threads( $IDs ) {
-
-
 		foreach ( $IDs as $i => $id ) {
 			if ( !(int)$id || bbpm_cache_get( $id, 'bbpm-cached' ) )
 				unset( $IDs[$i] );
@@ -382,7 +387,7 @@ class bbPM {
 		$thread_meta = (array)$bbdb->get_results( 'SELECT `bbpm_id`,`meta_key`,`meta_value` FROM `' . $bbdb->bbpm_meta . '` WHERE `bbpm_id` IN (' . implode( ',', array_map( 'intval', $IDs ) ) . ')' );
 
 		foreach ( $thread_meta as $meta ) {
-		    bbpm_cache_add( $meta->meta_key, $meta->meta_value, 'bbpm-thread-' . $meta->object_id );
+		    bbpm_cache_add( $meta->meta_key, $meta->meta_value, 'bbpm-thread-' . $meta->bbpm_id );
 
 			if ( $meta->meta_key == 'to' )
 				$users = array_merge( $users, explode( ',', $meta->meta_value ) );
@@ -391,7 +396,6 @@ class bbPM {
 		}
 
 		$thread_posts = (array)$bbdb->get_results( 'SELECT * FROM `' . $bbdb->bbpm . '` WHERE `ID` IN (' . implode( ',', $posts ) . ') ORDER BY `ID`' );
-
 
 	    foreach ( $thread_posts as $pm )
 		    bbpm_cache_add( (int)$pm->ID, $pm, 'bbpm' );
@@ -567,18 +571,6 @@ class bbPM {
 	/**
 	 * @access private
 	 */
-	function pm_buttons( $buttons ) {
-	    if (!bb_is_user_logged_in())
-	        return $buttons;
-	        		
-		$buttons[] =  sprintf('<a class="btn btn-primary" href="%s">%s</a>', $this->get_messages_url(), __('Private Messages', 'bbpm'));
-		
-		return $buttons;
-	}
-
-	/**
-	 * @access private
-	 */
 	function profile_edit_filter( $keys, $context = '' ) {
 		if ( $context == 'profile-edit' && !$this->_profile_context )
 			$this->_profile_context = true;
@@ -588,7 +580,6 @@ class bbPM {
 
 		return $keys;
 	}
-
 
 
 	/**
@@ -640,32 +631,6 @@ class bbPM {
 		return bb_get_uri( $this->location, array( 'pm' => 'new', 'to' => $user_name ) );
 	}
 
-	/**
-	 * @access private
-	 */
-	function header_link( $links ) {
-	    if (!bb_is_user_logged_in())
-	        return $links;
-	        
-	    $link = $this->get_link();
-	        
-		if ($count = $this->count_pm( bb_get_current_user_info( 'ID' ), true )) {
-			$link = gs_nav_link_wrap(sprintf('<a href="%s"><span class="badge badge-warning">%s</span> %s</a>', $this->get_messages_url(), bb_number_format_i18n($count), __('Inbox', 'bbpm')));
-		} else {
-		    $link = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', $this->get_messages_url(), __('Inbox', 'bbpm')));
-		}
-		
-		array_splice($links, 1, 0, $link);
-		
-		return $links;
-	}
-
-	/**
-	 * @access private
-	 */
-	function admin_add() {
-		bb_admin_add_submenu( __( 'bbPM', 'bbpm' ), 'use_keys', 'bbpm_admin_page', 'options-general.php' );
-	}
 
 	/**
 	 * Get the message ID that a user last read in a PM thread
@@ -687,7 +652,7 @@ class bbPM {
 	 * @return string|void The information requested, or null if the information could not be found.
 	 */
 	function get_thread_meta( $thread_ID, $key ) {
-		if ( false === $result = bbpm_cache_get( $key, 'bbpm-thread-' . $thread_ID ) ) {
+		if ( false === ($result = bbpm_cache_get( $key, 'bbpm-thread-' . $thread_ID )) ) {
 			global $bbdb;
 			$result = $bbdb->get_var( $bbdb->prepare( 'SELECT `meta_value` FROM `' . $bbdb->bbpm_meta . '` WHERE `meta_key` = %s AND `bbpm_id` = %d', $key, $thread_ID ) );
 
@@ -710,12 +675,6 @@ class bbPM {
 			bb_update_usermeta( bb_get_current_user_info( 'ID' ), 'bbpm_last_read_' . (int)$thread_ID, (int)$this->get_thread_meta( $thread_ID, 'last_message' ) );
 	}
 
-	/**
-	 * @since 0.1-alpha6
-	 */
-	function thread_alt_class() {
-		alt_class( 'bbpm_threads', $this->the_pm['last_message'] == $this->get_last_read( $this->the_pm['id'] ) ? '' : 'unread_posts_row' );
-	}
 
 	/**
 	 * @since 0.1-alpha6
