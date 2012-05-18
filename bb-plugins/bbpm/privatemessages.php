@@ -90,7 +90,6 @@ switch ($action) {
             exit;
         }
         
-        $members = $bbpm->get_thread_members($action);
         $bbpm->mark_read($action);
         break;
 }

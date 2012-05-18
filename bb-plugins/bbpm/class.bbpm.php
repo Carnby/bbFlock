@@ -365,20 +365,25 @@ class bbPM {
 	 * @uses bbPM_Message The thread is given as an array of {@link bbPM_Message}s
 	 */
 	function get_thread( $id ) {
+	    
 		global $bbdb;
+		
+		$this->cache_threads(array($id));
 
-		if ( false === $thread_ids = bbpm_cache_get( (int)$id, 'bbpm-thread' ) ) {
+		if ( false === $post_ids = bbpm_cache_get( (int)$id, 'bbpm-thread' ) ) {
 			$thread_posts = (array)$bbdb->get_results( $bbdb->prepare( 'SELECT * FROM `' . $bbdb->bbpm . '` WHERE `pm_thread` = %d ORDER BY `ID`', $id ) );
 
 			foreach ( $thread_posts as $pm )
 			    bbpm_cache_add( (int)$pm->ID, $pm, 'bbpm' );
 
-			bbpm_cache_add( (int)$id, $thread_ids, 'bbpm-thread' );
+			bbpm_cache_add( (int)$id, $post_ids, 'bbpm-thread' );
 		}
 		
 		$thread = array();
 		foreach ($thread_posts as &$tp)
 		    $thread[] = new bbPM_Message((int) $tp->ID);
+		    
+		
 
 		return $thread;
 	}
@@ -473,7 +478,7 @@ class bbPM {
 	        return $members;
 	        
 	    $members = (array) $bbdb->get_col("SELECT user_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id = '{$thread_id}'"); 
-	    bbpm_cache_set($thread_id, $members, 'bbpm-thread-members');
+	    bbpm_cache_add($thread_id, $members, 'bbpm-thread-members');
 	    return $members;
 	}
 

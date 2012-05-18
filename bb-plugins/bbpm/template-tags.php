@@ -86,7 +86,7 @@ function bbpm_pm_members() {
     ?>
     <h3><?php _e('Members'); ?></h3>
 
-    <ul class="unstyled">
+    <ul class="nav nav-tabs nav-stacked">
         <?php
         $links = $bbpm->get_thread_member_links($action);
 
@@ -96,7 +96,7 @@ function bbpm_pm_members() {
         ?>
     </ul>
     
-    <?php if ( $bbpm->settings['users_per_thread'] == 0 || $bbpm->settings['users_per_thread'] > count( $members ) ) { ?>
+    <?php if ( $bbpm->settings['users_per_thread'] == 0 || $bbpm->settings['users_per_thread'] > count($bbpm->get_thread_members($action)) ) { ?>
         <form class="form form-inline" action="<?php bbpm_form_handler_url(); ?>" method="post">
         <p>
         <input type="text" id="user_name" name="user_name"/>
