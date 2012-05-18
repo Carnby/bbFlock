@@ -24,6 +24,7 @@ function bbpm_install() {
     global $bbdb;
 	$bbdb->bbpm = $bbdb->prefix . 'bbpm';
 	$bbdb->bbpm_meta = $bbdb->prefix . 'bbpm_meta';
+	$bbdb->bbpm_thread_members = $bbdb->prefix . 'bbpm_thread_members';
 	
     $queries = array();
     $queries['bbpm_meta'] = "CREATE TABLE {$bbdb->bbpm_meta} (
@@ -46,6 +47,15 @@ function bbpm_install() {
         KEY ( `pm_from` ),
         KEY ( `reply_to` ),
         KEY ( `pm_thread` )
+    );";
+    
+    $queries['bbpm_thread_members'] = "CREATE TABLE {$bbdb->bbpm_thread_members} (
+        `ID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `thread_id` BIGINT UNSIGNED NOT NULL,
+        `user_id` BIGINT UNSIGNED NOT NULL,
+        `added_on` INT( 10 ) NOT NULL,
+        KEY ( `thread_id` ),
+        KEY ( `user_id` )
     );";
     
     require_once(BBPATH . 'bb-admin/upgrade-functions.php');

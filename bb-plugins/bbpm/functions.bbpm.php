@@ -59,7 +59,13 @@ function bbpm_cache_add($key, $value, $group = '') {
 }
 
 function bbpm_cache_set($key, $value, $group = '') {
-
+    global $bbpm_cache;
+    
+    if (!empty($group))
+        $key = $group . '_' . $key;
+            
+    $bbpm_cache[$key] = $value;
+    return $value;
 }
 
 function bbpm_cache_get($key, $group = '') {

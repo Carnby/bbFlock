@@ -108,7 +108,9 @@ if ( strtoupper( $_SERVER['REQUEST_METHOD'] ) == 'POST' && !empty( $_POST['pm_th
 }
 
 if ( isset( $_GET['unsubscribe'] ) && bb_verify_nonce( $_GET['_wpnonce'], 'bbpm-unsubscribe-' . $_GET['unsubscribe'] ) ) {
-	$bbpm->unsubscribe( $_GET['unsubscribe'] );
-
-	wp_redirect( $bbpm->get_link() );
+	if ($bbpm->unsubscribe((int) $_GET['unsubscribe']))
+	    wp_redirect( $bbpm->get_link() );
+	else 
+	    bb_die('Wrong Unsubscribe ID.', 'bbpm');
+	exit;
 }
