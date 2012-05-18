@@ -192,7 +192,8 @@ function gs_sidebar() {
         gs_manage_tags_form();
     }
     
-    if (!is_bb_profile() && !is_topic()) {
+    // display on site pages, but not on plugin pages.
+    if (!is_bb_profile() && !is_topic() && bb_get_location() != '') {  
         printf('<h3>%s</h3>', __('Views'));
         gs_views_tabs();
     }
@@ -254,9 +255,7 @@ function gs_navigation() {
 	    $links[] = gs_nav_link_wrap(sprintf('<a class="login_link" data-toggle="modal" href="#modalLogin">%s</a>', __('Login')), 'login');
 	    $links[] = gs_nav_link_wrap(sprintf(__('<a class="register_link" href="%1$s">Register</a>'), bb_get_option('uri').'register.php'), 'register');
 	} else {
-	    $links[] = gs_nav_link_wrap(bb_get_profile_link(array('text' => bb_get_current_user_info( 'name' ))), 'profile');		
-		$links[] = gs_nav_link_wrap('<a href="' . get_profile_tab_link(bb_get_current_user_info( 'id' ), 'favorites') . '" alt="'. __('Your Favorites') . '">' . __('Your Favorites') . '</a>', 'your-favorites');
-		
+	    $links[] = gs_nav_link_wrap(bb_get_profile_link(array('text' => bb_get_current_user_info( 'name' ))), 'profile');				
 		$links[] = gs_nav_link_wrap(bb_get_logout_link(), 'logout');
 	}
 	
@@ -331,11 +330,12 @@ function gs_no_discussions() {
         else 
             $text = __('Please enter a search query into the search box at the navigation panel.');
     } else {
-        $text = 'other place holder';
+        $text = __('Nothing found.');
     }
+    
 ?>
 <div class="well">
-<h2><?php echo $text; ?></h2>
+<h2><?php echo esc_html(apply_filters('merlot_nothing_found_text', $text)); ?></h2>
 </div>
 <?php
 }

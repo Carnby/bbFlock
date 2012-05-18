@@ -4,5 +4,4 @@
 <?php gs_topic_loop($topics); ?>
 
 
-
 <?php bb_get_footer(); ?>

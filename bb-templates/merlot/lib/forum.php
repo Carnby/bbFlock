@@ -29,7 +29,7 @@ function gs_forum_loop($not_used = 0) {
 ?>
 	<h3><?php _e('Forums'); ?></h3>
 	
-	<table id="forumlist" class="forum-list table">
+	<table id="forumlist" class="forum-list table table-striped">
 	    <thead>
 	        <th><?php _e('Forum'); ?></th>
 	        <?php do_action('template_after_forum_title_header'); ?>
