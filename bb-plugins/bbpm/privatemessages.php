@@ -31,11 +31,6 @@ if (!bb_get_option('mod_rewrite')) {
 $uri = substr($_SERVER['REQUEST_URI'], strlen(bb_get_option('path')));
 $url = explode('/', trim($uri, '/'));
 
-$get = $url[0];
-
-if ($get != 'pm')
-    bb_die(__('Incorrect page.', 'bbpm'));
-
 if (count($url) > 1)
     $action = $url[1];
 else
@@ -49,8 +44,13 @@ if (count($url) >= 4) {
 }
 
 
-if (!$action == 'viewall' or !$action == 'new')
+if (!$action == 'viewall' or !$action == 'new') {
     $action = intval($action);
+    if ($action <= 0) {
+        bb_die(__('The message does not exists.', 'bbpm'));
+        exit;
+    }    
+}
 
 
 switch ($action) {

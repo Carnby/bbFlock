@@ -18,6 +18,7 @@
     </thead>
     <tbody>
 <?php 
+    $bbpm->reset_loop($start, $end);
     
     while ($bbpm->have_pm($start, $end)) { ?>
         <tr<?php bbpm_thread_alt_class(); ?>>
@@ -35,7 +36,7 @@
     </tbody>
 </table>
 
-<?php $bbpm->pm_pages( max( $page ? $page : 1, 1 ) ); ?>
+<?php gs_pagination_links($bbpm->pm_pages( max( $page ? $page : 1, 1 ) )); ?>
 
 <?php } else { 
     gs_no_discussions();    

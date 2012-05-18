@@ -37,6 +37,8 @@ class bbPM {
 	 * @access private
 	 */
 	var $_profile_context;
+	
+	var $_loop_started;
 
     var $location;
 	/**
@@ -62,6 +64,7 @@ class bbPM {
 			$this->update();
 			
 		$this->location = 'bb-plugins/bbpm/privatemessages.php';
+		$this->_loop_started = false;
 	}
 
 	/**
@@ -118,12 +121,13 @@ class bbPM {
 	 */
 	function pm_pages( $current ) {
 		$total = ceil( $this->count_pm() / $this->threads_per_page() );
-
-		echo paginate_links( array(
+        $base = $this->get_messages_url();
+		return paginate_links( array(
 			'current' => $current,
 			'total' => $total,
-			'base' => $this->get_link() . '%_%',
-			'format' => bb_get_option( 'mod_rewrite' ) ? '/page/%#%' : '&page=%#%'
+			'base' => bb_get_option( 'mod_rewrite' ) ?  $base . '%_%' : $base . '?pm=viewall%_%',
+			'format' => bb_get_option( 'mod_rewrite' ) ? '/page/%#%' : '&page=%#%',
+			'type' => 'array'
 		) );
 	}
 
@@ -173,25 +177,36 @@ class bbPM {
 
 			if ( $this->current_pm[$start . '_' . $end] ) {
 				$this->the_pm = reset( $this->current_pm[$start . '_' . $end] );
+				$this->_loop_started = false;
 				return true;
 			}
 			return false;
 		}
 
-		if ( $this->the_pm = next( $this->current_pm[$start . '_' . $end] ) )
-			return true;
+		if ($this->_loop_started) {  
+		    if ($this->the_pm = next($this->current_pm[$start . '_' . $end]))
+			    return true;
+			 return false;
+		} 
+		
+		if ($this->the_pm = current($this->current_pm[$start . '_' . $end])) {
+		    $this->_loop_started = true;
+		    return true;
+		}
+		
 		return false;
 	}
 	
 	function reset_loop($start, $end) {
 	    if (isset($this->current_pm[$start . '_' . $end])) {
 	        $this->the_pm = reset($this->current_pm[$start . '_' . $end]);
+	        $this->_loop_started = false;
 			return true;
 	    } 
 	    
 	    return false;
 	}
-
+	
 	/**
 	 * @access private
 	 */
