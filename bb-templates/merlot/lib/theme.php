@@ -135,12 +135,12 @@ function gs_sidebar_buttons() {
         printf('<h3>%s</h3>', __('Hi, Stranger!'));
         printf('<p>%s</p>', __('It looks like you\'re new here. If you want to get involved, click one of these buttons!'));
         
-        $buttons[] = sprintf('<a class="btn btn-primary pull-left" href="%s">%s</a>', bb_get_uri('register.php'), __('Register'));
-        $buttons[] = sprintf(__('<a class="btn btn-primary" href="%1$s">Login</a>'), bb_get_option('uri').'bb-login.php');
+        $buttons[] = sprintf('<a class="btn btn-primary pull-left" href="%s"><i class="icon icon-plus-sign icon-white"></i> %s</a>', bb_get_uri('register.php'), __('Register'));
+        $buttons[] = sprintf(__('<a class="btn btn-primary" href="%1$s"><i class="icon icon-user icon-white"></i> Login</a>'), bb_get_option('uri').'bb-login.php');
     } else {
         if (is_front() || is_forum()) {                    
             if (bb_current_user_can('write_topics')) { 
-                $buttons[] = get_new_topic_link(array('class' => 'btn btn-primary btn-large', 'text' => __('Add New Topic &raquo;'))); 
+                $buttons[] = get_new_topic_link(array('class' => 'btn btn-primary btn-large', 'text' => sprintf('<i class="icon icon-comment icon-white"></i> %s', __('Add New Topic')))); 
             } 
         }
         
@@ -237,26 +237,26 @@ function gs_nav_link_wrap($link, $context = '') {
 
 function gs_navigation() {
 	$links = array();
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_uri(), __('Front Page', 'genealogies')), 'front-page');
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-home icon-white"></i> %s</a>', bb_get_uri(), __('Front Page', 'genealogies')), 'front-page');
 	
-	if ($admin_link = bb_get_admin_link()) {
+	if ($admin_link = bb_get_admin_link(array('text' => sprintf('<i class="icon icon-wrench icon-white"></i> %s', __('Admin'))))) {
         $links[] = gs_nav_link_wrap($admin_link, 'admin');		
     }
 	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-tags icon-white"></i> %s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
 	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s">%s</a>', bb_get_uri('members.php'), __('Members')), 'members');
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-th icon-white"></i> %s</a>', bb_get_uri('members.php'), __('Members')), 'members');
 	
 	printf('<ul class="nav">%s</ul>', implode('', apply_filters('gs_navigation_menu', $links)));
 	
 	$links = array();
 	
 	if (!bb_is_user_logged_in()) {
-	    $links[] = gs_nav_link_wrap(sprintf('<a class="login_link" data-toggle="modal" href="#modalLogin">%s</a>', __('Login')), 'login');
-	    $links[] = gs_nav_link_wrap(sprintf(__('<a class="register_link" href="%1$s">Register</a>'), bb_get_option('uri').'register.php'), 'register');
+	    $links[] = gs_nav_link_wrap(sprintf(__('<a class="register_link" href="%1$s"><i class="icon icon-plus-sign icon-white"></i> Register</a>'), bb_get_option('uri').'register.php'), 'register');
+	    $links[] = gs_nav_link_wrap(sprintf('<a class="login_link" data-toggle="modal" href="#modalLogin"><i class="icon icon-user icon-white"></i> %s</a>', __('Login')), 'login');
 	} else {
-	    $links[] = gs_nav_link_wrap(bb_get_profile_link(array('text' => bb_get_current_user_info( 'name' ))), 'profile');				
-		$links[] = gs_nav_link_wrap(bb_get_logout_link(), 'logout');
+	    $links[] = gs_nav_link_wrap(bb_get_profile_link(array('text' => sprintf('<i class="icon icon-user icon-white"></i> %s', bb_get_current_user_info( 'name' )))), 'profile');				
+		$links[] = gs_nav_link_wrap(bb_get_logout_link(array('text' => sprintf('<i class="icon icon-remove icon-white"></i>  %s', __('Log Out')))), 'logout');
 	}
 	
 	$links[] = '<li class="divider-vertical"></li>';
