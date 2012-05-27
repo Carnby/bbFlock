@@ -149,7 +149,7 @@ class bbPM {
 	 * @param int $end The ending index of the PM threads to get - Must be greater than $start
 	 * @return bool True if the next private message could be found, false otherwise
 	 */
-	function have_pm( $start = 0, $end = 0 ) {
+	function have_pm( $start = 0, $end = 0, $cache_unread_ids = true ) {
 		$start = (int)$start;
 		$end   = (int)$end;
 
@@ -176,7 +176,7 @@ class bbPM {
 
 			$this->current_pm[$key] = array();
 
-			foreach ( $threads as $thread_id ) {
+			foreach ($threads as $thread_id) {
 			    $thread = $this->retrieve_thread($thread_id);
 			    
 				$this->current_pm[$key][] = array( 
@@ -185,6 +185,20 @@ class bbPM {
 				    'title' => $thread->title, 
 				    'last_message' => $thread->last_message_id 
 				);
+			}
+			
+			if ($cache_unread_ids && $threads) {
+			    $user_id = (int) bb_get_current_user_info('ID');
+			    $thread_ids = implode(',', $threads);
+			    $last_read_message_ids = (array) $bbdb->get_results("SELECT thread_id, last_read_message_id FROM {$bbdb->bbpm_thread_members} WHERE user_id = '{$user_id}' AND thread_id IN ({$thread_ids}) AND deleted = 0");
+			    
+			    $last_read = array();
+			    
+			    foreach ($last_read_message_ids as $tuple) {
+			        $last_read[$tuple->thread_id] = $tuple->last_read_message_id; 
+			    }
+			    
+			    bbpm_cache_set($user_id, $last_read, 'bbpm-user-last-read-ids');
 			}
 
 			if ( $this->current_pm[$key] ) {
@@ -454,23 +468,12 @@ class bbPM {
             $posts[] = (int) $thread->last_message_id;
         }
         
-        /*
-		$thread_meta = (array) $bbdb->get_results( 'SELECT `bbpm_id`,`meta_key`,`meta_value` FROM `' . $bbdb->bbpm_meta . '` WHERE `bbpm_id` IN (' . $thread_ids . ')' );
-
-		foreach ( $thread_meta as $meta ) {
-		    bbpm_cache_add( $meta->meta_key, $meta->meta_value, 'bbpm-thread-' . $meta->bbpm_id );
-
-			if ( $meta->meta_key == 'last_message' )
-				$posts[] = (int) $meta->meta_value;
-		}
-		*/
-
 		$thread_posts = (array) $bbdb->get_results('SELECT * FROM `' . $bbdb->bbpm_messages . '` WHERE `message_id` IN (' . implode( ',', $posts ) . ')');
 
 	    foreach ($thread_posts as $pm)
 		    bbpm_cache_add( (int) $pm->message_id, $pm, 'bbpm-message' );
 
-        $tuples = (array) $bbdb->get_results("SELECT user_id, thread_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id IN ({$thread_ids})");
+        $tuples = (array) $bbdb->get_results("SELECT user_id, thread_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id IN ({$thread_ids}) AND deleted = 0");
         
         $thread_members = array();
         $user_ids = array();
@@ -481,8 +484,10 @@ class bbPM {
                 
             if (!isset($thread_members[$tuple->thread_id]))
                 $thread_members[$tuple->thread_id] = array();
-                
+                  
             $thread_members[$tuple->thread_id][] = $tuple->user_id;
+            
+            bbpm_cache_set((int) $thread_id, $members, 'bbpm-thread-members');
         }
         
         foreach ($thread_members as $thread_id => $members) {
@@ -765,6 +770,13 @@ class bbPM {
 		global $bbdb;
 		$thread_id = (int) $thread_id;
 		$user_id = (int) bb_get_current_user_info('ID');
+		
+		$last_read = bbpm_cache_get($user_id, 'bbpm-user-last-read-ids');
+		if ($last_read) {
+		    if (isset($last_read[$thread_id]))
+		        return $last_read[$thread_id];
+		}
+		
 		return (int) $bbdb->get_var("SELECT last_read_message_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id = '{$thread_id}' AND user_id = '{$user_id}';");
 	}
 
@@ -788,6 +800,7 @@ class bbPM {
 		if (($last_read_id && $last_read_id != $thread->last_message_id) || !$last_read_id) {
 		    global $bbdb;
 		    $bbdb->update($bbdb->bbpm_thread_members, array('last_read_message_id' => $thread->last_message_id), array('thread_id' => $thread_id, 'user_id' => $user_id));
+		    bbpm_cache_delete($user_id, 'bbpm-user-last-read-ids');
 		}
 			
 		return true;
