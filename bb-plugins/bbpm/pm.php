@@ -51,12 +51,14 @@ if (strtoupper( $_SERVER['REQUEST_METHOD'] ) == 'POST') {
 
         $thread_id = (int) $_POST['thread_id'];
         
-	    if ( $bbpm->can_read_thread($thread_id) ) {
-		    if (!$to = bb_get_user(trim($_POST['user_name'])))
-			    bb_die( __( 'You need to choose a valid person to send the message to.', 'bbpm' ) );
+        if (!$bbpm->can_read_thread($thread_id))
+            bb_die(__('Cheater! :p', 'bbpm'));
+        
+		if (!$to = bb_get_user(trim($_POST['user_name'])))
+		    bb_die( __( 'You need to choose a valid person to send the message to.', 'bbpm' ) );
 
-		    $bbpm->add_member($thread_id, $to->ID );
-	    }
+		$bbpm->add_member($thread_id, $to->ID );
+	    
 
 	    bb_update_usermeta( bb_get_current_user_info( 'ID' ), 'last_posted', time() );
         wp_redirect(bbpm_get_pm_link($thread_id));
@@ -98,7 +100,7 @@ if (strtoupper( $_SERVER['REQUEST_METHOD'] ) == 'POST') {
         if (!$bbpm->can_read_thread($thread_id))
             bb_die(__('There was an error sending your message.', 'bbpm'));
             
-	    $redirect_to = $bbpm->send_reply( $reply_to, stripslashes( $_POST['message'] ) );
+	    $redirect_to = $bbpm->send_reply($thread_id, stripslashes($_POST['message']));
 
 	    bb_update_usermeta( bb_get_current_user_info( 'ID' ), 'last_posted', time() );
 

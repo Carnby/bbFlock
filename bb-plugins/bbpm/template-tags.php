@@ -74,6 +74,28 @@ function bbpm_thread_alt_class() {
 	alt_class( 'bbpm_threads', $bbpm->the_pm['last_message'] == $bbpm->get_last_read( $bbpm->the_pm['id'] ) ? '' : 'unread_posts_row' );
 }
 
+function bbpm_thread_label() {
+    global $bbpm;
+    
+    if ($bbpm->the_pm && $bbpm->the_pm['last_message'] != $bbpm->get_last_read($bbpm->the_pm['id']))
+	    return __( 'New', 'bbpm' );
+	return '';
+}
+
+function bbpm_thread_title() {
+    global $bbpm, $action;
+    
+    if ($action == 'viewall') {
+        $thread_id = $bbpm->the_pm['id'];
+    } else if (is_numeric($action)) {
+        $thread_id = (int) $action;
+    }
+ 
+    $thread = $bbpm->retrieve_thread($thread_id);
+    if ($thread)
+        echo apply_filters('topic_title', $thread->title, 0);
+    
+}
 
 // for merlot hooks
 

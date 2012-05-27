@@ -84,33 +84,31 @@ class bbPM_Message {
 	function bbPM_Message( $ID ) {
 		global $bbpm, $bbdb;
 
-		if ( false === $row = bbpm_cache_get( (int)$ID, 'bbpm' ) ) {
-			$row = $bbdb->get_row( $bbdb->prepare( 'SELECT * FROM `' . $bbdb->bbpm . '` WHERE `ID`=%d', $ID ) );
-			bbpm_cache_add( (int)$ID, $row, 'bbpm' );
+		if ( false === $row = bbpm_cache_get( (int)$ID, 'bbpm-message' ) ) {
+			$row = $bbdb->get_row( $bbdb->prepare( 'SELECT * FROM `' . $bbdb->bbpm_messages . '` WHERE `message_id`=%d', $ID ) );
+			bbpm_cache_add( (int)$ID, $row, 'bbpm-message' );
 		}
 
 		if ( !$row ) {
 			$this->exists = false;
-            bbpm_cache_add( (int)$ID, 0, 'bbpm' );
+            bbpm_cache_add( (int)$ID, 0, 'bbpm-message' );
 			return;
 		}
 
 		if ( bb_get_option( 'mod_rewrite' ) ) {
-			$this->read_link    = bb_get_uri( 'pm/' . $row->pm_thread ) . '#pm-' . $row->ID;
-			$this->reply_link   = bb_get_uri( 'pm/' . $row->ID . '/reply' );
+			$this->read_link    = bb_get_uri( 'pm/' . $row->thread_id ) . '#pm-' . $row->message_id;
+			$this->reply_link   = bb_get_uri( 'pm/' . $row->thread_id . '/reply' );
 		} else {
-			$this->read_link    = bb_get_uri( $bbpm->location, array( 'pm' => $row->pm_thread ) ) . '#pm-' . $row->ID;
-			$this->reply_link   = bb_get_uri( $bbpm->location, array( 'pm' => $row->ID . '/reply' ) );
+			$this->read_link    = bb_get_uri( $bbpm->location, array( 'pm' => $row->thread_id ) ) . '#pm-' . $row->message_id;
+			$this->reply_link   = bb_get_uri( $bbpm->location, array( 'pm' => $row->message_id . '/reply' ) );
 		}
 		
 		$this->ID           = (int)$row->ID;
-		$this->title        = apply_filters( 'get_topic_title', $bbpm->get_thread_title( $row->pm_thread ), 0 );
-		$this->from         = bb_get_user((int)$row->pm_from);
-		$this->text         = apply_filters( 'get_post_text', $row->pm_text );
+		$this->from         = bb_get_user((int)$row->user_id);
+		$this->text         = apply_filters( 'get_post_text', $row->text );
 		$this->date         = (int)$row->sent_on;
-		$this->reply        = (bool)(int)$row->reply_to;
-		$this->reply_to     = (int)$row->reply_to;
-		$this->thread       = (int)$row->pm_thread;
+		$this->thread       = (int)$row->thread_id;
 		$this->exists       = true;
+		$this->ip           = $row->ip;
 	}
 }

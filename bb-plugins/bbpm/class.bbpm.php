@@ -48,8 +48,8 @@ class bbPM {
 	 */
 	function bbPM() { // INIT
 		global $bbdb;
-		$bbdb->bbpm = $bbdb->prefix . 'bbpm';
-		$bbdb->bbpm_meta = $bbdb->prefix . 'bbpm_meta';
+		$bbdb->bbpm_messages = $bbdb->prefix . 'bbpm_messages';
+		$bbdb->bbpm_threads = $bbdb->prefix . 'bbpm_threads';
 		$bbdb->bbpm_thread_members = $bbdb->prefix . 'bbpm_thread_members';
 
 		add_filter( 'get_profile_info_keys', array( &$this, 'profile_edit_filter' ), 9, 2 );
@@ -83,30 +83,35 @@ class bbPM {
 	 * @param bool $unread_only True to get only unread threads, false to get all threads that a user has access to.
 	 * @return int The number of private message threads that matched the criteria.
 	 */
-	function count_pm( $user_id = 0, $unread_only = false ) {
+	function count_pm($user_id = 0, $unread_only = false) {
 		global $bbdb;
 
-		$user_id = (int)$user_id;
+		$user_id = (int) $user_id;
 
 		if ( !$user_id )
 			$user_id = bb_get_current_user_info( 'ID' );
 
-		if ( false === $thread_member_of = bbpm_cache_get( $user_id, 'bbpm-user-messages' ) ) {
-			$thread_member_of = (array) $bbdb->get_col($bbdb->prepare("SELECT thread_id FROM {$bbdb->bbpm_thread_members} WHERE user_id = %d", $user_id));
+        if (!$unread_only) {
+            $thread_member_of = bbpm_cache_get($user_id, 'bbpm-user-messages');
+		    
+		    if (false === $thread_member_of) {
+			    $thread_member_of = (array) $bbdb->get_col($bbdb->prepare("SELECT thread_id FROM {$bbdb->bbpm_thread_members} WHERE user_id = %d AND deleted = 0", $user_id));
 
-			$this->cache_threads( $thread_member_of );
-
-			bbpm_cache_add( $user_id, $thread_member_of, 'bbpm-user-messages' );
+			    bbpm_cache_add( $user_id, $thread_member_of, 'bbpm-user-messages' );
+		    }
+		    
+		    return count($thread_member_of);
 		}
 
-		$threads = count( $thread_member_of );
+        $thread_member_of = bbpm_cache_get($user_id, 'bbpm-unread-user-messages');
+		    
+	    if (false === $thread_member_of) {
+		    $thread_member_of = (array) $bbdb->get_col("SELECT thread_id FROM {$bbdb->bbpm_thread_members} WHERE user_id = '{$user_id}' AND deleted = 0 AND last_message_id != last_read_message_id");
 
-		if ( $unread_only )
-			foreach ( $thread_member_of as $thread )
-				if ( $this->get_last_read( $thread ) == $this->get_thread_meta( $thread, 'last_message' ) )
-					$threads--;
-
-		return $threads;
+		    bbpm_cache_add( $user_id, $thread_member_of, 'bbpm-unread-user-messages' );
+	    }
+	    
+	    return count($thread_member_of);
 	}
 
 	/**
@@ -159,41 +164,45 @@ class bbPM {
 
 		$end -= $start;
 
-		if ( !isset( $this->current_pm[$start . '_' . $end] ) ) {
+        $user_id = (int) bb_get_current_user_info('ID');
+        $key = $start . '_' . $end;
+
+		if ( !isset( $this->current_pm[$key] ) ) {
 			global $bbdb;
 
-			if ( false !== $threads = bbpm_cache_get( bb_get_current_user_info( 'ID' ), 'bbpm-user-messages' ) ) {
-				usort( $threads, array( &$this, '_newer_last_message_1' ) );
-				$threads = array_slice( $threads, $start, $end );
-			} else {
-				$thread_member_of = (array) $bbdb->get_col($bbdb->prepare("SELECT thread_id FROM {$bbdb->bbpm_thread_members} WHERE user_id = %d", $user_id));
+			$threads = (array) $bbdb->get_col("SELECT thread_id FROM {$bbdb->bbpm_thread_members} WHERE user_id = '{$user_id}' AND deleted = 0 ORDER BY last_message_id DESC LIMIT {$start}, {$end}");
 				
-				$this->cache_threads( $threads );
+			$this->cache_threads( $threads );
+
+			$this->current_pm[$key] = array();
+
+			foreach ( $threads as $thread_id ) {
+			    $thread = $this->retrieve_thread($thread_id);
+			    
+				$this->current_pm[$key][] = array( 
+				    'id' => $thread_id, 
+				    'members' => $this->get_thread_members($thread_id), 
+				    'title' => $thread->title, 
+				    'last_message' => $thread->last_message_id 
+				);
 			}
 
-			$this->current_pm[$start . '_' . $end] = array();
-
-			foreach ( $threads as $thread ) {
-				$this->current_pm[$start . '_' . $end][] = array( 'id' => $thread, 'members' => $this->get_thread_members( $thread ), 'title' => $this->get_thread_title( $thread ), 'last_message' => $this->get_thread_meta( $thread, 'last_message' ) );
-			}
-
-			usort( $this->current_pm[$start . '_' . $end], array( &$this, '_newer_last_message_2' ) );
-
-			if ( $this->current_pm[$start . '_' . $end] ) {
-				$this->the_pm = reset( $this->current_pm[$start . '_' . $end] );
+			if ( $this->current_pm[$key] ) {
+				$this->the_pm = reset( $this->current_pm[$key] );
 				$this->_loop_started = false;
 				return true;
 			}
+			
 			return false;
 		}
 
 		if ($this->_loop_started) {  
-		    if ($this->the_pm = next($this->current_pm[$start . '_' . $end]))
+		    if ($this->the_pm = next($this->current_pm[$key]))
 			    return true;
 			 return false;
 		} 
 		
-		if ($this->the_pm = current($this->current_pm[$start . '_' . $end])) {
+		if ($this->the_pm = current($this->current_pm[$key])) {
 		    $this->_loop_started = true;
 		    return true;
 		}
@@ -211,19 +220,6 @@ class bbPM {
 	    return false;
 	}
 	
-	/**
-	 * @access private
-	 */
-	function _newer_last_message_1( $a, $b ) {
-		return $this->get_thread_meta( $a, 'last_message' ) > $this->get_thread_meta( $b, 'last_message' ) ? -1 : 1;
-	}
-
-	/**
-	 * @access private
-	 */
-	function _newer_last_message_2( $a, $b ) {
-		return $a['last_message'] > $b['last_message'] ? -1 : 1;
-	}
 
 	/**
 	 * @param int $id_reciever
@@ -238,34 +234,55 @@ class bbPM {
 		}
 
 		global $bbdb;
-
-        $sender_id = (int) bb_get_current_user_info('ID');
-
-		$pm = array(
-			'pm_from'   => $sender_id,
-			'pm_text'   => apply_filters('pre_post', $message, 0, 0),
-			'sent_on'   => bb_current_time('timestamp'),
-			'pm_thread' => $bbdb->get_var('SELECT MAX( `pm_thread` ) FROM `' . $bbdb->bbpm . '`') + 1
+		
+		$sender_id = (int) bb_get_current_user_info('ID');
+		
+		$title = apply_filters('pre_topic_title', $title, 0);
+		$title = bb_trim_for_db($title, 150);
+		
+		$thread = array(
+		    'title' => $title,
+		    'created_on' => bb_current_time('timestamp'),
+		     'user_id' => $sender_id,
+		     'updated_on' => bb_current_time('timestamp'),
+		     'message_count' => 1,
+		     'first_message_id' => 0,
+		     'last_message_id' => 0
 		);
 
-		$bbdb->insert( $bbdb->bbpm, $pm );
+        $bbdb->insert($bbdb->bbpm_threads, $thread);
+        $thread_id = $bbdb->insert_id;
+        
+        
+		$pm = array(
+			'user_id'   => $sender_id,
+			'text'      => apply_filters('pre_post', $message, 0, 0),
+			'sent_on'   => bb_current_time('timestamp'),
+			'thread_id' => $thread_id,
+			'ip' => $_SERVER['REMOTE_ADDR']
+		);
 
-		$msg = new bbPM_Message( $bbdb->insert_id );
-
-		bbpm_update_meta( $pm['pm_thread'], 'title', $title );
+		$bbdb->insert( $bbdb->bbpm_messages, $pm );
+		$message_id = $bbdb->insert_id;
 
         $bbdb->insert($bbdb->bbpm_thread_members, 
-            array('user_id' => $id_reciever, 'thread_id' => $pm['pm_thread'], 'added_on' => $pm['sent_on'])
+            array('user_id' => $id_reciever, 'thread_id' => $thread_id, 'added_on' => $thread['updated_on'], 'last_message_id' => $message_id)
+        );
+                
+        $bbdb->insert($bbdb->bbpm_thread_members, 
+            array('user_id' => $sender_id, 'thread_id' => $thread_id, 'added_on' => $thread['updated_on'], 'last_viewed' => $thread['updated_on'], 'last_read_message_id' => $message_id, 'last_message_id' => $message_id)
         );
         
-        $bbdb->insert($bbdb->bbpm_thread_members, 
-            array('user_id' => $sender_id, 'thread_id' => $pm['pm_thread'], 'added_on' => $pm['sent_on'], 'last_viewed' => bb_current_time('timestamp'), 'last_read_message_id' => $msg->ID)
+        $bbdb->update($bbdb->bbpm_threads, 
+            array('first_message_id' => $message_id, 'last_message_id' => $message_id),
+            array('thread_id' => $thread_id)
         );
+
+        $msg = new bbPM_Message($message_id);
         
 		bbpm_cache_delete($id_reciever);
 		bbpm_cache_delete($sender_id, 'bbpm-user-messages');
 		
-
 		if ( $this->settings['email_new'] && !bb_get_usermeta( $id_reciever, 'bbpm_emailme' ) && $sender_id != $id_reciever )
 			bb_mail( bb_get_user_email( $id_reciever ),
 				sprintf(
@@ -282,8 +299,6 @@ class bbPM {
 					$msg->read_link
 				)
 			);
-
-		bbpm_update_meta( $pm['pm_thread'], 'last_message', $msg->ID );
 
 		do_action( 'bbpm_new', $msg );
 		do_action( 'bbpm_send', $msg );
@@ -306,17 +321,35 @@ class bbPM {
         $thread_id = (int) $thread_id;
         $user_id = (int) bb_get_current_user_info('ID');
 		$pm = array(
-			'pm_from'      => $user_id,
-			'pm_text'      => apply_filters( 'pre_post', $message, 0, 0 ),
-			'sent_on'      => bb_current_time( 'timestamp' ),
-			'pm_thread'    => $thread_id
+			'user_id' => $user_id,
+			'text' => apply_filters('pre_post', $message, 0, 0),
+			'sent_on' => bb_current_time( 'timestamp' ),
+			'thread_id' => $thread_id,
+			'ip' => $_SERVER['REMOTE_ADDR']
 		);
 
-		$bbdb->insert( $bbdb->bbpm, $pm );
+		$bbdb->insert( $bbdb->bbpm_messages, $pm );
+		$message_id = $bbdb->insert_id;
+		
+		$bbdb->update($bbdb->bbpm_thread_members, 
+            array('last_viewed' => bb_current_time('timestamp'), 'last_read_message_id' => $message_id),
+            array('thread_id' => $thread_id, 'user_id' => $user_id)
+        );
+        
+        $bbdb->update($bbdb->bbpm_thread_members, 
+            array('last_message_id' => $message_id),
+            array('thread_id' => $thread_id)
+        );
 
-		$msg = new bbPM_Message( $bbdb->insert_id );
+        $bbdb->update($bbdb->bbpm_threads,
+            array('last_message_id' => $message_id),
+            array('thread_id' => $thread_id)
+        );
 
-		bbpm_update_meta( $pm['pm_thread'], 'last_message', $msg->ID );
+		$msg = new bbPM_Message($message_id);
+
+        
+
 
 		if ( $this->settings['email_reply'] ) {
 			$to = $this->get_thread_members( $pm['pm_thread'] );
@@ -349,11 +382,6 @@ class bbPM {
 			}
 		}
 
-        $bbdb->update($bbdb->bbpm_thread_members, 
-            array('last_viewed' => bb_current_time('timestamp'), 'last_read_message_id' => $msg->ID),
-            array('thread_id' => $thread_id, 'user_id' => $user_id)
-        );
-
 		do_action( 'bbpm_reply', $msg );
 		do_action( 'bbpm_send', $msg );
 
@@ -369,24 +397,26 @@ class bbPM {
 	 * @global BPDB_Multi Get the threads
 	 * @uses bbPM_Message The thread is given as an array of {@link bbPM_Message}s
 	 */
-	function get_thread( $id ) {
+	function get_thread_messages( $thread_id ) {
 	    
 		global $bbdb;
 		
-		$this->cache_threads(array($id));
+		$thread_id = (int) $thread_id;
+		
+		$this->cache_threads(array($thread_id));
 
-		if ( false === $post_ids = bbpm_cache_get( (int)$id, 'bbpm-thread' ) ) {
-			$thread_posts = (array)$bbdb->get_results( $bbdb->prepare( 'SELECT * FROM `' . $bbdb->bbpm . '` WHERE `pm_thread` = %d ORDER BY `ID`', $id ) );
+		if (false === $post_ids = bbpm_cache_get($thread_id, 'bbpm-thread-messages')) {
+			$thread_posts = (array) $bbdb->get_results( $bbdb->prepare( 'SELECT * FROM `' . $bbdb->bbpm_messages . '` WHERE `thread_id` = %d ORDER BY `message_id`', $thread_id ) );
 
 			foreach ( $thread_posts as $pm )
-			    bbpm_cache_add( (int)$pm->ID, $pm, 'bbpm' );
+			    bbpm_cache_add( (int) $pm->message_id, $pm, 'bbpm-message' );
 
-			bbpm_cache_add( (int)$id, $post_ids, 'bbpm-thread' );
+			bbpm_cache_add( (int) $id, $post_ids, 'bbpm-thread-messages' );
 		}
 		
 		$thread = array();
 		foreach ($thread_posts as &$tp)
-		    $thread[] = new bbPM_Message((int) $tp->ID);
+		    $thread[] = new bbPM_Message((int) $tp->message_id);
 
 		return $thread;
 	}
@@ -417,6 +447,14 @@ class bbPM {
 		
 		$thread_ids = implode(',', array_map('intval', $IDs));
 
+        $threads = (array) $bbdb->get_results("SELECT * FROM {$bbdb->bbpm_threads} WHERE thread_id IN ({$thread_ids}) AND deleted = 0");
+        
+        foreach ($threads as $thread) {
+            bbpm_cache_add((int) $thread->thread_id, $thread, 'bbpm-thread');
+            $posts[] = (int) $thread->last_message_id;
+        }
+        
+        /*
 		$thread_meta = (array) $bbdb->get_results( 'SELECT `bbpm_id`,`meta_key`,`meta_value` FROM `' . $bbdb->bbpm_meta . '` WHERE `bbpm_id` IN (' . $thread_ids . ')' );
 
 		foreach ( $thread_meta as $meta ) {
@@ -425,16 +463,18 @@ class bbPM {
 			if ( $meta->meta_key == 'last_message' )
 				$posts[] = (int) $meta->meta_value;
 		}
+		*/
 
-		$thread_posts = (array) $bbdb->get_results( 'SELECT * FROM `' . $bbdb->bbpm . '` WHERE `ID` IN (' . implode( ',', $posts ) . ') ORDER BY `ID`' );
+		$thread_posts = (array) $bbdb->get_results('SELECT * FROM `' . $bbdb->bbpm_messages . '` WHERE `message_id` IN (' . implode( ',', $posts ) . ')');
 
-	    foreach ( $thread_posts as $pm )
-		    bbpm_cache_add( (int) $pm->ID, $pm, 'bbpm' );
+	    foreach ($thread_posts as $pm)
+		    bbpm_cache_add( (int) $pm->message_id, $pm, 'bbpm-message' );
 
         $tuples = (array) $bbdb->get_results("SELECT user_id, thread_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id IN ({$thread_ids})");
         
         $thread_members = array();
         $user_ids = array();
+        
         foreach ($tuples as $tuple) {
             if (!isset($user_ids[$tuple->user_id]))
                 $user_ids[$tuple->user_id] = true;
@@ -452,17 +492,20 @@ class bbPM {
 		bb_cache_users(array_keys($user_ids));
 	}
 
-	/**
-	 * Get the title of a private message thread
-	 *
-	 * @since 0.1-alpha6
-	 * @param int $thread_ID The ID of the thread
-	 * @return string The title of the thread
-	 * @uses bbPM::get_thread_meta() Getting the thread's title
-	 */
-	function get_thread_title( $thread_ID ) {
-		return $this->get_thread_meta( $thread_ID, 'title' );
-	}
+    function retrieve_thread($thread_id) {
+        $thread_id = (int) $thread_id;
+
+        $thread = bbpm_cache_get($thread_id, 'bbpm-thread');
+        if (!$thread) {
+            global $bbdb;
+            $thread = $bbdb->get_row("SELECT * FROM {$bbdb->bbpm_threads} WHERE thread_id = '{$thread_id}' AND deleted = 0");
+            if ($thread)
+                bbpm_cache_add($thread_id, $thread, 'bbpm-thread');
+        }
+        
+        return $thread;
+    }
+
 
 	/**
 	 * Get the IDs of the members of a private message thread
@@ -480,7 +523,7 @@ class bbPM {
 	    if ($members = bbpm_cache_get($thread_id, 'bbpm-thread-members'))
 	        return $members;
 	        
-	    $members = (array) $bbdb->get_col("SELECT user_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id = '{$thread_id}'"); 
+	    $members = (array) $bbdb->get_col("SELECT user_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id = '{$thread_id}' AND deleted = 0"); 
 	    bbpm_cache_add($thread_id, $members, 'bbpm-thread-members');
 	    return $members;
 	}
@@ -542,16 +585,19 @@ class bbPM {
 		if (!in_array($user_id, $members))
 		    return false;
 		
-		$bbdb->query("DELETE FROM {$bbdb->bbpm_thread_members} WHERE thread_id = '{$thread_id}' AND user_id = '{$user_id}'");
+		$bbdb->update($bbdb->bbpm_thread_members,
+		    array('deleted' => 1),
+		    array('thread_id' => $thread_id, 'user_id' => $user_id)
+		  );
 		
 		if (count($members) == 1) {
-		    $bbdb->query("DELETE FROM {$bbdb->bbpm} WHERE pm_thread = '{$thread_id}'");
-			$bbdb->query("DELETE FROM {$bbdb->bbpm_meta} WHERE bbpm_id = '{$thread_id}'");
+		    $bbdb->update($bbdb->bbpm_threads, array('deleted' => 1), array('thread_id' => $thread_id));
 		}
 		
 		bbpm_cache_flush('bbpm-thread-' . $thread_id);
 		bbpm_cache_delete($user_id, 'bbpm-user-messages');
 		bbpm_cache_delete($thread_id, 'bbpm-thread-members');
+		bbpm_cache_delete($thread_id, 'bbpm-thread');
 		
 		do_action('bbpm_unsubscribe', $thread_id, $user_id);
 
@@ -568,13 +614,16 @@ class bbPM {
 	 *                   and null if the PM thread doesn't exist or has reached its limit for members.
 	 * @uses bbPM::count_pm() Count the messages a user has, make sure the limit is not exceeded
 	 */
-	function add_member( $ID, $user ) {
-		if ( $this->settings['max_inbox'] > 0 && $this->count_pm( $user ) > $this->settings['max_inbox'] )
+	function add_member( $thread_id, $user_id ) {
+	    $user_id = (int) $user_id;
+	    
+		if ( $this->settings['max_inbox'] > 0 && $this->count_pm($user_id) > $this->settings['max_inbox'] )
 			return false;
 
 		global $bbdb;
 		
-		$thread_id = (int) $ID;
+		$thread_id = (int) $thread_id;
+		$thread = $this->retrieve_thread($thread_id);
 		
 		if ($members = $this->get_thread_members($thread_id)) {
 			if ( $this->settings['users_per_thread'] != 0 ) {
@@ -583,28 +632,38 @@ class bbPM {
 			}
 
 			if (!in_array($user, $members)) {
-			
-			    $bbdb->insert($bbdb->bbpm_thread_members, array('user_id' => $user, 'thread_id' => $thread_id, 'added_on' => bb_current_time('timestamp')));
+			    $is_deleted = (bool) $bbdb->get_var("SELECT thread_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id = '{$thread_id}' AND user_id = '{$user_id}' AND deleted = '0'");
+			    
+			    if (!$is_deleted) {
+			        $bbdb->insert($bbdb->bbpm_thread_members, 
+			            array('user_id' => $user_id, 'thread_id' => $thread_id, 'added_on' => bb_current_time('timestamp'), 'last_message_id' => $thread->last_message_id)
+			         );
+			     } else {
+			        $bbdb->update($bbdb->bbpm_thread_members, 
+			            array('deleted' => 0, 'added_on' => bb_current_time('timestamp'), 'last_message_id' => $thread->last_message_id),
+			            array('user_id' => $user_id, 'thread_id' => $thread_id)
+			         );
+			     }
 
-            	bbpm_cache_delete($user, 'bbpm-user-messages');
+            	bbpm_cache_delete($user_id, 'bbpm-user-messages');
             	bbpm_cache_delete($thread_id, 'bbpm-thread-members');
 				
-				do_action( 'bbpm_add_member', $ID, $user );
+				do_action( 'bbpm_add_member', $thread_id, $user_id );
 
-				if ( $this->settings['email_add'] && !bb_get_usermeta( $user, 'bbpm_emailme' ) ) {
-					bb_mail( bb_get_user_email( $user ),
+				if ( $this->settings['email_add'] && !bb_get_usermeta( $user_id, 'bbpm_emailme' ) ) {
+					bb_mail( bb_get_user_email( $user_id ),
 						sprintf(
 							__( '%1$s has added you to a conversation on %2$s: "%3$s"', 'bbpm' ),
 							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							bb_get_option( 'name' ),
-							$this->get_thread_title( $ID )
+							$this->get_thread_title( $thread_id )
 						), sprintf(
 							__( "Hello, %1\$s!\n\n%2\$s has added you to a private message conversation titled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s", 'bbpm' ),
-							get_user_name( $user ),
+							get_user_name( $user_id ),
 							get_user_name( bb_get_current_user_info( 'ID' ) ),
-							$this->get_thread_title( $ID ),
+							$this->get_thread_title( $thread_id ),
 							bb_get_option( 'name' ),
-							bb_get_option( 'mod_rewrite' ) ? bb_get_uri( 'pm/' . $ID ) : bb_get_uri( $this->location, array( 'pm' => $ID ) )
+							bb_get_option( 'mod_rewrite' ) ? bb_get_uri( 'pm/' . $thread_id ) : bb_get_uri( $this->location, array( 'pm' => $thread_id ) )
 						)
 					);
 				}
@@ -710,25 +769,6 @@ class bbPM {
 	}
 
 	/**
-	 * Get information about a bbPM thread
-	 *
-	 * @since 0.1-alpha6
-	 * @param int $thread_ID The ID of the thread to get information about
-	 * @param string $key The type of information to get
-	 * @return string|void The information requested, or null if the information could not be found.
-	 */
-	function get_thread_meta( $thread_ID, $key ) {
-		if ( false === ($result = bbpm_cache_get( $key, 'bbpm-thread-' . $thread_ID )) ) {
-			global $bbdb;
-			$result = $bbdb->get_var( $bbdb->prepare( 'SELECT `meta_value` FROM `' . $bbdb->bbpm_meta . '` WHERE `meta_key` = %s AND `bbpm_id` = %d', $key, $thread_ID ) );
-
-			bbpm_cache_add( $key, $result, 'bbpm-thread-' . $thread_ID );
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Mark a PM thread as read for the current user
 	 *
 	 * @since 0.1-alpha6
@@ -736,9 +776,21 @@ class bbPM {
 	 * @param int $thread_ID The ID of the PM thread to mark as read
 	 * @return void
 	 */
-	function mark_read( $thread_ID ) {
-		if ( $this->get_last_read( $thread_ID ) != $this->get_thread_meta( $thread_ID, 'last_message' ) )
-			bb_update_usermeta( bb_get_current_user_info( 'ID' ), 'bbpm_last_read_' . (int)$thread_ID, (int)$this->get_thread_meta( $thread_ID, 'last_message' ) );
+	function mark_read($thread_id) {
+	    $thread_id = (int) $thread_id;
+	    $user_id = (int) bb_get_current_user_info('ID');
+	    $last_read_id = $this->get_last_read($thread_id);
+	    
+	    $thread = $this->retrieve_thread($thread_id);
+	    if (!$thread)
+	        return false;
+		
+		if (($last_read_id && $last_read_id != $thread->last_message_id) || !$last_read_id) {
+		    global $bbdb;
+		    $bbdb->update($bbdb->bbpm_thread_members, array('last_read_message_id' => $thread->last_message_id), array('thread_id' => $thread_id, 'user_id' => $user_id));
+		}
+			
+		return true;
 	}
 
 

@@ -80,13 +80,13 @@ switch ($action) {
     default:
         $base_template = 'bbpm-thread.php'; 
 
-        if (!$messages = $bbpm->get_thread($action)) {
-            bb_die(__('The message does not exists.', 'bbpm'));
+        if (!$bbpm->can_read_thread($action)) {
+            bb_die(__('You cannot read this message.', 'bbpm'));
             exit;
         }
-        
-        if (!$bbpm->can_read_thread($action)) {
-            bb_die(__('You can\'t read the specified message.', 'bbpm'));
+
+        if (!$messages = $bbpm->get_thread_messages($action)) {
+            bb_die(__('The message does not exists.', 'bbpm'));
             exit;
         }
         

@@ -24,8 +24,8 @@
         <tr<?php bbpm_thread_alt_class(); ?>>
 	        <td>
 	        
-	        <h4><a href="<?php bbpm_pm_link($bbpm->the_pm['id']); ?>"><?php echo esc_html( $bbpm->the_pm['title'] ); ?></a></h4>
-	        <?php if ($label = $bbpm->get_thread_label())
+	        <h4><a href="<?php bbpm_pm_link($bbpm->the_pm['id']); ?>"><?php bbpm_thread_title(); ?></a></h4>
+	        <?php if ($label = bbpm_thread_label())
 	            echo '<span class="label label-warning">' . $label . '</span>'; 
 	        ?>    
 	        </td>

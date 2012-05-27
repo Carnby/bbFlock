@@ -1,7 +1,7 @@
 <?php bb_get_header(); ?>
 
 <div class="page-header">
-    <h2><?php echo esc_html($bbpm->get_thread_title($action)); ?></h2>
+    <h2><?php bbpm_thread_title(); ?></h2>
 </div>
 
 <?php
