@@ -239,11 +239,13 @@ class bbPM {
 
 		global $bbdb;
 
+        $sender_id = (int) bb_get_current_user_info('ID');
+
 		$pm = array(
-			'pm_from'   => (int)bb_get_current_user_info( 'ID' ),
-			'pm_text'   => apply_filters( 'pre_post', $message, 0, 0 ),
-			'sent_on'   => bb_current_time( 'timestamp' ),
-			'pm_thread' => $bbdb->get_var( 'SELECT MAX( `pm_thread` ) FROM `' . $bbdb->bbpm . '`' ) + 1
+			'pm_from'   => $sender_id,
+			'pm_text'   => apply_filters('pre_post', $message, 0, 0),
+			'sent_on'   => bb_current_time('timestamp'),
+			'pm_thread' => $bbdb->get_var('SELECT MAX( `pm_thread` ) FROM `' . $bbdb->bbpm . '`') + 1
 		);
 
 		$bbdb->insert( $bbdb->bbpm, $pm );
@@ -251,27 +253,30 @@ class bbPM {
 		$msg = new bbPM_Message( $bbdb->insert_id );
 
 		bbpm_update_meta( $pm['pm_thread'], 'title', $title );
-		//bbpm_update_meta( $pm['pm_thread'], 'to', bb_get_current_user_info( 'ID' ) == $id_reciever ? ',' . $id_reciever . ',' : ',' . bb_get_current_user_info( 'ID' ) . ',' . $id_reciever . ',' );
 
-        $bbdb->insert($bbdb->bbpm_thread_members, array('user_id' => $id_reciever, 'thread_id' => $pm['pm_thread'], 'added_on' => $pm['sent_on']));
-        $bbdb->insert($bbdb->bbpm_thread_members, array('user_id' => (int) bb_get_current_user_info('ID'), 'thread_id' => $pm['pm_thread'], 'added_on' => $pm['sent_on']));
+        $bbdb->insert($bbdb->bbpm_thread_members, 
+            array('user_id' => $id_reciever, 'thread_id' => $pm['pm_thread'], 'added_on' => $pm['sent_on'])
+        );
         
-
-		bbpm_cache_delete( $id_reciever);
-		bbpm_cache_delete( bb_get_current_user_info( 'ID' ), 'bbpm-user-messages' );
+        $bbdb->insert($bbdb->bbpm_thread_members, 
+            array('user_id' => $sender_id, 'thread_id' => $pm['pm_thread'], 'added_on' => $pm['sent_on'], 'last_viewed' => bb_current_time('timestamp'), 'last_read_message_id' => $msg->ID)
+        );
+        
+		bbpm_cache_delete($id_reciever);
+		bbpm_cache_delete($sender_id, 'bbpm-user-messages');
 		
 
-		if ( $this->settings['email_new'] && !bb_get_usermeta( $id_reciever, 'bbpm_emailme' ) && bb_get_current_user_info( 'ID' ) != $id_reciever )
+		if ( $this->settings['email_new'] && !bb_get_usermeta( $id_reciever, 'bbpm_emailme' ) && $sender_id != $id_reciever )
 			bb_mail( bb_get_user_email( $id_reciever ),
 				sprintf(
 					__( '%1$s has sent you a private message on %2$s: "%3$s"', 'bbpm' ),
-					get_user_name( bb_get_current_user_info( 'ID' ) ),
+					get_user_name( $sender_id ),
 					bb_get_option( 'name' ),
 					$title
 				), sprintf(
 					__( "Hello, %1\$s!\n\n%2\$s has sent you a private message entitled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s", 'bbpm' ),
 					get_user_name( $id_reciever ),
-					get_user_name( bb_get_current_user_info( 'ID' ) ),
+					get_user_name( $sender_id ),
 					$title,
 					bb_get_option( 'name' ),
 					$msg->read_link
@@ -279,7 +284,6 @@ class bbPM {
 			);
 
 		bbpm_update_meta( $pm['pm_thread'], 'last_message', $msg->ID );
-		bb_update_usermeta( bb_get_current_user_info( 'ID' ), 'bbpm_last_read_' . $pm['pm_thread'], $msg->ID );
 
 		do_action( 'bbpm_new', $msg );
 		do_action( 'bbpm_send', $msg );
@@ -296,17 +300,16 @@ class bbPM {
 	 * @global BPDB_Multi sending the reply
 	 * @since 0.1-alpha6
 	 */
-	function send_reply( $reply_to, $message ) {
+	function send_reply( $thread_id, $message ) {
 		global $bbdb;
 
-		$reply_to = new bbPM_Message( $reply_to );
-
+        $thread_id = (int) $thread_id;
+        $user_id = (int) bb_get_current_user_info('ID');
 		$pm = array(
-			'pm_from'      => (int)bb_get_current_user_info( 'ID' ),
+			'pm_from'      => $user_id,
 			'pm_text'      => apply_filters( 'pre_post', $message, 0, 0 ),
 			'sent_on'      => bb_current_time( 'timestamp' ),
-			'pm_thread'    => (int)$reply_to->thread,
-			'reply_to'     => (int)$reply_to->ID
+			'pm_thread'    => $thread_id
 		);
 
 		$bbdb->insert( $bbdb->bbpm, $pm );
@@ -319,7 +322,7 @@ class bbPM {
 			$to = $this->get_thread_members( $pm['pm_thread'] );
 
 			foreach ( $to as $recipient ) {
-				if ( $recipient != bb_get_current_user_info( 'ID' ) && !bb_get_usermeta( $recipient, 'bbpm_emailme' ) )
+				if ( $recipient != $user_id && !bb_get_usermeta( $recipient, 'bbpm_emailme' ) )
 					bb_mail( bb_get_user_email( $recipient ),
 						sprintf(
 							__( '%1$s has sent you a private message on %2$s: "%3$s"', 'bbpm' ),
@@ -329,7 +332,7 @@ class bbPM {
 						), $this->settings['email_message'] ? sprintf(
 							__( "Hello, %1\$s!\n\n%2\$s has sent you a private message entitled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s\n\nDo NOT reply to this message.\n\nThe contents of the message are:\n\n%6\$s", 'bbpm' ),
 							get_user_name( $recipient ),
-							get_user_name( bb_get_current_user_info( 'ID' ) ),
+							get_user_name( $user_id ),
 							$this->get_thread_title( $msg->thread ),
 							bb_get_option( 'name' ),
 							$msg->read_link,
@@ -337,7 +340,7 @@ class bbPM {
 						) : sprintf(
 							__( "Hello, %1\$s!\n\n%2\$s has sent you a private message entitled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s", 'bbpm' ),
 							get_user_name( $recipient ),
-							get_user_name( bb_get_current_user_info( 'ID' ) ),
+							get_user_name( $user_id ),
 							$this->get_thread_title( $msg->thread ),
 							bb_get_option( 'name' ),
 							$msg->read_link
@@ -346,14 +349,16 @@ class bbPM {
 			}
 		}
 
-		bb_update_usermeta( bb_get_current_user_info( 'ID' ), 'bbpm_last_read_' . $pm['pm_thread'], $msg->ID );
+        $bbdb->update($bbdb->bbpm_thread_members, 
+            array('last_viewed' => bb_current_time('timestamp'), 'last_read_message_id' => $msg->ID),
+            array('thread_id' => $thread_id, 'user_id' => $user_id)
+        );
 
 		do_action( 'bbpm_reply', $msg );
 		do_action( 'bbpm_send', $msg );
 
 		return $msg->read_link;
 	}
-
 
 	/**
 	 * Get the messages in a private messaging thread
@@ -382,8 +387,6 @@ class bbPM {
 		$thread = array();
 		foreach ($thread_posts as &$tp)
 		    $thread[] = new bbPM_Message((int) $tp->ID);
-		    
-		
 
 		return $thread;
 	}
@@ -496,7 +499,6 @@ class bbPM {
 		if ( !$msg->exists )
 			return false;
 
-		return $this->can_read_thread( $msg->thread, $user_id );
 	}
 
 	/**
@@ -518,7 +520,6 @@ class bbPM {
 			$user_id = bb_get_current_user_info( 'ID' );
 
         return (bool) $bbdb->get_var("SELECT ID FROM {$bbdb->bbpm_thread_members} WHERE thread_id = '{$thread_id}' AND user_id = '{$user_id}'");
-		//return strpos( $this->get_thread_meta( $ID, 'to' ), ',' . $user_id . ',' ) !== false;
 	}
 
 	/**
@@ -701,8 +702,11 @@ class bbPM {
 	 * @param int $thread_ID The ID of the thread
 	 * @return int The ID of the last message read by the user, or 0 if the user has never read the thread
 	 */
-	function get_last_read( $thread_ID ) {
-		return (int)bb_get_usermeta( bb_get_current_user_info( 'ID' ), 'bbpm_last_read_' . (int)$thread_ID );
+	function get_last_read($thread_id) {
+		global $bbdb;
+		$thread_id = (int) $thread_id;
+		$user_id = (int) bb_get_current_user_info('ID');
+		return (int) $bbdb->get_var("SELECT last_read_message_id FROM {$bbdb->bbpm_thread_members} WHERE thread_id = '{$thread_id}' AND user_id = '{$user_id}';");
 	}
 
 	/**
@@ -812,7 +816,7 @@ class bbPM {
 		$result = __( 'Cleaning up bbPM messages&hellip; ', 'bbpm' );		
 
 		// Get all of the PM thread member lists
-		$members = $bbdb->get_results( $bbdb->prepare( 'SELECT `object_id`,`meta_value` FROM `' . $bbdb->bbpm_meta . '` WHERE `meta_key` = %s', 'to' ) );
+		$members = $bbdb->get_results( $bbdb->prepare( 'SELECT `bbpm_id`,`meta_value` FROM `' . $bbdb->bbpm_meta . '` WHERE `meta_key` = %s', 'to' ) );
 		$users = array();
 
 		foreach ( $members as $thread ) {
@@ -857,7 +861,8 @@ class bbPM {
 			    bbpm_cache_flush( 'bbpm-thread-' . $ID );
 
 			$bbdb->query( 'DELETE FROM `' . $bbdb->bbpm . '` WHERE `pm_thread` IN (' . implode( ',', $threads_delete ) . ')' );
-			$bbdb->query( 'DELETE FROM `' . $bbdb->bbpm_meta . '` WHERE `object_id`  IN (' . implode( ',', $threads_delete ) . ')' );
+			$bbdb->query( 'DELETE FROM `' . $bbdb->bbpm_thread_members . '` WHERE `thread_id` IN (' . implode( ',', $threads_delete ) . ')' );
+			$bbdb->query( 'DELETE FROM `' . $bbdb->bbpm_meta . '` WHERE `bbpm_id`  IN (' . implode( ',', $threads_delete ) . ')' );
 
 			$result .= sprintf( __ngettext( 'Deleted one thread. ', 'Deleted %s threads. ', count( $threads_delete ), 'bbpm' ), bb_number_format_i18n( count( $threads_delete ) ) );
 		}

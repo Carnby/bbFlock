@@ -28,11 +28,10 @@ function bbpm_install() {
 	
     $queries = array();
     $queries['bbpm_meta'] = "CREATE TABLE {$bbdb->bbpm_meta} (
-      `meta_id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `meta_id` bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
       `bbpm_id` bigint(20) NOT NULL DEFAULT '0',
       `meta_key` varchar(255) DEFAULT NULL,
       `meta_value` longtext,
-      PRIMARY KEY (`meta_id`),
       KEY `bbpm_id` (`bbpm_id`),
       KEY `meta_key` (`meta_key`)
     );";
@@ -43,9 +42,7 @@ function bbpm_install() {
         `pm_from` BIGINT UNSIGNED NOT NULL,
         `pm_text` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
         `sent_on` INT( 10 ) NOT NULL,
-        `reply_to` BIGINT UNSIGNED DEFAULT NULL,
         KEY ( `pm_from` ),
-        KEY ( `reply_to` ),
         KEY ( `pm_thread` )
     );";
     
@@ -54,6 +51,8 @@ function bbpm_install() {
         `thread_id` BIGINT UNSIGNED NOT NULL,
         `user_id` BIGINT UNSIGNED NOT NULL,
         `added_on` INT( 10 ) NOT NULL,
+        `last_viewed` INT( 10 ) NULL,
+        `last_read_message_id` INT( 10 ) NULL,
         KEY ( `thread_id` ),
         KEY ( `user_id` )
     );";

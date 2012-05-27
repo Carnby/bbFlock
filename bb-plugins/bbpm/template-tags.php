@@ -100,7 +100,7 @@ function bbpm_pm_members() {
         <form class="form form-inline" action="<?php bbpm_form_handler_url(); ?>" method="post">
         <p>
         <input type="text" id="user_name" name="user_name"/>
-        <input type="hidden" id="pm_thread" name="pm_thread" value="<?php echo $action; ?>"/>
+        <input type="hidden" id="thread_id" name="thread_id" value="<?php echo $action; ?>"/>
         <?php bb_nonce_field( 'bbpm-add-member-' . $action ); ?>
         <input class="btn btn-primary" type="submit" value="<?php _e( 'Add &raquo;' ); ?>"/>
         </p>

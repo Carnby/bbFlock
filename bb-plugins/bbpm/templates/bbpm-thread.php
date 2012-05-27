@@ -43,20 +43,19 @@ foreach ( $messages as $i => $the_pm ) { ?>
     <h2><?php _e('Reply', 'bbpm'); ?></h2>
     
     <form class="postform pm-form form form-vertical" method="post" action="<?php bbpm_form_handler_url(); ?>">
-
-    <div class="controls">
-        <label class="control-label" for="message"><?php _e('Message:', 'bbom'); ?></label>
         <div class="controls">
-            <textarea name="message" cols="50" rows="12" id="message" tabindex="3" class="span10"></textarea>
+            <label class="control-label" for="message"><?php _e('Message:', 'bbom'); ?></label>
+            <div class="controls">
+                <textarea name="message" cols="50" rows="12" id="message" tabindex="3" class="span10"></textarea>
+            </div>
         </div>
-    </div>
 
-    <div class="form-actions">
-        <input class="btn btn-primary" type="submit" id="postformsub" name="Submit" value="<?php echo attribute_escape(__('Send Message &raquo;', 'bbpm')); ?>" tabindex="4" />
-    </div>
-    
-    <?php bb_nonce_field( 'bbpm-reply-' . $the_pm->ID ); ?>
-    <input type="hidden" value="<?php echo $the_pm->ID; ?>" name="reply_to" id="reply_to" />
+        <div class="form-actions">
+            <input class="btn btn-primary" type="submit" id="postformsub" name="Submit" value="<?php echo attribute_escape(__('Send Message &raquo;', 'bbpm')); ?>" tabindex="4" />
+        </div>
+        
+        <?php bb_nonce_field( 'bbpm-reply-' . $action ); ?>
+        <input type="hidden" value="<?php echo $action; ?>" name="thread_id" id="thread_id" />
     </form>
     
     <?php do_action('post_post_form'); ?>
