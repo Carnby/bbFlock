@@ -305,6 +305,9 @@ class bbPM {
 		global $bbdb;
 
         $thread_id = (int) $thread_id;
+        
+        $thread = $this->retrieve_thread($thread_id);
+        
         $user_id = (int) bb_get_current_user_info('ID');
 		$pm = array(
 			'user_id' => $user_id,
@@ -347,12 +350,12 @@ class bbPM {
 							__( '%1$s has sent you a private message on %2$s: "%3$s"', 'bbpm' ),
 							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							bb_get_option( 'name' ),
-							$this->get_thread_title( $msg->thread )
+							$thread->title
 						), $this->settings['email_message'] ? sprintf(
 							__( "Hello, %1\$s!\n\n%2\$s has sent you a private message entitled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s\n\nDo NOT reply to this message.\n\nThe contents of the message are:\n\n%6\$s", 'bbpm' ),
 							get_user_name( $recipient ),
 							get_user_name( $user_id ),
-							$this->get_thread_title( $msg->thread ),
+							$thread->title,
 							bb_get_option( 'name' ),
 							$msg->read_link,
 							strip_tags( $msg->text )
@@ -360,7 +363,7 @@ class bbPM {
 							__( "Hello, %1\$s!\n\n%2\$s has sent you a private message entitled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s", 'bbpm' ),
 							get_user_name( $recipient ),
 							get_user_name( $user_id ),
-							$this->get_thread_title( $msg->thread ),
+							$thread->title,
 							bb_get_option( 'name' ),
 							$msg->read_link
 						)
@@ -633,12 +636,12 @@ class bbPM {
 							__( '%1$s has added you to a conversation on %2$s: "%3$s"', 'bbpm' ),
 							get_user_name( bb_get_current_user_info( 'ID' ) ),
 							bb_get_option( 'name' ),
-							$this->get_thread_title( $thread_id )
+							$thread->title
 						), sprintf(
 							__( "Hello, %1\$s!\n\n%2\$s has added you to a private message conversation titled \"%3\$s\" on %4\$s!\n\nTo read it now, go to the following address:\n\n%5\$s", 'bbpm' ),
 							get_user_name( $user_id ),
 							get_user_name( bb_get_current_user_info( 'ID' ) ),
-							$this->get_thread_title( $thread_id ),
+							$thread->title,
 							bb_get_option( 'name' ),
 							bb_get_option( 'mod_rewrite' ) ? bb_get_uri( 'pm/' . $thread_id ) : bb_get_uri( $this->location, array( 'pm' => $thread_id ) )
 						)
