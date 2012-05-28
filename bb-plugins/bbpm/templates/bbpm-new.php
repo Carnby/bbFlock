@@ -8,14 +8,14 @@
 <fieldset>
 
     <div class="control-group">
-	    <label for="title"><?php _e( 'Message title: (be brief and descriptive)', 'bbpm' ); ?></label>
+	    <label for="title"><i class="icon icon-envelope"></i> <?php _e( 'Message title: (be brief and descriptive)', 'bbpm' ); ?></label>
 	    <div class="controls">    
 	        <input name="title" type="text" id="title" class="input-xlarge" size="50" maxlength="80" tabindex="1" />
 	    </div>
     </div>
 
     <div class="control-group">
-    	<label for="to"><?php _e( 'Send to:', 'bbpm' ); ?></label>
+    	<label for="to"><i class="icon icon-user"></i> <?php _e( 'Send to:', 'bbpm' ); ?></label>
         <div class="controls">    
     	    <input name="to" class="input-medium" type="text" id="to" size="50" maxlength="80" tabindex="2"<?php echo ' value="' . esc_attr(urldecode($recipient)) . '"'; ?> />
         </div>
@@ -23,7 +23,7 @@
 
 	
     <div class="control-group">
-    	<label for="message"><?php _e( 'Content:', 'bbpm' ); ?></label>
+    	<label for="message"><i class="icon icon-pencil"></i>  <?php _e( 'Content:', 'bbpm' ); ?></label>
         <div class="controls">
     	    <textarea class="span10" name="message" cols="50" rows="8" id="message" tabindex="3"></textarea>
         </div>
@@ -31,7 +31,7 @@
 	
 
     <div class="form-actions">
-	    <input class="btn btn-primary" type="submit" id="postformsub" name="Submit" value="<?php echo attribute_escape( __( 'Send Message &raquo;', 'bbpm' ) ); ?>" tabindex="4" />
+        <button class="btn btn-primary" type="submit" id="postformsub" name="Submit"><i class="icon icon-ok icon-white"></i> <?php echo attribute_escape( __( 'Send Message &raquo;', 'bbpm' ) ); ?></button>
 	</div>
 
 </fieldset>
