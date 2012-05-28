@@ -15,12 +15,6 @@ class bbPM {
 	var $settings;
 
 	/**
-	 * @var string The current bbPM version
-	 * @since 0.1-alpha1
-	 */
-	var $version;
-
-	/**
 	 * @var array The current list of bbPM threads
 	 * @since 0.1-alpha6
 	 * @access private
@@ -54,27 +48,12 @@ class bbPM {
 
 		add_filter( 'get_profile_info_keys', array( &$this, 'profile_edit_filter' ), 9, 2 );
 
-		add_action( 'bb_recount_list', array( &$this, 'add_recount' ) );
-
 		$this->current_pm = array();
 
 		$this->settings = bb_get_option( 'bbpm_settings' );
-		$this->version = $this->settings ? $this->settings['version'] : false;
-
-		if ( !$this->version || $this->version != '1.0.2' )
-			$this->update();
 			
 		$this->location = 'bb-plugins/bbpm/privatemessages.php';
 		$this->_loop_started = false;
-	}
-
-	/**
-	 * @access private
-	 */
-	function update() {
-	    bbpm_install();
-	    $this->settings['version'] = '1.0.2';
-	    bb_update_option('bbpm_settings', $this->settings);
 	}
 	
 	/**
@@ -149,28 +128,21 @@ class bbPM {
 	 * @param int $end The ending index of the PM threads to get - Must be greater than $start
 	 * @return bool True if the next private message could be found, false otherwise
 	 */
-	function have_pm( $start = 0, $end = 0, $cache_unread_ids = true ) {
-		$start = (int)$start;
-		$end   = (int)$end;
+	function have_pm( $start = 0, $cache_unread_ids = true ) {
+		$start = (int) $start;
 
 		if ( $start < 0 )
 			$start = 0;
 
-		if ( $end < 1 )
-			$end = 2147483647;
-
-		if ( $start > $end )
-			return false;
-
-		$end -= $start;
+		$limit = $this->threads_per_page();
 
         $user_id = (int) bb_get_current_user_info('ID');
-        $key = $start . '_' . $end;
+        $key = $start . '_' . $limit;
 
 		if ( !isset( $this->current_pm[$key] ) ) {
 			global $bbdb;
 
-			$threads = (array) $bbdb->get_col("SELECT thread_id FROM {$bbdb->bbpm_thread_members} WHERE user_id = '{$user_id}' AND deleted = 0 ORDER BY last_message_id DESC LIMIT {$start}, {$end}");
+			$threads = (array) $bbdb->get_col("SELECT thread_id FROM {$bbdb->bbpm_thread_members} WHERE user_id = '{$user_id}' AND deleted = 0 ORDER BY last_message_id DESC LIMIT {$start}, {$limit}");
 				
 			$this->cache_threads( $threads );
 
@@ -224,9 +196,9 @@ class bbPM {
 		return false;
 	}
 	
-	function reset_loop($start, $end) {
-	    if (isset($this->current_pm[$start . '_' . $end])) {
-	        $this->the_pm = reset($this->current_pm[$start . '_' . $end]);
+	function reset_loop($start, $limit) {
+	    if (isset($this->current_pm[$start . '_' . $limit])) {
+	        $this->the_pm = reset($this->current_pm[$start . '_' . $limit]);
 	        $this->_loop_started = false;
 			return true;
 	    } 
@@ -257,11 +229,11 @@ class bbPM {
 		$thread = array(
 		    'title' => $title,
 		    'created_on' => bb_current_time('timestamp'),
-		     'user_id' => $sender_id,
-		     'updated_on' => bb_current_time('timestamp'),
-		     'message_count' => 1,
-		     'first_message_id' => 0,
-		     'last_message_id' => 0
+		    'user_id' => $sender_id,
+		    'updated_on' => bb_current_time('timestamp'),
+		    'message_count' => 1,
+		    'first_message_id' => 0,
+		    'last_message_id' => 0
 		);
 
         $bbdb->insert($bbdb->bbpm_threads, $thread);
@@ -520,7 +492,7 @@ class bbPM {
 	 * @return array The members of the thread
 	 * @uses bbPM::get_thread_meta() Getting the thread's member list
 	 */
-	function get_thread_members( $thread_id ) {
+	function get_thread_members($thread_id) {
 	    global $bbdb;
 	    
 	    $thread_id = (int) $thread_id;
@@ -710,14 +682,6 @@ class bbPM {
 
 
 	/**
-	 * @access private
-	 */
-	function post_author_sections_add( $sections ) {
-		$sections[] = 'bbpm_pm_user';
-		return $sections;
-	}
-
-	/**
 	 * Get the URL of the PM list page
 	 *
 	 * @since 0.1-alpha1
@@ -806,16 +770,6 @@ class bbPM {
 		return true;
 	}
 
-
-	/**
-	 * @since 0.1-alpha6
-	 */
-	function thread_freshness() {
-		$the_pm = new bbPM_Message( $this->the_pm['last_message'] );
-
-		echo apply_filters( 'bbpm_freshness', bb_since( $the_pm->date ), $the_pm->date );
-	}
-
 	/**
 	 * @since 0.1-alpha6
 	 */
@@ -827,113 +781,6 @@ class bbPM {
 		return bb_nonce_url(BB_CORE_PLUGIN_URL . basename( dirname( __FILE__ ) ) . '/pm.php?unsubscribe=' . $ID, 'bbpm-unsubscribe-' . $ID);
 	}
 
-	/**
-	 * @since 1.0.0
-	 */
-	function get_thread_label() {
-	    if ($this->the_pm && $this->the_pm['last_message'] != $this->get_last_read($this->the_pm['id']))
-	        return __( 'New', 'bbpm' );
-	    return false;
-	}
-	 
-	/**
-	 * @since 1.0.0
-	 */
-    function get_thread_member_links($ID) {
-        $links = array();
-        
-        foreach ((array) $this->get_thread_members($ID) as $member) {
-	        $user = bb_get_user((int)$member);
-            $links[] = sprintf('<a href="%s">%s</a>', get_user_profile_link($user->ID), apply_filters('get_post_author', $user->user_login));
-        }
-        
-        return $links;
-    }
-
-
-	/**
-	 * @see bbPM::recount()
-	 * @access private
-	 * @since 0.1-alpha7
-	 */
-	function add_recount() {
-		global $recount_list;
-
-		$recount_list[] = array( 'bbpm', __( 'Remove deleted users from bbPM threads', 'bbpm' ), array( &$this, 'recount' ) );
-	}
-
-	/**
-	 * Delete unused bbPM data
-	 *
-	 * So far, the actions used are:
-	 *
-	 * - Remove users that have been deleted from thread member lists
-	 * - Delete threads with no users (this only deletes threads if they had deleted users in them, otherwise threads should be deleted automatically)
-	 *
-	 * @todo Optimize this (maybe ask _ck_)
-	 * @since 0.1-alpha7
-	 * @return string A description of the actions used
-	 * @global BPDB_Multi Get, set, and delete as needed
-	 */
-	function recount() {
-		global $bbdb;
-
-		$result = __( 'Cleaning up bbPM messages&hellip; ', 'bbpm' );		
-
-		// Get all of the PM thread member lists
-		$members = $bbdb->get_results( $bbdb->prepare( 'SELECT `bbpm_id`,`meta_value` FROM `' . $bbdb->bbpm_meta . '` WHERE `meta_key` = %s', 'to' ) );
-		$users = array();
-
-		foreach ( $members as $thread ) {
-			$member = array_slice( explode( ',', $thread->meta_value ), 1, -1 );
-			foreach ( $member as $user ) {
-				if ( !isset( $users[$user] ) )
-					$users[$user] = true;
-			}
-		}
-
-		$users = array_keys( $users );
-
-		bb_cache_users( $users );
-
-		$users_noexist = array();
-
-		foreach ( $users as $user ) {
-			if ( !bb_get_user( $user ) ) {
-				$users_noexist[] = ',' . $user . ',';
-			}
-		}
-
-		$threads_delete = array();
-
-		if ( $users_noexist ) {
-			foreach ( $members as $thread ) {
-				if ( $thread->meta_value != $_members = str_replace( $users_noexist, ',', $thread->meta_value ) ) {
-					if ( $_members == ',' ) {
-						$threads_delete[] = $thread->object_id;
-					} else {
-						bbpm_update_meta( $thread->object_id, 'to', $_members );
-						bbpm_cache_set( 'to', $_members, 'bbpm-thread-' . $thread->object_id );
-					}
-				}
-			}
-
-			$result .= sprintf( __ngettext( 'Removed one nonexistant user from bbPM threads.', 'Removed %s nonexistant users from bbPM threads.', count( $users_noexist ), 'bbpm' ), bb_number_format_i18n( count( $users_noexist ) ) );
-		}
-
-		if ( count( $threads_delete ) ) {
-			foreach ( $threads_delete as $ID )
-			    bbpm_cache_flush( 'bbpm-thread-' . $ID );
-
-			$bbdb->query( 'DELETE FROM `' . $bbdb->bbpm . '` WHERE `pm_thread` IN (' . implode( ',', $threads_delete ) . ')' );
-			$bbdb->query( 'DELETE FROM `' . $bbdb->bbpm_thread_members . '` WHERE `thread_id` IN (' . implode( ',', $threads_delete ) . ')' );
-			$bbdb->query( 'DELETE FROM `' . $bbdb->bbpm_meta . '` WHERE `bbpm_id`  IN (' . implode( ',', $threads_delete ) . ')' );
-
-			$result .= sprintf( __ngettext( 'Deleted one thread. ', 'Deleted %s threads. ', count( $threads_delete ), 'bbpm' ), bb_number_format_i18n( count( $threads_delete ) ) );
-		}
-
-		return $result;
-	}
-
+	
 }
 
