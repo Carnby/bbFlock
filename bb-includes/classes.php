@@ -369,8 +369,12 @@ class BB_Query {
 					$where .= " AND 0 /* No such tag */";
 			endif;
 
-			if ( is_numeric($q['favorites']) && $f_user = bb_get_user( $q['favorites'] ) )
-				$where .= $this->parse_value( 't.topic_id', $f_user->favorites );
+			if ( is_numeric($q['favorites']) && $f_user = bb_get_user( $q['favorites'] ) ) {
+				if (!empty($f_user->favorites))
+				    $where .= $this->parse_value( 't.topic_id', $f_user->favorites );
+				else 
+				    $where .= ' AND 0 ';
+			} 
 		endif; // !_part_of_post_query
 
 		if ( $q['topic_title'] )
@@ -506,8 +510,12 @@ class BB_Query {
 					$where .= " AND 0 /* No such tag */";
 			endif;
 
-			if ( is_numeric($q['favorites']) && $f_user = bb_get_user( $q['favorites'] ) )
-				$where .= $this->parse_value( 'p.topic_id', $f_user->favorites );
+			if ( is_numeric($q['favorites']) && $f_user = bb_get_user( $q['favorites'] ) ) {
+				if (!empty($f_user->favorites))
+				    $where .= $this->parse_value( 'p.topic_id', $f_user->favorites );
+				else 
+				    $where .= ' AND 0 ';
+			}
 		endif; // !_part_of_topic_query
 
 		if ( $q['post_text'] ) :
