@@ -17,10 +17,11 @@ class bbdb_base {
 	var $prefix;
 
 	// Our tables
-	var $tables = array( 'forums', 'forummeta', 'posts', 'topics', 'topicmeta', 'users', 'usermeta', 'tags', 'tagged' );
+	var $tables = array( 'forums', 'forummeta', 'posts', 'postmeta', 'topics', 'topicmeta', 'users', 'usermeta', 'tags', 'tagged' );
 	var $forums;
 	var $forummeta;
 	var $posts;
+	var $postmeta;
 	var $topics;
 	var $topicmeta;
 	var $users;

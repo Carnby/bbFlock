@@ -42,7 +42,7 @@ $bb_queries['forummeta'] = "CREATE TABLE $bbdb->forummeta (
   meta_key varchar(255) default NULL,
   meta_value longtext,
   PRIMARY KEY  (meta_id),
-  KEY topic_id (forum_id),
+  KEY forum_id (forum_id),
   KEY meta_key (meta_key)
 ) $charset_collate;";
 
@@ -56,12 +56,24 @@ $bb_queries['posts'] = "CREATE TABLE $bbdb->posts (
   poster_ip varchar(15) NOT NULL default '',
   post_status tinyint(1) NOT NULL default '0',
   post_position bigint(20) NOT NULL default '0',
+  edited_by_id int(10) NOT NULL default '0',
+  edit_time datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (post_id),
   KEY topic_time (topic_id,post_time),
   KEY poster_time (poster_id,post_time),
   KEY post_time (post_time),
   FULLTEXT KEY post_text (post_text)
 ) ENGINE = MYISAM $charset_collate;";
+
+$bb_queries['postmeta'] = "CREATE TABLE $bbdb->postmeta (
+  meta_id bigint(20) NOT NULL auto_increment,
+  post_id bigint(20) NOT NULL default '0',
+  meta_key varchar(255) default NULL,
+  meta_value longtext,
+  PRIMARY KEY  (meta_id),
+  KEY post_id (post_id),
+  KEY meta_key (meta_key)
+) $charset_collate;";
 
 $bb_queries['topics'] = "CREATE TABLE $bbdb->topics (
   topic_id bigint(20) NOT NULL auto_increment,
@@ -106,6 +118,8 @@ $bb_queries['users'] = "CREATE TABLE $bbdb->users (
   user_url varchar(100) NOT NULL default '',
   user_registered datetime NOT NULL default '0000-00-00 00:00:00',
   user_status int(11) NOT NULL default '0',
+  user_topic_count int(11) NOT NULL default '0',
+  user_post_count int(11) NOT NULL default '0',
   display_name varchar(250) NOT NULL default '',
   PRIMARY KEY  (ID),
   UNIQUE KEY user_login (user_login),
