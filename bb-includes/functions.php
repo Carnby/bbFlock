@@ -273,7 +273,8 @@ function bb_insert_topic( $args = null ) {
 	} else {
 		$bbdb->insert( $bbdb->topics, compact( $fields ) );
 		$topic_id = $bbdb->insert_id;
-		$bbdb->query( $bbdb->prepare( "UPDATE $bbdb->forums SET topics = topics + 1 WHERE forum_id = %d", $forum_id ) );
+		$bbdb->query($bbdb->prepare( "UPDATE $bbdb->forums SET topics = topics + 1 WHERE forum_id = %d", $forum_id));
+		$bbdb->query($bbdb->prepare("UPDATE $bbdb->users SET user_topic_count = user_topic_count + 1 WHERE ID = %d", $topic_poster));
 		$bb_cache->flush_many( 'forum', $forum_id );
 		do_action( 'bb_new_topic', $topic_id );
 	}
@@ -313,13 +314,21 @@ function bb_delete_topic( $topic_id, $new_status = 0 ) {
 			add_filter('get_thread_post_ids_where', 'no_where');
 		$post_ids = get_thread_post_ids( $topic_id );
 		$post_ids['post'] = array_reverse((array) $post_ids['post']);
+				
 		foreach ( $post_ids['post'] as $post_id )
 			_bb_delete_post( $post_id, $new_status );
 
 		$ids = array_unique((array) $post_ids['poster']);
-		foreach ( $ids as $id )
-			if ( $user = bb_get_user( $id ) )
+		foreach ( $ids as $id ) {
+			if ( $user = bb_get_user( $id ) ) {
 				bb_update_usermeta( $user->ID, $bbdb->prefix . 'topics_replied', ( $old_status ? $user->topics_replied + 1 : $user->topics_replied - 1 ) );
+				$post_count = (int) $bbdb->get_var("SELECT COUNT(post_id) FROM $bbdb->posts WHERE topic_id = '$topic_id' AND poster_id = '$id'");
+				if ($post_count != 0) {
+				    $operation = $old_status ? '+' : '-';
+				    $bbdb->query("UPDATE $bbdb->users SET user_post_count = user_post_count $operation $post_count WHERE ID = '{$topic->topic_poster}'");
+				}
+			}
+		}
 
 		if ( $ids = $bbdb->get_col( "SELECT user_id, meta_value FROM $bbdb->usermeta WHERE meta_key = 'favorites' and FIND_IN_SET('$topic_id', meta_value) > 0" ) )
 			foreach ( $ids as $id )
@@ -331,6 +340,8 @@ function bb_delete_topic( $topic_id, $new_status = 0 ) {
 			$bbdb->query( $bbdb->prepare(
 				"UPDATE $bbdb->forums SET topics = topics - 1, posts = posts - %d WHERE forum_id = %d", $topic->topic->posts, $topic->forum_id
 			) );
+		
+			$bbdb->query($bbdb->prepare("UPDATE $bbdb->users SET user_topic_count = user_topic_count - 1 WHERE ID = %d", $topic->topic_poster));
 		} else {
 			$bbdb->update( $bbdb->topics, array( 'topic_status' => $new_status ), compact( 'topic_id' ) );
 			$topic_posts = (int) $bbdb->get_var( $bbdb->prepare(
@@ -343,6 +354,7 @@ function bb_delete_topic( $topic_id, $new_status = 0 ) {
 			$bbdb->query( $bbdb->prepare(
 				"UPDATE $bbdb->forums SET topics = topics + 1, posts = posts + %d WHERE forum_id = %d", $topic_posts, $topic->forum_id
 			) );
+			$bbdb->query($bbdb->prepare("UPDATE $bbdb->users SET user_topic_count = user_topic_count + 1 WHERE ID = %d", $topic->topic_poster));
 			$bbdb->update( $bbdb->topics, compact( 'topic_posts' ), compact( 'topic_id' ) );
 			bb_topic_set_last_post( $topic_id );
 			update_post_positions( $topic_id );
@@ -702,7 +714,9 @@ function bb_insert_post( $args = null ) {
 			$topic_last_poster = $poster_id;
 			$topic_last_poster_name = $user->user_login;
 
-			$bbdb->query( $bbdb->prepare( "UPDATE $bbdb->forums SET posts = posts + 1 WHERE forum_id = %d", $topic->forum_id ) );
+			$bbdb->query($bbdb->prepare("UPDATE $bbdb->forums SET posts = posts + 1 WHERE forum_id = %d", $topic->forum_id));
+			$bbdb->query($bbdb->prepare("UPDATE $bbdb->users SET user_post_count = user_post_count + 1 WHERE ID = %d", $current_user_id));
+			
 			$bbdb->update(
 				$bbdb->topics,
 				compact( 'topic_time', 'topic_last_poster', 'topic_last_poster_name', 'topic_last_post_id', 'topic_posts' ),
@@ -782,9 +796,11 @@ function bb_delete_post( $post_id, $new_status = 0 ) {
 		if ( 0 == $old_status ) {
 			bb_update_topicmeta( $topic_id, 'deleted_posts', $topic->deleted_posts + 1 );
 			$bbdb->query( $bbdb->prepare( "UPDATE $bbdb->forums SET posts = posts - 1 WHERE forum_id = %d", $topic->forum_id ) );
+			$bbdb->query( $bbdb->prepare( "UPDATE $bbdb->users SET user_post_count = user_post_count - 1 WHERE ID = %d", $bb_post->poster_id ) );
 		} else if ( 0 == $new_status ) {
 			bb_update_topicmeta( $topic_id, 'deleted_posts', $topic->deleted_posts - 1 );
 			$bbdb->query( $bbdb->prepare( "UPDATE $bbdb->forums SET posts = posts + 1 WHERE forum_id = %d", $topic->forum_id ) );
+			$bbdb->query( $bbdb->prepare( "UPDATE $bbdb->users SET user_post_count = user_post_count + 1 WHERE ID = %d", $bb_post->poster_id ) );
 		}
 		$posts = (int) $bbdb->get_var( $bbdb->prepare( "SELECT COUNT(*) FROM $bbdb->posts WHERE topic_id = %d AND post_status = 0", $topic_id ) );
 		$bbdb->update( $bbdb->topics, array( 'topic_posts' => $posts ), compact( 'topic_id' ) );
@@ -802,6 +818,7 @@ function bb_delete_post( $post_id, $new_status = 0 ) {
 			if ( 0 != $topic->topic_status ) {
 				$bbdb->update( $bbdb->topics, array( 'topic_status' => 0 ), compact( 'topic_id' ) );
 				$bbdb->query( $bbdb->prepare( "UPDATE $bbdb->forums SET topics = topics + 1 WHERE forum_id = %d", $topic->forum_id ) );
+				$bbdb->query( $bbdb->prepare( "UPDATE $bbdb->users SET user_topic_count = user_topic_count + 1 WHERE ID = %d", $topic->topic_poster ) );
 			}
 			bb_topic_set_last_post( $topic_id );
 			update_post_positions( $topic_id );
@@ -851,20 +868,11 @@ function post_author_cache($posts) {
 		bb_cache_users(array_unique($ids), false); // false since we've already checked for soft cached data.
 }
 
-// These two filters are lame.  It'd be nice if we could do this in the query parameters
-function get_recent_user_replies_fields( $fields ) {
-	return $fields . ', MAX(post_time) as post_time';
-}
-
-function get_recent_user_replies_group_by() {
-	return 'p.topic_id';
-}
-
 function get_recent_user_replies( $user_id ) {
-	global $bbdb;
+	global $page;
 	$user_id = (int) $user_id;
 
-	$post_query = new BB_Query( 'post', array( 'post_author_id' => $user_id, 'order_by' => 'post_time' ), 'get_recent_user_replies' );
+	$post_query = new BB_Query('post', array('post_author_id' => $user_id, 'order_by' => 'post_time', 'page' => $page), 'get_recent_user_replies');
 
 	return $post_query->results;
 }
@@ -1239,6 +1247,13 @@ function bb_update_topics_replied( $user_id ) {
 		return false;
 
 	$topics_replied = (int) $bbdb->get_var( $bbdb->prepare( "SELECT COUNT(DISTINCT topic_id) FROM $bbdb->posts WHERE post_status = '0' AND poster_id = %d", $user_id ) );
+	
+	$posts_created = (int) $bbdb->get_var( $bbdb->prepare( "SELECT COUNT(DISTINCT post_id) FROM $bbdb->posts WHERE post_status = '0' AND poster_id = %d", $user_id ) );
+	
+	$topics_created = (int) $bbdb->get_var( $bbdb->prepare( "SELECT COUNT(DISTINCT topic_id) FROM $bbdb->topics WHERE topic_status = '0' AND topic_poster = %d", $user_id ) );
+	
+	$bbdb->update($bbdb->users, array('user_topic_count' => $topics_created, 'user_post_count' => $posts_created), array('ID' => $user_id));
+	
 	return bb_update_usermeta( $user_id, $bbdb->prefix . 'topics_replied', $topics_replied );
 }
 
@@ -2200,18 +2215,19 @@ function bb_repermalink() {
 			$user_id = $user->ID;
 			global_profile_menu_structure();
 			$valid = false;
-			if ( $tab = isset($_GET['tab']) ? $_GET['tab'] : get_path(2) )
-				foreach ( $profile_hooks as $valid_tab => $valid_file )
+			if ( $tab = isset($_GET['tab']) ? $_GET['tab'] : get_path(2) ) {
+				foreach ( $profile_hooks as $valid_tab => $valid_file ) {
 					if ( $tab == $valid_tab ) {
 						$valid = true;
 						$self = $valid_file;
 					}
-			if ( $valid ) :
-				$permalink = get_profile_tab_link( $user->ID, $tab, $page );
-			else :
-				$permalink = get_user_profile_link( $user->ID, $page );
-				unset($self, $tab);
-			endif;
+				}
+			}
+			if ( !$valid ) {
+			    $tab = apply_filters('bb_default_profile_tab', 'discussions');
+			    $self = $profile_hooks[$tab];
+			}
+			$permalink = get_profile_tab_link( $user_id, $tab, $page );
 			break;
 		case 'favorites-page':
 			$permalink = get_favorites_link();
@@ -2293,9 +2309,7 @@ function global_profile_menu_structure() {
 	// The capability required for other users to view the tab ('' to allow non logged in access)
 	// The URL of the item's file
 	// Item name for URL (nontranslated)
-	$profile_menu[0] = array(__('Edit'), 'edit_profile', 'edit_users', 'profile-edit.php', 'edit');
-	$profile_menu[5] = array(__('Favorites'), 'edit_favorites', 'edit_others_favorites', 'favorites.php', 'favorites');
-
+	
 	// Create list of page plugin hook names the current user can access
 	$profile_hooks = array();
 	foreach ($profile_menu as $profile_tab)
@@ -2364,6 +2378,159 @@ function get_assignable_caps() {
 	if ( $throttle_time = bb_get_option( 'throttle_time' ) )
 		$caps['throttle'] = sprintf( __('Ignore the %d second post throttling limit'), $throttle_time );
 	return apply_filters( 'get_assignable_caps', $caps );
+}
+
+
+function profile_tab_topics_data($user_id = 0) {
+    global $topics;
+    $topics = get_recent_user_threads($user_id);
+}
+
+function profile_tab_posts_data($user_id = 0) {
+    global $posts;
+    $posts = get_recent_user_replies($user_id);
+}
+
+function profile_tab_edit_data($user_id = 0) {
+    global $errors, $bb_roles;
+    
+    bb_auth();
+
+    if ( !bb_current_user_can( 'edit_user', $user_id ) ) {
+	    $sendto = bb_get_option('uri');
+	    wp_redirect( $sendto );
+	    exit;
+    }
+
+    $bb_current_id = bb_get_current_user_info( 'id' );
+
+    if ( !is_bb_profile() ) {
+	    $sendto = get_profile_tab_link( $bb_current_id, 'edit' );
+	    wp_redirect( $sendto );
+	    exit;
+    }
+
+    require_once(BB_PATH . BB_INC . 'registration-functions.php');
+
+    if ( !$user->capabilities )
+	    $user->capabilities = array('inactive' => true);
+    $profile_info_keys = get_profile_info_keys();
+    if ( bb_current_user_can('edit_users') ) {
+	    $profile_admin_keys = get_profile_admin_keys();
+	    $assignable_caps = get_assignable_caps();
+    }
+
+    $errors = new WP_Error;
+
+    if ( 'post' == strtolower($_SERVER['REQUEST_METHOD']) ) {
+	    $_POST = stripslashes_deep( $_POST );
+	    bb_check_admin_referer( 'edit-profile_' . $user_id );
+
+	    $user_url = bb_fix_link( $_POST['user_url'] );
+
+	    foreach ( $profile_info_keys as $key => $label ) {
+		    if ( isset($$key) )
+			    continue;
+
+		    $$key = apply_filters( 'sanitize_profile_info', $_POST[$key], $key, $_POST[$key] );
+		    if ( !$$key && $label[0] == 1 ) {
+			    $errors->add( $key, sprintf( __( '%s is required.' ), wp_specialchars( $label[1] ) ) );
+			    $$key = false;
+		    }
+	    }
+
+	    // Find out if we have a valid email address
+	    if ( isset( $user_email ) && !$user_email = bb_verify_email( $user_email ) ) {
+		    $errors->add( 'user_email', __( 'Invalid email address' ), array( 'data' => $_POST['user_email'] ) );
+	    }
+
+	    if ( bb_current_user_can('edit_users') ) {
+		    if ( isset($_POST['delete-user']) && $_POST['delete-user'] && $bb_current_id != $user->ID ) {
+			    bb_delete_user( $user->ID );
+			    wp_redirect( bb_get_option( 'uri' ) );
+			    exit;
+		    }
+
+		    $user_obj = new BB_User( $user->ID );
+
+		    $role = $_POST['role'];
+
+		    $can_keep_gate = bb_current_user_can( 'keep_gate' );
+		    if ( !array_key_exists($role, $bb_roles->roles) )
+			    $errors->add( 'role', __( 'Invalid Role' ) );
+		    elseif ( !$can_keep_gate && ( 'keymaster' == $role || 'keymaster' == $user_obj->roles[0] ) )
+			    $errors->add( 'role', __( 'You are not the Gate Keeper.' ) );
+		    elseif ( 'keymaster' == $user_obj->roles[0] && 'keymaster' != $role && $bb_current_id == $user->ID )
+			    $errors->add( 'role', __( 'You, Keymaster, may not demote yourself.' ) );
+
+		    foreach ( $profile_admin_keys as $key => $label ) {
+			    if ( isset($$key) )
+				    continue;
+			    $$key = apply_filters( 'sanitize_profile_admin', $_POST[$key], $key, $_POST[$key] );
+			    if ( !$$key && $label[0] == 1 ) {
+				    $errors->add( $key, sprintf( __( '%s is required.' ), wp_specialchars( $label[1] ) ) );
+				    $$key = false;
+			    }
+		    }
+
+		    foreach ( $assignable_caps as $cap => $label ) {
+			    if ( isset($$cap) )
+				    continue;
+			    $$cap = ( isset($_POST[$cap]) && $_POST[$cap] ) ? 1 : 0;
+		    }
+	    }
+
+	    if ( bb_current_user_can( 'change_user_password', $user->ID ) ) {
+		    if ( ( !empty($_POST['pass1']) || !empty($_POST['pass2']) ) && $_POST['pass1'] !== $_POST['pass2'] )
+			    $errors->add( 'pass', __( 'You must enter the same password twice.' ) );
+		    elseif( !empty($_POST['pass1']) && !bb_current_user_can( 'change_user_password', $user->ID ) )
+			    $errors->add( 'pass', __( "You are not allowed to change this user's password." ) );
+	    }
+
+	    if ( !$errors->get_error_codes() ) {
+		    if ( bb_current_user_can( 'edit_user', $user->ID ) ) {
+			    bb_update_user( $user->ID, $user_email, $user_url );
+
+			    foreach( $profile_info_keys as $key => $label )
+				    if ( strpos($key, 'user_') !== 0 )
+					    if ( $$key != '' || isset($user->$key) )
+						    bb_update_usermeta( $user->ID, $key, $$key );
+		    }
+
+		    if ( bb_current_user_can( 'edit_users' ) ) {
+			    if ( !array_key_exists($role, $user->capabilities) ) {
+				    $user_obj->set_role($role); // Only support one role for now
+				    if ( 'blocked' == $role && 'blocked' != $old_role )
+					    bb_break_password( $user->ID );
+				    elseif ( 'blocked' != $role && 'blocked' == $old_role )
+					    bb_fix_password( $user->ID );
+			    }
+			    foreach( $profile_admin_keys as $key => $label )
+				    if ( $$key != ''  || isset($user->$key) )
+					    bb_update_usermeta( $user->ID, $key, $$key );
+			    foreach( $assignable_caps as $cap => $label ) {
+				    if ( ( !$already = array_key_exists($cap, $user->capabilities) ) && $$cap)
+					    $user_obj->add_cap($cap);
+				    elseif ( !$$cap && $already )
+					    $user_obj->remove_cap($cap);
+			    }
+		    }
+
+		    if ( bb_current_user_can( 'change_user_password', $user->ID ) && !empty($_POST['pass1']) ) {
+			    $_POST['pass1'] = addslashes($_POST['pass1']);
+			    bb_update_user_password( $user->ID, $_POST['pass1'] );
+		    }
+		
+		    do_action('profile_edited', $user->ID);
+
+            // only redirect if we don't have any errors while editing the profile.
+            $error_messages = $errors->get_error_messages();
+            if (empty($error_messages)) {
+		        wp_redirect( add_query_arg( 'updated', 'true', get_user_profile_link( $user->ID ) ) );
+		        exit;
+		    }	
+	    }
+    }
 }
 
 /* Views */
