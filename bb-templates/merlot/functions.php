@@ -1,7 +1,7 @@
 <?php
 
 
-$gs_sources = array('links.php', 'profile.php', 'topic.php', 'theme.php', 'post.php', 'forum.php', 'favorites.php', 'search.php', 'view.php', 'tag.php', 'stats.php');
+$gs_sources = array('links.php', 'profile.php', 'topic.php', 'theme.php', 'favorites.php', 'post.php', 'forum.php', 'search.php', 'view.php', 'tag.php', 'stats.php');
 
 foreach ($gs_sources as $gs_source) {
     require_once(bb_get_template('lib/' . $gs_source));
@@ -72,14 +72,4 @@ add_action('bb_profile.php', 'gs_cache_users');
 add_action('bb_stats.php', 'gs_cache_users');
 add_action('bb_favorites.php', 'gs_cache_users');
 add_action('bb_tag-single.php', 'gs_cache_users');
-
-// test
-
-add_profile_tab('Comentarios', 'participate', 'participate', 'profile_comments', 'comments');
-//var_dump($profile_hooks);
-//var_dump($profile_menu);
-
-function profile_comments() {
-    echo 'chao malo';
-}
 

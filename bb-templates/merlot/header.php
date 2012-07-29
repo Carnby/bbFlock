@@ -7,11 +7,13 @@
 <!--[if (gte IE 9)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html <?php bb_language_attributes(); ?> class="no-js"><!--<![endif]-->
 	
 	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	    <title><?php bb_title(); ?></title>
 	    <?php bb_feed_head(); ?> 
 	    <?php merlot_bootstrap_css(); ?>
+	    <?php merlot_bootstrap_responsive_css(); ?>
 	    <link rel="stylesheet" href="<?php bb_stylesheet_uri(); ?>" type="text/css" />
 	    <?php if ( 'rtl' == bb_get_option( 'text_direction' ) ) : ?>
 	    <link rel="stylesheet" href="<?php bb_stylesheet_uri( 'rtl' ); ?>" type="text/css" />

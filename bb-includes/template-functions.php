@@ -92,10 +92,9 @@ function bb_head() {
         do_action('bb_head');
 }
 
-function profile_menu($profile_user_id = 0) {
+function bb_profile_menu($profile_user_id = 0) {
 	global $user_id, $profile_menu, $self, $profile_page_title;
-	$list  = "<ul id='profile-menu'>";
-	$list .= "\n\t<li" . ( ( $self ) ? '' : ' class="current"' ) . '><a href="' . attribute_escape( get_user_profile_link( $user_id ) ) . '">' . __('Profile') . '</a></li>';
+	$list  = "<ul id='profile-menu' class='nav nav-tabs'>";
 	
 	if (!$profile_user_id) {
 	    $profile_user_id = $user_id;
@@ -106,7 +105,7 @@ function profile_menu($profile_user_id = 0) {
 		// 0 = name, 1 = users cap, 2 = others cap, 3 = file
 		$class = '';
 		if ( $item[3] == $self ) {
-			$class = ' class="current"';
+			$class = ' class="active"';
 			$profile_page_title = $item[0];
 		}
 		if ( can_access_tab( $item, $id, $profile_user_id ) )
@@ -1088,13 +1087,13 @@ function topic_move_dropdown( $id = 0 ) {
 	if ( !$dropdown )
 		return;
 
-	echo '<form id="topic-move" class="form-inline form_topic_move" method="post" action="' . bb_get_option('uri') . 'bb-admin/topic-move.php"><fieldset><div>' . "\n\t";
+	echo '<form id="topic-move" class="form-vertical form_topic_move" method="post" action="' . bb_get_option('uri') . 'bb-admin/topic-move.php"><fieldset><div>' . "\n\t";
 	echo "<input type='hidden' name='topic_id' value='$topic->topic_id' />\n\t";
 	echo '<label for="forum-id">'. __('Move this topic to the selected forum:') . ' ';
 	echo $dropdown;
 	echo "</label>\n\t";
 	bb_nonce_field( 'move-topic_' . $topic->topic_id );
-	echo "<input type='submit' class='btn btn-warning' name='Submit' value='". __('Move') ."' />\n</div></fieldset></form>";
+	echo "<button type='submit' class='btn btn-warning' name='Submit'><i class=\"icon icon-random icon-white\"></i> ". __('Move') ."</button>\n</div></fieldset></form>";
 }
 
 function topic_class( $class = '', $key = 'topic', $id = 0 ) {
@@ -1213,6 +1212,41 @@ function bb_get_topic_pagecount( $topic_id = 0 ) {
 function bb_is_topic_lastpage( $topic_id = 0 ) {
 	global $page;
 	return ( $page == bb_get_topic_pagecount( $topic_id ) );
+}
+
+function bb_no_discussions_message() {
+    if (is_view())
+        $text =  __('There are no discussions in this view.');
+    else if (is_bb_tag())
+        $text =  __('There are no discussions tagged with this tag.');
+    else if (is_front())
+        $text = __("There are no recent discussions on the forum.");
+        
+    else if (is_bb_profile() and isset($_GET['tab']) and $_GET['tab'] == 'favorites') {
+        global $user_id;
+        //var_dump($user_id);
+        if ( $user_id == bb_get_current_user_info( 'id' ) ) {
+            $text = __('You currently have no favorites.');
+        } else {
+            $text = sprintf(__('%s currently has no favorites.'), get_user_name( $user_id ));
+        }
+    } else if (is_forum()) {
+        $text = __('There are no discussions on this forum.');
+    } else if (is_bb_search()) {
+        global $q;
+        if (isset($q) and $q)
+            $text = __('No results found.');
+        else 
+            $text = __('Please enter a search query into the search box at the navigation panel.');
+    } else {
+        $text = __('Nothing found.');
+    }
+    
+    ?>
+    <div class="well">
+        <h2><?php echo esc_html(apply_filters('bb_no_discussions_message', $text)); ?></h2>
+    </div>
+    <?php
 }
 
 // POSTS
@@ -1484,6 +1518,100 @@ function get_profile_tab_link( $id = 0, $tab, $page = 1 ) {
 	return apply_filters( 'get_profile_tab_link', $r, bb_get_user_id( $id ) );
 }
 
+/* Profile Default Tabs */ 
+
+function profile_tab_topics() {
+    global $topics, $page;
+    
+    $updated = isset($_GET['updated']);
+	    
+	if ($updated)
+	    printf('<div class="alert alert-success"><p>%s</p></div>', __('Your profile has been updated!'));
+    
+    ?>
+    
+    <?php if ($topics) {
+        gs_topic_loop($topics);
+    } else {
+        bb_no_discussions_message();
+    } 
+    
+    gs_pagination_links(get_profile_topic_pages());
+}
+
+function profile_tab_posts() {
+    global $posts, $page, $topic, $bb_post, $user;    
+    ?>
+    
+    <?php if ($posts) { ?>
+        <div class="row-fluid" id="profile-replies">
+            <?php foreach ($posts as $bb_post) { 
+                $topic = get_topic($bb_post->topic_id);
+	            bb_post_template();
+            } ?>
+        </div>
+    <?php } else { 
+        bb_no_discussions_message();
+    } 
+    
+    gs_pagination_links(get_profile_posts_pages());
+}
+
+function profile_tab_edit() {
+    global $user, $errors;
+    
+    $error_messages = $errors->get_error_messages();
+    
+    if (!empty($error_messages)) {
+        ?>
+        <div class="alert alert-error">
+            <h5><?php _e('We have found the following errors while trying to update your profile:'); ?></h5>
+            <ul class="unstyled">
+                <?php 
+                foreach($error_messages as $error) {
+                    printf('<li>%s</li>', esc_html($error));
+                }
+                ?>
+            </ul>
+        </div>
+        <?php
+    }
+    
+    ?>
+    <form id="your-profile" method="post" action="<?php profile_tab_link($user->ID, 'edit');  ?>" enctype="multipart/form-data" class="form form-horizontal">
+	
+	    <fieldset>
+	        <legend><?php _e('Profile Info'); ?></legend>
+	        <?php bb_profile_data_form(); ?>
+	    </fieldset>
+	
+	    <?php if ( bb_current_user_can( 'edit_users' ) ) : ?>
+	    <fieldset>
+	        <legend><?php _e('Administration'); ?></legend>
+	        <?php bb_profile_admin_form(); ?>
+	    </fieldset>
+	    <?php endif; ?>
+	
+	    <?php do_action('gs_profile_edit_form', $user->ID); ?>
+	
+	    <?php if ( bb_current_user_can( 'change_user_password', $user->ID ) ) : ?>
+	    <fieldset>
+	        <legend><?php _e('Password'); ?></legend>
+	        <p><?php _e('To change your password, enter a new password twice below:'); ?></p>
+	        <?php bb_profile_password_form(); ?>
+	    </fieldset>
+	    <?php endif; ?>
+		
+	    <div class="form-actions">
+	        <?php gs_profile_actions(); ?>
+	    </div>
+    <?php bb_nonce_field( 'edit-profile_' . $user->ID ); ?>
+    </form>
+    <?php
+}
+
+/* Profile Links */ 
+
 function user_link( $id = 0 ) {
 	echo apply_filters( 'user_link', get_user_link( $id ), $id );
 }
@@ -1546,18 +1674,18 @@ function get_user_title( $id = 0 ) {
 	return empty( $user->title ) ? get_user_type( $id ) : apply_filters( 'get_user_title', $user->title, $user->ID );
 }
 
-function profile_pages() {
-	global $user, $page;
-	$add = 0;
-	$add = apply_filters( 'profile_pages_add', $add );
-	echo apply_filters( 'profile_pages', get_page_number_links( $page, $user->topics_replied + $add ) );
-}
-
-function get_profile_pages() {
+function get_profile_topic_pages() {
     global $user, $page;
 	$add = 0;
-	$add = apply_filters( 'profile_pages_add', $add );
-	return apply_filters( 'get_profile_pages', get_page_number_links( $page, $user->topics_replied + $add, 'array' ) );
+	$add = apply_filters( 'profile_topic_pages_add', $add );
+	return apply_filters( 'get_profile_topic_pages', get_page_number_links( $page, $user->user_topic_count + $add, 'array' ) );
+}
+
+function get_profile_posts_pages() {
+    global $user, $page;
+	$add = 0;
+	$add = apply_filters( 'profile_posts_pages_add', $add );
+	return apply_filters( 'get_profile_posts_pages', get_page_number_links( $page, $user->user_post_count + $add, 'array' ) );
 }
 
 function bb_profile_data( $id = 0 ) {
@@ -1569,6 +1697,13 @@ function bb_profile_data( $id = 0 ) {
 	echo "<dl id='userinfo'>\n";
 	echo "\t<dt>" . __('Member Since') . "</dt>\n";
 	echo "\t<dd>" . bb_datetime_format_i18n($reg_time, 'date') . ' (' . bb_since($reg_time) . ")</dd>\n";
+	
+	echo "\t<dt>" . __('Discussions Created') . "</dt>\n";
+	echo "\t<dd>" . $user->user_topic_count . "</dd>\n";
+	
+	echo "\t<dt>" . __('Replies') . "</dt>\n";
+	echo "\t<dd>" . $user->user_post_count . "</dd>\n";
+	
 	if ( is_array( $profile_info_keys ) ) {
 		foreach ( $profile_info_keys as $key => $label ) {
 			$val = 'user_url' == $key ? get_user_link( $user->ID ) : $user->$key;
@@ -1595,9 +1730,12 @@ function bb_profile_data( $id = 0 ) {
 }
 
 function bb_profile_base_content() {
-	global $self;
+	global $self, $profile_menu;
 	if ( !is_callable( $self ) )
 		return; // should never happen
+		
+	bb_profile_menu();
+	
 	call_user_func( $self );
 }
 
@@ -2047,7 +2185,7 @@ function tag_form() {
 	global $topic;
 	if ( !bb_current_user_can( 'edit_tag_by_on', bb_get_current_user_info( 'id' ), $topic->topic_id ) )
 		return false;
-	echo "<form id='tag-form' class='form-inline' method='post' action='" . bb_get_option('uri') . "tag-add.php'>\n";
+	echo "<form id='tag-form' class='form form-vertical' method='post' action='" . bb_get_option('uri') . "tag-add.php'>\n";
 	bb_load_template( 'tag-form.php' );
 	bb_nonce_field( 'add-tag_' . $topic->topic_id );
 	echo "</form>";
@@ -2257,6 +2395,8 @@ function bb_get_forum_dropdown( $args = '' ) {
 }
 
 //FAVORITES
+// disabled because favorites are no longer part of a profile 
+
 function favorites_link( $user_id = 0 ) {
 	echo apply_filters( 'favorites_link', get_favorites_link( $user_id ) );
 }
@@ -2264,6 +2404,11 @@ function favorites_link( $user_id = 0 ) {
 function get_favorites_link( $user_id = 0 ) {
 	if ( !$user_id )
 		$user_id = bb_get_current_user_info( 'id' );
+	
+	$user_id = (int) $user_id;
+		
+	return bb_get_uri('bb-admin/admin-ajax.php');
+		
 	return apply_filters( 'get_favorites_link', get_profile_tab_link($user_id, 'favorites'), $user_id );
 }
 
@@ -2300,7 +2445,7 @@ function get_user_favorites_link($add = array(), $rem = array(), $class = 'fav_l
 	endif;
 
 	if (  !is_null($is_fav) )
-		return "$pre<a href='" . attribute_escape( bb_nonce_url( add_query_arg( $favs, get_favorites_link( $user_id ) ), 'toggle-favorite_' . $topic->topic_id ) ) . "' class='" . $class . "'>$mid</a>$post";
+		return "$pre<a href='#' class='" . $class . "' id='toggle-topic-fav'>$mid</a>$post";
 	return '';
 }
 

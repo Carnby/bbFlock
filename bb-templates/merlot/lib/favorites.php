@@ -15,3 +15,45 @@ function gs_favorites_header() {
 </div>
 <?php
 }
+
+function merlot_toggle_favorite_link() {
+    return get_user_favorites_link(array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star-empty"></i> ' . __('Add this topic to your favorites')), array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star"></i> ' . __('This topic is one of your favorites')), 'btn btn-large');
+}
+
+function merlot_favorite_topic_js() {
+    if (!is_topic())
+        return;
+        
+    if (!bb_is_user_logged_in())
+        return;
+        
+    $url = attribute_escape(bb_nonce_url(bb_get_uri('bb-admin/admin-ajax.php'), 'toggle-favorite_' . get_topic_id()));
+?>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toggle-topic-fav').on('click', function(e) {
+        console.log(e);
+        
+        $.post('<?php echo $url; ?>', 
+            {
+                'action': 'toggle-favorite',
+                'user_id': <?php echo bb_get_current_user_info('id'); ?>,
+                'topic_id': <?php echo get_topic_id(); ?>
+            },
+            function(data) {
+                console.log(data);
+                if (data == 1) {
+                    $('#toggle-topic-fav').html('added');
+                }
+            },
+            'text'
+        );
+        
+        return false;
+    });
+});
+</script>
+<?php
+}
+
+add_action('bb_head', 'merlot_favorite_topic_js');

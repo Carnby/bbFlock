@@ -107,7 +107,7 @@ function gs_credits() {
 function gs_do_full_width() {
     $do = in_array(bb_get_location(), array('register-page', 'login-page', 'password-reset'));    
     $do = $do || (is_front() && isset($_GET['new']));
-    $do = $do || is_bb_profile_tab('edit');
+    //$do = $do || is_bb_profile_tab('edit');
     return apply_filters('gs_do_full_width', $do);
 }
 
@@ -119,8 +119,6 @@ function gs_rss_link() {
 		$link = '<a href="' . get_topic_rss_link() . '" class="feed">' . __('RSS feed for this topic') . '</a>';	 
 	} else if (is_bb_tag()) {
 		$link = '<a href="' . bb_get_tag_rss_link() . '" class="feed">' . __('RSS feed for this tag') . '</a>';
-	} else if (is_view()) {
-		$link = '<a href="' . bb_get_view_rss_link() . '" class="feed">' . __('RSS feed for this view') . '</a>';
 	} else {
 	    $link = '<a href="' . bb_get_topics_rss_link() . '" class="feed">' . __('RSS feed for this site') . '</a>';
     }
@@ -145,9 +143,7 @@ function gs_sidebar_buttons() {
         }
         
         if (is_topic()) {
-            $link = get_user_favorites_link(array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star-empty"></i> ' . __('Add this topic to your favorites')), array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star"></i> ' . __('This topic is one of your favorites')), 'btn btn-large');
-            
-            if ($link)
+            if ($link = merlot_toggle_favorite_link())
                 $buttons[] = $link;
         }
         
@@ -305,41 +301,6 @@ function gs_registration_header() {
 
 }
 
-function gs_no_discussions() {
-    if (is_view())
-        $text =  __('There are no discussions in this view.');
-    else if (is_bb_tag())
-        $text =  __('There are no discussions tagged with this tag.');
-    else if (is_front())
-        $text = __("There are no recent discussions on the forum.");
-        
-    else if (is_bb_profile() and isset($_GET['tab']) and $_GET['tab'] == 'favorites') {
-        global $user_id;
-        //var_dump($user_id);
-        if ( $user_id == bb_get_current_user_info( 'id' ) ) {
-            $text = __('You currently have no favorites.');
-        } else {
-            $text = sprintf(__('%s currently has no favorites.'), get_user_name( $user_id ));
-        }
-    } else if (is_forum()) {
-        $text = __('There are no discussions on this forum.');
-    } else if (is_bb_search()) {
-        global $q;
-        if (isset($q) and $q)
-            $text = __('No results found.');
-        else 
-            $text = __('Please enter a search query into the search box at the navigation panel.');
-    } else {
-        $text = __('Nothing found.');
-    }
-    
-?>
-<div class="well">
-<h2><?php echo esc_html(apply_filters('merlot_nothing_found_text', $text)); ?></h2>
-</div>
-<?php
-}
-
 function gs_no_members() {
     $text = __('No users found.');
 ?>
@@ -352,6 +313,12 @@ function gs_no_members() {
 function merlot_bootstrap_css() {
     $css_url = bb_get_option('uri') . '/bb-vendors/bootstrap/css/bootstrap.min.css';
     $css_url = apply_filters('merlot_bootstrap_css', $css_url);
+    printf('<link rel="stylesheet" href="%s" type="text/css" />', $css_url);
+}
+
+function merlot_bootstrap_responsive_css() {
+    $css_url = bb_get_option('uri') . '/bb-vendors/bootstrap/css/bootstrap-responsive.min.css';
+    $css_url = apply_filters('merlot_bootstrap_responsive_css', $css_url);
     printf('<link rel="stylesheet" href="%s" type="text/css" />', $css_url);
 }
 

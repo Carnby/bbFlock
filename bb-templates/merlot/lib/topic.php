@@ -53,10 +53,10 @@ function gs_topic_loop_start($id = "latest") {
 	<table id="<?php echo $id; ?>" class="forum-topics table table-striped">
 	<thead>
 	    <tr>
-	        <th>Title</th>
-	        <th>Author</th>
-	        <th>Last Reply</th>
-	        <th>Comments</th>
+	        <th><?php _e('Title'); ?></th>
+	        <th><?php _e('Author'); ?></th>
+	        <th><?php _e('Last Reply'); ?></th>
+	        <th><?php _e('Comments'); ?></th>
 	    </tr>
 	</thead>
 	<tbody>
@@ -121,7 +121,7 @@ function gs_topic_loop(&$discussions) {
 	    
 	    gs_discussion_pages();
 	} else {
-	    gs_no_discussions();
+	    bb_no_discussions_message();
 	}
 }
 
