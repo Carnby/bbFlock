@@ -109,6 +109,9 @@ function userphoto_profile_update($userID){
 				$error = sprintf(__("The file &ldquo;%s&rdquo; was not uploaded. Did you provide the correct filename?", 'user-photo'), $_FILES['userphoto_image_file']['name']);
 			else if(@!$userphoto_validtypes[$_FILES['userphoto_image_file']['type']]) 
 				$error = sprintf(__("The uploaded file type &ldquo;%s&rdquo; is not allowed.", 'user-photo'), $_FILES['userphoto_image_file']['type']);
+				
+			if (!empty($error))
+			    $errors->add('userphoto_error', $error);
 			
 			$tmppath = $_FILES['userphoto_image_file']['tmp_name'];
 			
@@ -128,8 +131,11 @@ function userphoto_profile_update($userID){
 			if (!$error) {
 				$dir = USERPHOTO_PATH;
 				
-				if (!file_exists($dir) && !mkdir($dir, 0777))
+				if (!file_exists($dir) && !mkdir($dir, 0777)) {
 					$error = __("The userphoto upload content directory does not exist and could not be created. Please ensure that you have write permissions for the /wp-content/uploads/ directory.", 'user-photo');
+				    $errors->add('userphoto_error', $error);	
+				}
+					
 				
 				if (!$error) {
 
@@ -138,9 +144,10 @@ function userphoto_profile_update($userID){
 					$thumbfile = preg_replace("/(?=\.\w+$)/", '.thumbnail', $imagefile);
 					$thumbpath = $dir . '/' . $thumbfile;
 					
-					if(!move_uploaded_file($tmppath, $imagepath))
+					if(!move_uploaded_file($tmppath, $imagepath)) {
 						$error = __("Unable to move the file to the user photo upload content directory.", 'user-photo');
-					else {
+						$errors->add('userphoto_error', $error);
+					} else {
 						chmod($imagepath, 0666);
 						
 
@@ -183,7 +190,7 @@ function userphoto_delete_user($userID){
 
 
 function userphoto_display_selector_fieldset($userID){
-	global $userphoto_error;
+	global $errors;
 	
 	$current_user = bb_current_user();
 	$profileuser = bb_get_user($userID);
@@ -218,12 +225,17 @@ function userphoto_display_selector_fieldset($userID){
 
         <?php endif; ?>
 
-        <?php if ($profileuser->userphoto_error): ?>
-		    <p id='userphoto-upload-error' class="alert alert-error"><strong>Upload error:</strong> 
-		        <?php echo $profileuser->userphoto_error ?></p>
+        <?php if ($up_errors = $errors->get_error_messages('userphoto_error')): ?>
+		    <div id='userphoto-upload-error' class="alert alert-error"> 
+		        <ul class="unstyled">
+		        <?php foreach ($up_errors as $error)
+		             printf('<li>%s</li>', $error); 
+		        ?>
+		        </ul>
+		    </div>
 		<?php endif; ?>
 
-        <label><?php _e("Upload image:", 'user-photo') ?></label>
+        <label class="control-label"><?php _e("Upload image:", 'user-photo') ?></label>
         
         <div class="controls">
 		    <input type="file" class="input-file" name="userphoto_image_file" id="userphoto_image_file" />

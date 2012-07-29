@@ -52,20 +52,16 @@ function gs_profile_labels() {
 
 function gs_profile_header() {
     global $user;
-?>
-<div class="page-header">
-    <h2><?php echo $user->user_login; ?></h2>
-</div>
-<?php
+    ?>
+    <div class="page-header">
+        <h2><?php echo esc_html($user->user_login); ?></h2>
+    </div>
+    <?php
 }
 
 function gs_member_pagination() {
     global $page, $count_found_users;
     gs_pagination_links(get_page_number_links($page, $count_found_users, 'array'));
-}
-
-function gs_profile_pagination() {
-    gs_pagination_links(get_profile_pages());
 }
 
 function gs_profile_actions() {
