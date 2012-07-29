@@ -33,6 +33,36 @@ function bb_check_login($user, $pass, $already_md5 = false) {
 }
 endif;
 
+// code from _ck_'s email-login
+if ( !function_exists('bb_check_email_login') ) :
+function bb_check_email_login($email, $pass) {	
+	if (strpos($email, '@') === false || strpos($email, '.') === false) {
+	    return false;
+	}
+	  
+	if (!preg_match("/^([a-z0-9+_]|\\-|\\.)+@(([a-z0-9_]|\\-)+\\.)+[a-z]{2,6}\$/i", $email)) {
+	    return false;
+	}   
+	
+	global $bbdb;
+	$user_id = $bbdb->get_var($bbdb->prepare("SELECT ID FROM $bbdb->users WHERE user_email = '%s' LIMIT 1", $email));
+	
+	if (empty($user_id)) {
+        return false;	
+	}
+
+	$user = bb_get_user( $user_id );	
+
+	if ( !wp_check_password($pass, $user->user_pass, $user->ID) ) {
+	    return false;
+	}
+	
+	if ( 1 == $user->user_status ) {update_user_status( $user->ID, 0 );} 	// User is logging in for the first time, update status
+	
+	return $user;
+}
+endif;
+
 if ( !function_exists('bb_get_current_user') ) :
 function bb_get_current_user() {
 	global $bb_current_user;
@@ -103,13 +133,19 @@ function bb_is_user_logged_in() {
 }
 endif;
 
+// code from _ck_'s email-login
 if ( !function_exists('bb_login') ) :
-function bb_login($login, $password, $remember = false) {
-	if ( $user = bb_check_login( $login, $password ) ) {
-		wp_set_auth_cookie($user->ID, $remember);
-		
-		do_action('bb_user_login', (int) $user->ID );
+function bb_login( $login, $password, $remember = false ) {
+	$user = bb_check_login( $login, $password );
+	
+	if (empty($user)) {	
+	    $user = bb_check_email_login( $login, $password );	
 	}
+			
+	if ($user) {
+		wp_set_auth_cookie($user->ID, $remember);
+		do_action('bb_user_login', (int) $user->ID );
+	}	
 	
 	return $user;
 }
