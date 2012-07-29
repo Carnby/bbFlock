@@ -57,10 +57,10 @@ case 'delete-tag' :
 	$user_id  = (int) $user_id;
 	$topic_id = (int) $_POST['topic_id'];
 
+    bb_check_ajax_referer( "remove-tag_$tag_id|$topic_id" );
+
 	if ( !bb_current_user_can('edit_tag_by_on', $user_id, $topic_id) )
 		die('-1');
-
-	bb_check_ajax_referer( "remove-tag_$tag_id|$topic_id" );
 
 	add_action('bb_rpe_tag_removed', 'bb_grab_results', 10, 3);
 
@@ -73,9 +73,11 @@ case 'delete-tag' :
 		die('1');
 	break;
 
-case 'dim-favorite' :
+case 'toggle-favorite' :
 	$topic_id = (int) @$_POST['topic_id'];
 	$user_id  = (int) @$_POST['user_id'];
+	
+	bb_check_ajax_referer( "toggle-favorite_$topic_id" );
 
 	$topic = get_topic( $topic_id );
 	$user = bb_get_user( $user_id );
@@ -84,8 +86,6 @@ case 'dim-favorite' :
 
 	if ( !bb_current_user_can( 'edit_favorites_of', $user->ID ) )
 		die('-1');
-
-	bb_check_ajax_referer( "toggle-favorite_$topic_id" );
 
 	$is_fav = is_user_favorite( $user_id, $topic_id );
 
