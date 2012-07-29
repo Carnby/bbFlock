@@ -5,11 +5,10 @@ require('./bb-load.php');
 $bb_db_override = false;
 do_action( 'bb_index.php_pre_db', '' );
 
-if ( isset($_GET['new']) && '1' == $_GET['new'] ) :
-	$forums = false;
-elseif ( !$bb_db_override ) :
+if ( !$bb_db_override ) :
 	$forums = get_forums(); // Comment to hide forums
-	$topics = get_latest_topics();
+	//TODO: topics and stickies should be configurable on admin. for now, only shows stickies
+	//$topics = get_latest_topics();
 	$super_stickies = get_sticky_topics();
 endif;
 

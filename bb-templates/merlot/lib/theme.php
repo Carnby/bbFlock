@@ -136,7 +136,7 @@ function gs_sidebar_buttons() {
         $buttons[] = sprintf('<a class="btn btn-primary pull-left" href="%s"><i class="icon icon-plus-sign icon-white"></i> %s</a>', bb_get_uri('register.php'), __('Register'));
         $buttons[] = sprintf(__('<a class="btn btn-primary" href="%1$s"><i class="icon icon-user icon-white"></i> Login</a>'), bb_get_option('uri').'bb-login.php');
     } else {
-        if (is_front() || is_forum()) {                    
+        if (is_forum()) {                    
             if (bb_current_user_can('write_topics')) { 
                 $buttons[] = get_new_topic_link(array('class' => 'btn btn-primary btn-large', 'text' => sprintf('<i class="icon icon-comment icon-white"></i> %s', __('Add New Topic')))); 
             } 
