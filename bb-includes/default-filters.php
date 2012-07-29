@@ -48,33 +48,30 @@ add_action('bb_user_has_no_caps', 'bb_give_user_default_role');
 add_filter('sanitize_profile_info', 'wp_specialchars');
 add_filter('sanitize_profile_admin', 'wp_specialchars');
 
-add_filter( 'get_recent_user_replies_fields', 'get_recent_user_replies_fields' );
-add_filter( 'get_recent_user_replies_group_by', 'get_recent_user_replies_group_by' );
-
-if ( !bb_get_option( 'mod_rewrite' ) ) {
-	add_filter( 'bb_stylesheet_uri', 'attribute_escape', 1, 9999 );
-	add_filter( 'forum_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'forum_rss_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'bb_tag_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'tag_rss_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'topic_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'topic_rss_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'post_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'post_anchor_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'user_profile_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'profile_tab_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'favorites_link', 'attribute_escape', 1, 9999 );
-	add_filter( 'view_link', 'attribute_escape', 1, 9999 );
+if (!bb_get_option('mod_rewrite')) {
+	add_filter('bb_stylesheet_uri', 'attribute_escape', 1, 9999);
+	add_filter('forum_link', 'attribute_escape', 1, 9999);
+	add_filter('forum_rss_link', 'attribute_escape', 1, 9999);
+	add_filter('bb_tag_link', 'attribute_escape', 1, 9999);
+	add_filter('tag_rss_link', 'attribute_escape', 1, 9999);
+	add_filter('topic_link', 'attribute_escape', 1, 9999);
+	add_filter('topic_rss_link', 'attribute_escape', 1, 9999);
+	add_filter('post_link', 'attribute_escape', 1, 9999);
+	add_filter('post_anchor_link', 'attribute_escape', 1, 9999);
+	add_filter('user_profile_link', 'attribute_escape', 1, 9999);
+	add_filter('profile_tab_link', 'attribute_escape', 1, 9999);
+	add_filter('favorites_link', 'attribute_escape', 1, 9999);
+	add_filter('view_link', 'attribute_escape', 1, 9999);
 }
 
 add_filter('sort_tag_heat_map', 'bb_sort_tag_heat_map');
 
 if ( is_bb_feed() ) {
-	add_filter( 'bb_title_rss', 'ent2ncr' );
-	add_filter( 'topic_title', 'ent2ncr' );
-	add_filter( 'post_link', 'wp_specialchars' );
-	add_filter( 'post_text', 'htmlspecialchars' ); // encode_bad should not be overruled by wp_specialchars
-	add_filter( 'post_text', 'ent2ncr' );
+	add_filter('bb_title_rss', 'ent2ncr');
+	add_filter('topic_title', 'ent2ncr');
+	add_filter('post_link', 'wp_specialchars');
+	add_filter('post_text', 'htmlspecialchars'); // encode_bad should not be overruled by wp_specialchars
+	add_filter('post_text', 'ent2ncr');
 }
 
 function bb_register_default_views() {
@@ -83,17 +80,30 @@ function bb_register_default_views() {
 
     if (bb_is_user_logged_in()) {
         $user_info = bb_get_current_user_info();
-        bb_register_view('my-discussions', __('My Discussions'), array('topic_author' => $user_info->data->ID));
-        bb_register_view('my-favorites', __('My Favorites'), array('favorites' => $user_info->data->ID));
+        bb_register_view('my-discussions', __('My Discussions'), array('topic_author' => (int) $user_info->data->ID));
+        bb_register_view('my-favorites', __('My Favorites'), array('favorites' => (int) $user_info->data->ID));
     }    
     
 	// no posts (besides the first one), older than 2 hours
-	bb_register_view( 'no-replies', __('Topics with no replies'), array( 'post_count' => 1, 'started' => '<' . gmdate( 'YmdH', time() - 7200 ) ) );
-	bb_register_view( 'untagged'  , __('Topics with no tags')   , array( 'tag_count'  => 0 ) );
+	bb_register_view('no-replies', __('Topics with no replies'), array( 'post_count' => 1, 'started' => '<' . gmdate( 'YmdH', time() - 7200)));
+	bb_register_view('untagged'  , __('Topics with no tags'), array('tag_count' => 0));
 	
-	bb_register_view( 'popular', __('Popular Topics'), array('per_page' => $num, 'order_by' => 'topic_posts', 'append_meta' => 1) );
+	bb_register_view('popular', __('Popular Topics'), array('per_page' => $num, 'order_by' => 'topic_posts', 'append_meta' => 1));
 }
-add_action( 'bb_init', 'bb_register_default_views' );
+add_action('bb_init', 'bb_register_default_views');
+
+function bb_register_default_profile_tabs() {
+    //add_profile_tab($tab_title, $users_cap, $others_cap, $file, $arg = false);
+    add_profile_tab(__('Discussions'), 'read', 'read', 'profile_tab_topics', 'discussions');
+    add_action('bb_profile_profile_tab_topics.php', 'profile_tab_topics_data', 5, 1);
+    
+    add_profile_tab(__('Comments'), 'read', 'read', 'profile_tab_posts', 'comments');
+    add_action('bb_profile_profile_tab_posts.php', 'profile_tab_posts_data', 5, 1);
+    
+    add_profile_tab(__('Edit'), 'edit_profile', 'edit_users', 'profile_tab_edit', 'edit');
+    add_action('bb_profile_profile_tab_edit.php', 'profile_tab_edit_data', 5, 1);
+}
+add_action('bb_init', 'bb_register_default_profile_tabs');
 
 if ( bb_get_option( 'wp_table_prefix' ) ) {
 	add_action( 'bb_user_login', 'bb_apply_wp_role_map_to_user' );
