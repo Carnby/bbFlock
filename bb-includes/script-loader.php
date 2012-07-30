@@ -302,23 +302,17 @@ function bb_enqueue_script( $handle, $src = false, $deps = array(), $ver = false
 	$bb_scripts->enqueue( $handle );
 }
 
+
 function bb_just_in_time_script_localization() {
 	bb_localize_script( 'topic', 'bbTopicJS', array(
 		'currentUserId' => bb_get_current_user_info( 'id' ),
 		'topicId' => get_topic_id(),
-		'favoritesLink' => get_favorites_link(),
-		'isFav' => (int) is_user_favorite( bb_get_current_user_info( 'id' ) ),
 		'confirmPostDelete' => __("Are you sure you wanna delete this post by '%author%'?"),
-		'confirmTagDelete' => __("Are you sure you want to remove the '%tag%' tag?"),
-		'favLinkYes' => __( 'favorites' ),
-		'favLinkNo' => __( '?' ),
-		'favYes' => __( 'This topic is one of your %favLinkYes% [%favDel%]' ),
-		'favNo' => __( '%favAdd% (%favLinkNo%)' ),
-		'favDel' => __( '&times;' ),
-		'favAdd' => __( 'Add this topic to your favorites' )
+		'confirmTagDelete' => __("Are you sure you want to remove the '%tag%' tag?")
 	));
 }
 
 add_action( 'bb_print_scripts', 'bb_just_in_time_script_localization' );
+
 
 ?>

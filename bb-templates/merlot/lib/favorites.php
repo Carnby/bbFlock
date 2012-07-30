@@ -1,21 +1,5 @@
 <?php
 
-function gs_favorites_header() {
-?>
-<div class="page-header">
-<?php $fave_user = bb_get_user((int) $_GET['id']); ?>
-
-<h2><?php printf(__('Favorites of %s'), $fave_user->user_login); ?></h2>
-
-<p><?php _e("Your Favorites allow you to create a custom <abbr title=\"Really Simple Syndication\">RSS</abbr> feed which pulls recent replies to the topics you specify.\nTo add topics to your list of favorites, just click the \"Add to Favorites\" link found on that topic&#8217;s page."); ?></p>
-
-<?php if ( $fave_user->ID == bb_get_current_user_info( 'id' ) ) : ?>
-<p><?php printf(__('Subscribe to your favorites&#8217; <a href="%s"><abbr title="Really Simple Syndication">RSS</abbr> feed</a>.'), attribute_escape( get_favorites_rss_link( bb_get_current_user_info( 'id' ) ) )) ?></p>
-<?php endif; ?>
-</div>
-<?php
-}
-
 function merlot_toggle_favorite_link() {
     return get_user_favorites_link(array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star-empty"></i> ' . __('Add this topic to your favorites')), array('pre' => '', 'post' => '', 'mid' => '<i class="icon-star"></i> ' . __('This topic is one of your favorites')), 'btn btn-large');
 }
@@ -27,23 +11,38 @@ function merlot_favorite_topic_js() {
     if (!bb_is_user_logged_in())
         return;
         
-    $url = attribute_escape(bb_nonce_url(bb_get_uri('bb-admin/admin-ajax.php'), 'toggle-favorite_' . get_topic_id()));
+    $topic_id = get_topic_id();
+    $user_id = (int) bb_get_current_user_info('id');
+    $url = attribute_escape(bb_nonce_url(bb_get_uri('bb-admin/admin-ajax.php'), 'toggle-favorite_' . $topic_id));
+    $favorited = (bool) is_user_favorite($user_id, $topic_id);
+    $add_text =  '<i class="icon-star-empty"></i> ' . __('Add this topic to your favorites');
+    $del_text =  '<i class="icon-star"></i> ' . __('This topic is one of your favorites');
+    
 ?>
 <script type="text/javascript">
 $(document).ready(function() {
+    <?php printf('var is_favorite = %s;', $favorited ? 'true' : 'false'); ?>
+
     $('#toggle-topic-fav').on('click', function(e) {
         console.log(e);
         
         $.post('<?php echo $url; ?>', 
             {
                 'action': 'toggle-favorite',
-                'user_id': <?php echo bb_get_current_user_info('id'); ?>,
-                'topic_id': <?php echo get_topic_id(); ?>
+                'user_id': <?php echo $user_id; ?>,
+                'topic_id': <?php echo $topic_id; ?>
             },
             function(data) {
                 console.log(data);
                 if (data == 1) {
-                    $('#toggle-topic-fav').html('added');
+                    is_favorite = !is_favorite;
+                    
+                    if (is_favorite)
+                        $('#toggle-topic-fav').html('<?php echo $del_text; ?>');
+                    else 
+                        $('#toggle-topic-fav').html('<?php echo $add_text; ?>');
+                } else {
+                    alert('<?php _e('There was an error. Please reload the page and try again in a few minutes.'); ?>');
                 }
             },
             'text'
@@ -57,3 +56,4 @@ $(document).ready(function() {
 }
 
 add_action('bb_head', 'merlot_favorite_topic_js');
+

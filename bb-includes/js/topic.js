@@ -1,19 +1,13 @@
+
 bbTopicJS = jQuery.extend( {
 	currentUserId: 0,
 	topicId: 0,
-	favoritesLink: '',
-	isFav: 0,
 	confirmPostDelete: 'Are you sure you wanna delete this post by "%author%"?',
-	confirmTagDelete: 'Are you sure you want to remove the "%tag%" tag?',
-	favLinkYes: 'favorites',
-	favLinkNo: '?',
-	favYes: 'This topic is one of your %favLinkYes% [%favDel%]',
-	favNo: '%favAdd% (%favLinkNo%)',
-	favDel: 'x',
-	favAdd: 'Add this topic to your favorites'
+	confirmTagDelete: 'Are you sure you want to remove the "%tag%" tag?'
 }, bbTopicJS );
 
 bbTopicJS.isFav = parseInt( bbTopicJS.isFav );
+
 
 addLoadEvent( function() { // Posts
 	thePostList = new listMan('thread');
@@ -63,33 +57,3 @@ function ajaxDelTag(tag, user, tagName, a) {
 		return othersTagList.ajaxDelete( 'tag', tag + '_' + user );
 }
 
-addLoadEvent( function() { // TopicMeta
-	var favoritesToggle = jQuery('#favorite-toggle');
-	favoritesToggle[ bbTopicJS.isFav ? 'removeClass' : 'addClass' ]( 'is-not-favorite' );
-	theTopicMeta = new listMan('topicmeta');
-	theTopicMeta.showLink = false;
-	var nonce = jQuery( '#favorite-toggle a[href*="_wpnonce="]' ).click( FavIt ).attr( 'href' ).toQueryParams()['_wpnonce'];
-	theTopicMeta.inputData = '&user_id=' + bbTopicJS.currentUserId + '&topic_id=' + bbTopicJS.topicId + '&_ajax_nonce=' + nonce;
-	theTopicMeta.dimComplete = function(what, id, dimClass) {
-		if ( 'is-not-favorite' == dimClass ) {
-			bbTopicJS.isFav = favoritesToggle.is('.' + dimClass) ? 0 : 1;
-			favLinkSetup();
-		}
-	}
-} );
-
-function favLinkSetup() {
-	var favoritesToggle = jQuery('#favorite-toggle');
-	if ( bbTopicJS.isFav ) {
-		html = bbTopicJS.favYes
-			.replace( /%favLinkYes%/, "<a href='" + bbTopicJS.favoritesLink + "'>" + bbTopicJS.favLinkYes + "</a>" )
-			.replace( /%favDel%/, "<a href='#' onclick='return FavIt();'>" + bbTopicJS.favDel + "</a>" );
-	} else {
-		html = bbTopicJS.favNo
-			.replace( /%favLinkNo%/, "<a href='" + bbTopicJS.favoritesLink + "'>" + bbTopicJS.favLinkNo + "</a>" )
-			.replace( /%favAdd%/, "<a href='#' onclick='return FavIt();'>" + bbTopicJS.favAdd + "</a>" );
-	}
-	favoritesToggle.html( html );
-}
-
-function FavIt() { return theTopicMeta.ajaxDimmer( 'favorite', 'toggle', 'is-not-favorite' ); }
