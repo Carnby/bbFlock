@@ -252,7 +252,7 @@ function bb_get_location() { // Not for display.  Do not internationalize.
 		return 'register-page';
 		break;
 	case 'members.php' :
-	    return 'members-page';
+	    return 'user-view-page';
 	    break;
 	case 'bb-reset-password.php':
 	    return 'password-reset';
@@ -316,6 +316,11 @@ function is_bb_favorites() {
 function is_view() {
 	return 'view-page' == bb_get_location();
 }
+
+function is_user_view() {
+	return 'user-view-page' == bb_get_location();
+}
+
 
 function is_bb_stats() {
 	return 'stats-page' == bb_get_location();
@@ -2531,6 +2536,54 @@ function get_view_link( $_view = false, $page = 1 ) {
 
 	return apply_filters( 'get_view_link', $link, $v, $page );
 }
+
+//USER VIEWS
+function user_view_name( $view = '' ) { // Filtration should be done at bb_register_view()
+	echo get_user_view_name( $view );
+}
+
+function get_user_view_name( $_view = '' ) {
+	global $user_view, $bb_user_views;
+	if ( $_view )
+		$v = bb_slug_sanitize($_view);
+	else
+		$v =& $user_view;
+
+	if ( isset($bb_user_views[$v]) )
+		return $bb_user_views[$v]['title'];
+}
+
+function user_view_pages() {
+	global $page, $user_view_count;
+	echo apply_filters( 'user_view_pages', get_page_number_links( $page, $user_view_count ) );
+}
+
+function get_user_view_pages() {
+	global $page, $user_view_count;
+	return apply_filters( 'get_user_view_pages', get_page_number_links( $page, $user_view_count, 'array' ) );
+}
+
+function user_view_link( $_view = false, $page = 1 ) {
+	echo get_user_view_link( $_view, $page );
+}
+
+function get_user_view_link( $_view = false, $page = 1 ) {
+	global $user_view, $bb_user_views;
+	if ( $_view )
+		$v = bb_slug_sanitize($_view);
+	else
+		$v =& $user_view;
+
+	if ( !array_key_exists($v, $bb_user_views) )
+		return bb_get_option('uri');
+	if ( bb_get_option('mod_rewrite') )
+		$link = bb_get_option('uri') . 'members/' . $v . ( 1 < $page ? "/page/$page" : '' );
+	else
+		$link = bb_get_option('uri') . "members.php?view=$v" . ( 1 < $page ? "&page=$page" : '');
+
+	return apply_filters( 'get_user_view_link', $link, $v, $page );
+}
+
 
 function _bb_parse_time_function_args( $args ) {
 	if ( is_numeric($args) )

@@ -1,14 +1,16 @@
 <?php
 require_once('./bb-load.php');
 
+bb_repermalink();
+
 $bb->static_title = __('Members');
+$user_view = bb_slug_sanitize($user_view);
 
-$members = bb_user_search(array('page' => $page));
+if ( isset($bb_user_views[$user_view]) ) {
+	$results = bb_user_view_query($user_view, array('page' => $page));
+	$members = $results->results;
+	$count_found_users = $results->found_rows;
+}
 
-if ($members)
-    $count_found_users = bb_count_last_query();
-else 
-    $count_found_users = 0;
-    
 bb_load_template( 'memberlist.php', array('page', 'members', 'count_found_users') );
 ?>

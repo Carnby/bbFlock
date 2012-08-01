@@ -89,6 +89,10 @@ function bb_register_default_views() {
 	bb_register_view('untagged'  , __('Topics with no tags'), array('tag_count' => 0));
 	
 	bb_register_view('popular', __('Popular Topics'), array('per_page' => $num, 'order_by' => 'topic_posts', 'append_meta' => 1));
+	
+	bb_register_user_view('all', __('All Members'));
+	global $bbdb;
+	bb_register_user_view('staff', __('Staff'), array('meta' => array($bbdb->prefix . 'capabilities' => array(array('moderator' => true), array('keymaster' => true), array('administrator' => true)))));
 }
 add_action('bb_init', 'bb_register_default_views');
 

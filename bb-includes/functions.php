@@ -2257,6 +2257,16 @@ function bb_repermalink() {
 			$view = $id;
 			$permalink = get_view_link( $view, $page );
 			break;
+		case 'user-view-page':
+		    if ( isset($_GET['view']) )
+				$id = $_GET['view'];
+			else
+				$id = get_path();
+			$_original_id = $id;
+			global $user_view;
+			$user_view = $id;
+			$permalink = get_user_view_link( $view, $page );
+			break;
 		default:
 			return;
 			break;
@@ -2381,19 +2391,18 @@ function get_assignable_caps() {
 }
 
 
-function profile_tab_topics_data($user_id = 0) {
+function profile_tab_topics_data($_user_id) {
     global $topics;
-    $topics = get_recent_user_threads($user_id);
+    $topics = get_recent_user_threads($_user_id);
 }
 
-function profile_tab_posts_data($user_id = 0) {
+function profile_tab_posts_data($_user_id) {
     global $posts;
-    $posts = get_recent_user_replies($user_id);
+    $posts = get_recent_user_replies($_user_id);
 }
 
-function profile_tab_edit_data($user_id = 0) {
+function profile_tab_edit_data($user_id) {
     global $errors, $bb_roles;
-    
     bb_auth();
 
     if ( !bb_current_user_can( 'edit_user', $user_id ) ) {
@@ -2411,6 +2420,8 @@ function profile_tab_edit_data($user_id = 0) {
     }
 
     require_once(BB_PATH . BB_INC . 'registration-functions.php');
+
+    $user = bb_get_user($user_id);
 
     if ( !$user->capabilities )
 	    $user->capabilities = array('inactive' => true);
@@ -2452,7 +2463,6 @@ function profile_tab_edit_data($user_id = 0) {
 		    }
 
 		    $user_obj = new BB_User( $user->ID );
-
 		    $role = $_POST['role'];
 
 		    $can_keep_gate = bb_current_user_can( 'keep_gate' );
@@ -2500,6 +2510,7 @@ function profile_tab_edit_data($user_id = 0) {
 		    if ( bb_current_user_can( 'edit_users' ) ) {
 			    if ( !array_key_exists($role, $user->capabilities) ) {
 				    $user_obj->set_role($role); // Only support one role for now
+
 				    if ( 'blocked' == $role && 'blocked' != $old_role )
 					    bb_break_password( $user->ID );
 				    elseif ( 'blocked' != $role && 'blocked' == $old_role )
@@ -2602,6 +2613,81 @@ function bb_get_view_query_args( $view ) {
 		return false;
 
 	return $bb_views[$view]['query'];
+}
+
+/* User Views */
+
+function bb_get_user_views() {
+	global $bb_user_views;
+
+	$user_views = array();
+	foreach ( (array) $bb_user_views as $view => $array )
+		$user_views[$view] = $array['title'];
+
+	return $user_views;
+}
+
+function bb_register_user_view( $view, $title, $query_args = '') {
+	global $bb_user_views;
+
+	$view  = bb_slug_sanitize( $view );
+	$title = wp_specialchars( $title );
+
+	if ( !$view || !$title )
+		return false;
+
+	$query_args = wp_parse_args( $query_args );
+
+	$bb_user_views[$view]['title']  = $title;
+	$bb_user_views[$view]['query']  = $query_args;
+	return $bb_user_views[$view];
+}
+
+function bb_deregister_user_view( $view ) {
+	global $bb_user_views;
+
+	$view = bb_slug_sanitize( $view );
+	if ( !isset($bb_user_views[$view]) )
+		return false;
+
+	unset($GLOBALS['bb_user_views'][$view]);
+	return true;
+}
+
+function bb_user_view_query( $view, $new_args = '' ) {
+    global $bb_user_views;
+    
+    $view = bb_slug_sanitize($view);
+    
+    if ( !isset($bb_user_views[$view]) )
+		return false;
+
+	if ( $new_args ) {
+		$new_args = wp_parse_args( $new_args );
+		$query_args = array_merge( $bb_user_views[$view]['query'], $new_args );
+	} else {
+		$query_args = $bb_user_views[$view]['query'];
+	}
+	
+    $result = new stdClass;
+    $result->results = bb_user_search($query_args);
+    
+    if ($result->results)
+        $result->found_rows = bb_count_last_query();
+    else 
+        $result->found_rows = 0;
+        
+    return $result; 
+}
+
+function bb_get_user_view_query_args( $view ) {
+	global $bb_user_views;
+
+	$view = bb_slug_sanitize( $view );
+	if ( !isset($bb_user_views[$view]) )
+		return false;
+
+	return $bb_user_views[$view]['query'];
 }
 
 /* Nonce */
@@ -2897,8 +2983,8 @@ function bb_user_search( $args = '' ) {
 	if ( $args && is_string($args) && false === strpos($args, '=') )
 		$args = array( 'query' => $args );
 
-	$defaults = array( 'query' => '', 'append_meta' => true, 'user_login' => true, 'display_name' => true, 'user_nicename' => false, 'user_url' => true, 'user_email' => false, 'user_meta' => false, 'users_per_page' => false, 'page' => false );
-
+	$defaults = array( 'query' => '', 'append_meta' => true, 'user_login' => true, 'display_name' => true, 'user_nicename' => false, 'user_url' => true, 'user_email' => false, 'user_meta' => false, 'meta' => false, 'users_per_page' => false, 'page' => false );
+	
 	extract(wp_parse_args( $args, $defaults ), EXTR_SKIP);
 
 	$query = trim( $query );
@@ -2937,6 +3023,40 @@ function bb_user_search( $args = '' ) {
 			return $users;
 		endif;
 	endif;
+	
+	if ($meta) {
+	    $sql = "SELECT user_id FROM $bbdb->usermeta WHERE ";
+	    
+	    $all_conditions = array();
+	    foreach ($meta as $meta_key => $meta_values) {
+	        $conditions = array();
+	        if (is_array($meta_values)) {
+	            $serialized_values = array_map('bb_maybe_serialize', $meta_values);
+	            $in = array();
+	            foreach ($serialized_values as $value) {
+	                $in[] = $bbdb->prepare('%s', $value);
+	            }
+	            $conditions[] = sprintf("meta_value IN (%s)", implode(', ', $in)); 
+	        } else {
+	            $conditions[] = $bbdb->prepare('meta_value = %s', $meta_values);
+	        }
+	        
+	        $all_conditions[] = sprintf('%s', implode(' OR ', $conditions));
+	    }
+	    
+	    $sql .= sprintf(' meta_key = \'%s\' AND (%s) ', $meta_key, implode(' AND ', $all_conditions));
+	    $sql .= " LIMIT $limit";
+	    
+	    //TODO: this would reset the previous results found.
+	    $user_meta_ids = $bbdb->get_col($sql);
+	    $bb_last_countable_query = $sql;
+
+		bb_cache_users( $user_meta_ids );
+		$users = array();
+		foreach( $user_meta_ids as $user_id )
+			$users[] = bb_get_user( $user_id );
+		return $users;
+	}
 
 	$sql = "SELECT * FROM $bbdb->users";
 

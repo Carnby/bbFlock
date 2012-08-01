@@ -188,8 +188,13 @@ function gs_sidebar() {
         gs_manage_tags_form();
     }
     
+    if (is_user_view()) {
+        printf('<h3>%s</h3>', __('Views'));
+        gs_user_views_tabs();
+    }
+    
     // display on site pages, but not on plugin pages.
-    if (!is_bb_profile() && !is_topic() && bb_get_location() != '') {  
+    if (!is_bb_profile() && !is_topic() && !is_user_view() && bb_get_location() != '') {  
         printf('<h3>%s</h3>', __('Views'));
         gs_views_tabs();
     }
@@ -219,7 +224,7 @@ function gs_nav_link_wrap($link, $context = '') {
         $class = $active;
     else if ($context == 'tags' && is_bb_tags())
         $class = $active;
-    else if ($context == 'members' && bb_get_location() == 'members-page')
+    else if ($context == 'members' && bb_get_location() == 'user-view-page')
         $class = $active;
     else if ($context == 'register' && bb_get_location() == 'register-page')
         $class = $active;
@@ -241,7 +246,7 @@ function gs_navigation() {
 	
 	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-tags icon-white"></i> %s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
 	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-th icon-white"></i> %s</a>', bb_get_uri('members.php'), __('Members')), 'members');
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-th icon-white"></i> %s</a>', get_user_view_link('all'), __('Members')), 'members');
 	
 	printf('<ul class="nav">%s</ul>', implode('', apply_filters('gs_navigation_menu', $links)));
 	
