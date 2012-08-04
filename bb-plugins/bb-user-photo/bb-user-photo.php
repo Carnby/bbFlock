@@ -8,8 +8,8 @@ Author URI: http://about.me/egraells
 License: GPLv3
 */
 
-define('USERPHOTO_PATH', BB_PATH . "bb-uploads/avatars/");
-define('USERPHOTO_URL', bb_get_option('uri') . 'bb-uploads/avatars/');
+define('USERPHOTO_PATH', BB_PATH . "/bb-uploads/avatars/");
+define('USERPHOTO_URL', bb_get_uri() . '/bb-uploads/avatars/');
 
 define('USE_GRAVATARS_IF_NO_PHOTO', 1);	
 
@@ -79,37 +79,8 @@ function userphoto_profile_update($userID){
 		if(isset($_FILES['userphoto_image_file']) && @$_FILES['userphoto_image_file']['name']){
 			
 			#Upload error
-			$error = '';
-			if($_FILES['userphoto_image_file']['error']){
-				switch($_FILES['userphoto_image_file']['error']){
-					case UPLOAD_ERR_INI_SIZE:
-					case UPLOAD_ERR_FORM_SIZE:
-						$error = __("The uploaded file exceeds the max upload size.", 'user-photo');
-						break;
-					case UPLOAD_ERR_PARTIAL:
-						$error = __("The uploaded file was only partially uploaded.", 'user-photo');
-						break;
-					case UPLOAD_ERR_NO_FILE:
-						$error = __("No file was uploaded.", 'user-photo');
-						break;
-					case UPLOAD_ERR_NO_TMP_DIR:
-						$error = __("Missing a temporary folder.", 'user-photo');
-						break;
-					case UPLOAD_ERR_CANT_WRITE:
-						$error = __("Failed to write file to disk.", 'user-photo');
-						break;
-					case UPLOAD_ERR_EXTENSION:
-						$error = __("File upload stopped by extension.", 'user-photo');
-						break;
-					default:
-						$error = __("File upload failed due to unknown error.", 'user-photo');
-				}
-			}
-			else if(!$_FILES['userphoto_image_file']['size'])
-				$error = sprintf(__("The file &ldquo;%s&rdquo; was not uploaded. Did you provide the correct filename?", 'user-photo'), $_FILES['userphoto_image_file']['name']);
-			else if(@!$userphoto_validtypes[$_FILES['userphoto_image_file']['type']]) 
-				$error = sprintf(__("The uploaded file type &ldquo;%s&rdquo; is not allowed.", 'user-photo'), $_FILES['userphoto_image_file']['type']);
-				
+			$error = bb_image_check_error('userphoto_image_file');
+			
 			if (!empty($error))
 			    $errors->add('userphoto_error', $error);
 			
@@ -118,7 +89,7 @@ function userphoto_profile_update($userID){
 			$imageinfo = null;
 			$thumbinfo = null;
 			
-			if (!$error) {				
+			if (empty($error)) {				
 				$imageinfo = getimagesize($tmppath);
 				if (!$imageinfo || !$imageinfo[0] || !$imageinfo[1])
 					$error = __("Unable to get image dimensions.", 'user-photo');
@@ -128,7 +99,7 @@ function userphoto_profile_update($userID){
 				}
 			}
 			
-			if (!$error) {
+			if (empty($error)) {
 				$dir = USERPHOTO_PATH;
 				
 				if (!file_exists($dir) && !mkdir($dir, 0777)) {
@@ -137,12 +108,12 @@ function userphoto_profile_update($userID){
 				}
 					
 				
-				if (!$error) {
+				if (empty($error)) {
 
 					$imagefile = preg_replace('/^.+(?=\.\w+$)/', $userdata->user_nicename, $_FILES['userphoto_image_file']['name']);
-					$imagepath = $dir . '/' . $imagefile;
+					$imagepath = $dir . $imagefile;
 					$thumbfile = preg_replace("/(?=\.\w+$)/", '.thumbnail', $imagefile);
-					$thumbpath = $dir . '/' . $thumbfile;
+					$thumbpath = $dir  . $thumbfile;
 					
 					if(!move_uploaded_file($tmppath, $imagepath)) {
 						$error = __("Unable to move the file to the user photo upload content directory.", 'user-photo');
@@ -171,11 +142,12 @@ function userphoto_profile_update($userID){
 		}
 	}
 	
+	/*
 	if ($error)
 		bb_update_usermeta($userID, 'userphoto_error', $error);
 	else
 		bb_delete_usermeta($userID, "userphoto_error");
-
+    */
 }
 
 add_action('bb_delete_user', 'userphoto_delete_user');
