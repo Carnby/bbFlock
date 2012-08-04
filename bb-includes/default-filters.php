@@ -115,5 +115,14 @@ if ( bb_get_option( 'wp_table_prefix' ) ) {
 
 if ( !defined( 'BB_MAIL_EOL' ) )
 	define( 'BB_MAIL_EOL', "\n" );
+	
+	
+// pre-cache users. TODO: it should be optional depending on the theme.
+add_action('bb_index.php', 'bb_precache_users');
+add_action('bb_forum.php', 'bb_precache_users');
+add_action('bb_view.php', 'bb_precache_users');
+add_action('bb_profile.php', 'bb_precache_users');
+add_action('bb_stats.php', 'bb_precache_users');
+add_action('bb_favorites.php', 'bb_precache_users');
+add_action('bb_tag-single.php', 'bb_precache_users');
 
-?>

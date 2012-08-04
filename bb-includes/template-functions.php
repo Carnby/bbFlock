@@ -2584,6 +2584,15 @@ function get_user_view_link( $_view = false, $page = 1 ) {
 	return apply_filters( 'get_user_view_link', $link, $v, $page );
 }
 
+function bb_no_users_found_message() {
+    $text = __('No users found.');
+?>
+<div class="well">
+<h2><?php echo $text; ?></h2>
+</div>
+<?php
+}
+
 
 function _bb_parse_time_function_args( $args ) {
 	if ( is_numeric($args) )

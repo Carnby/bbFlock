@@ -1154,6 +1154,30 @@ function bb_get_top_tags( $recent = true, $limit = 40 ) {
 
 /* Users */
 
+function bb_precache_users($not_used = 0) {
+    global $topics;
+    $ids = array();
+    foreach ($topics as &$topic) {
+        $ids[$topic->topic_poster] = true;
+        $ids[$topic->topic_last_poster] = true;
+    }
+    
+    global $stickies;
+    if ($stickies) foreach ($stickies as &$topic) {
+        $ids[$topic->topic_poster] = true;
+        $ids[$topic->topic_last_poster] = true;
+    }
+    
+    global $super_stickies;
+    if ($super_stickies) foreach ($super_stickies as &$topic) {
+        $ids[$topic->topic_poster] = true;
+        $ids[$topic->topic_last_poster] = true;
+    }
+    
+    if ($ids)
+        bb_cache_users(array_keys($ids));
+}
+
 function bb_block_current_user() {
 	global $bbdb;
 	if ( $id = bb_get_current_user_info( 'id' ) )

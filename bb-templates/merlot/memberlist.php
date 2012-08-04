@@ -6,25 +6,28 @@
 
 <?php if ($members) { ?>
 
-<ul class="thumbnails">
+<div class="members">
 
 <?php foreach ($members as $member) { ?>
-    <li class="span2">
-	    <div class="thumbnail">
-	        <?php echo bb_get_avatar($member->ID, 140); ?>
-	    
+    <div class="member">
+	    <div class="pull-left" style="width: 80px;">
+	        <?php echo bb_get_avatar($member->ID, 64); ?>
+	    </div>
+	    <div class="profile-info">
 	        <h5><?php echo "<a href=\"".get_user_profile_link($member->ID)."\">".$member->user_login."</a>"; ?></h5>
 	        <p><span class="label label-info"><?php echo get_user_type($member->ID); ?></span></p>
 	    </div>
-    </li>
+	    
+	    <hr />
+	 </div>
 <?php } ?>
 
-</ul>
+</div>
 
 <?php gs_member_pagination(); ?>
 
 <?php } else { 
-    gs_no_members();
+    bb_no_users_found_message();
 } ?>
 
 <?php bb_get_footer(); ?>

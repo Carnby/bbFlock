@@ -21,8 +21,6 @@ function gs_header_breadcrumb() {
         gs_profile_breadcrumb();
     if (is_bb_tags())
         gs_tag_breadcrumb();
-    if (is_bb_stats())
-        gs_stats_breadcrumb();
 }
 
 function gs_page_header() {
@@ -106,8 +104,6 @@ function gs_credits() {
 
 function gs_do_full_width() {
     $do = in_array(bb_get_location(), array('register-page', 'login-page', 'password-reset'));    
-    $do = $do || (is_front() && isset($_GET['new']));
-    //$do = $do || is_bb_profile_tab('edit');
     return apply_filters('gs_do_full_width', $do);
 }
 
@@ -287,14 +283,12 @@ function gs_site_title() {
 
 
 function gs_front_page_header() {
-    if (!isset($_GET['new'])) {
     ?>
     <div class="page-header">
     <h1><?php bb_option('name'); ?></h1>
     <p><?php bb_option('description'); ?></p>
     </div>
     <?php
-    }
 }
 
 function gs_registration_header() {
@@ -306,14 +300,7 @@ function gs_registration_header() {
 
 }
 
-function gs_no_members() {
-    $text = __('No users found.');
-?>
-<div class="well">
-<h2><?php echo $text; ?></h2>
-</div>
-<?php
-}
+
 
 function merlot_bootstrap_css() {
     $css_url = bb_get_option('uri') . '/bb-vendors/bootstrap/css/bootstrap.min.css';
