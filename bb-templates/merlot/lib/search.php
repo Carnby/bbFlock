@@ -1,8 +1,6 @@
 <?php
 
-function gs_search_results(&$query, &$results) {
-
-    if ($results) {
+function merlot_search_results(&$query, &$results) {
     ?>
 <ol class="search-results">
 <?php foreach ( $results as $bb_post ) { ?>
@@ -14,12 +12,10 @@ function gs_search_results(&$query, &$results) {
     </li>
 <?php } ?>
 </ol>
-    <?php } else {
-        gs_no_discussions();
-    }
+    <?php
 }
 
-function gs_search_header(&$query) {
+function merlot_search_header(&$query) {
 ?>
     <h2><?php topic_title(); ?><?php 
     if ($query) {
@@ -29,7 +25,7 @@ function gs_search_header(&$query) {
     } ?></h2>
     
     <?php if ($query) { ?>
-    <p><?php printf(__('You may also try your <a href="http://google.com/search?q=site:%1$s&%2$s">search at Google</a>'), bb_get_option('uri'), urlencode($query)) ?></p>    
+    <p><?php printf(__('You may also try your <a href="http://google.com/search?q=site:%1$s+%2$s">search at Google</a>'), bb_get_uri(), urlencode($query)) ?></p>    
     <?php } ?>
 <?php
 }
@@ -38,5 +34,17 @@ function gs_search_form() {
     bb_topic_search_form();
 }
 
+function merlot_nav_search_form() {
+	$search_value = '';
+    
+    if (is_bb_search()) {
+        global $q;
+        $search_value = $q;
+    }
+
+    $search = '<form class="navbar-search pull-right" id="searchform" method="get" action="search.php"><input type="text" class="input-medium search-query" name="search" id="s" size="15" placeholder="' . attribute_escape(__('Search')) . '" value="' . attribute_escape($search_value) . '"/></form>';
+	
+	printf('%s', $search);
+}
 
 

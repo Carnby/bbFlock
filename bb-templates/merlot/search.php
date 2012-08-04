@@ -5,10 +5,10 @@
 
 <h3><?php _e('Relevant Posts')?></h3>
 
-<?php gs_search_results($q, $relevant);?>
+<?php merlot_search_results($q, $relevant);?>
 
 <?php } else {
-    gs_no_discussions();
+    bb_no_discussions_message();
 }?>
 
 <?php bb_get_footer(); ?>
