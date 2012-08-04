@@ -1,7 +1,7 @@
 <?php
 
 
-$gs_sources = array('links.php', 'profile.php', 'topic.php', 'theme.php', 'favorites.php', 'post.php', 'forum.php', 'search.php', 'view.php', 'tag.php', 'functions.php');
+$gs_sources = array('links.php', 'profile.php', 'topic.php', 'theme.php', 'favorites.php', 'post.php', 'forum.php', 'search.php', 'view.php', 'tag.php', 'functions.php', 'members.php');
 
 foreach ($gs_sources as $gs_source) {
     require_once(bb_get_template('lib/' . $gs_source));

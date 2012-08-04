@@ -1,9 +1,5 @@
 <?php bb_get_header(); ?>
 
-<div class="page-header">
-    <h2><?php _e('Members'); ?></h2>
-</div>
-
 <?php if ($members) { ?>
 
 <div class="members">
@@ -24,7 +20,7 @@
 
 </div>
 
-<?php gs_member_pagination(); ?>
+<?php merlot_member_pagination(); ?>
 
 <?php } else { 
     bb_no_users_found_message();

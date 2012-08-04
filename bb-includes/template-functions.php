@@ -391,63 +391,11 @@ function bb_feed_head() {
 	$feeds = array();
 	
 	switch (bb_get_location()) {
-		case 'profile-page':
-			if ( $tab = isset($_GET['tab']) ? $_GET['tab'] : get_path(2) )
-				if ($tab != 'favorites')
-					break;
-			
-			$feeds[] = array(
-				'title' => sprintf(__('User Favorites: %s'), get_user_name()),
-				'href'  => get_favorites_rss_link()
-			);
-			break;
-		
-		case 'topic-page':
-			$feeds[] = array(
-				'title' => sprintf(__('Topic: %s'), get_topic_title()),
-				'href'  => get_topic_rss_link()
-			);
-			break;
-		
-		case 'tag-page':
-			if (is_bb_tag()) {
-				$feeds[] = array(
-					'title' => sprintf(__('Tag: %s'), bb_get_tag_name()),
-					'href'  => bb_get_tag_rss_link()
-				);
-			}
-			break;
-		
-		case 'forum-page':
-			$feeds[] = array(
-				'title' => sprintf(__('Forum: %s - Recent Posts'), get_forum_name()),
-				'href'  => get_forum_rss_link()
-			);
-			$feeds[] = array(
-				'title' => sprintf(__('Forum: %s - Recent Topics'), get_forum_name()),
-				'href'  => bb_get_forum_topics_rss_link()
-			);
-			break;
-		
 		case 'front-page':
-			$feeds[] = array(
-				'title' => __('Recent Posts'),
-				'href'  => bb_get_posts_rss_link()
-			);
 			$feeds[] = array(
 				'title' => __('Recent Topics'),
 				'href'  => bb_get_topics_rss_link()
 			);
-			break;
-		
-		case 'view-page':
-			global $bb_views, $view;
-			if ($bb_views[$view]['feed']) {
-				$feeds[] = array(
-					'title' => get_view_name(),
-					'href'  => bb_get_view_rss_link()
-				);
-			}
 			break;
 	}
 	
@@ -483,13 +431,8 @@ function bb_get_topics_rss_link() {
 	return apply_filters( 'bb_get_topics_rss_link', $link );
 }
 
-function bb_get_view_rss_link() {
-	global $view;
-	if ( bb_get_option( 'mod_rewrite' ) )
-		$link = bb_get_option( 'uri' ) . 'rss/view/' . $view;
-	else
-		$link = bb_get_option( 'uri' ) . 'rss.php?view=' . $view;
-	return apply_filters( 'bb_get_view_rss_link', $link );
+function bb_rss_link() {
+	echo '<a href="' . bb_get_topics_rss_link() . '" class="feed">' . __('RSS feed for this site') . '</a>';
 }
 
 // FORUMS

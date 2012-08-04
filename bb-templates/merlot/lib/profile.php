@@ -1,6 +1,6 @@
 <?php
 
-function gs_profile_breadcrumb() {
+function merlot_profile_breadcrumb() {
     global $user;
     $links = array();
     
@@ -57,11 +57,6 @@ function gs_profile_header() {
         <h2><?php echo esc_html($user->user_login); ?></h2>
     </div>
     <?php
-}
-
-function gs_member_pagination() {
-    global $page, $count_found_users;
-    gs_pagination_links(get_page_number_links($page, $count_found_users, 'array'));
 }
 
 function gs_profile_actions() {

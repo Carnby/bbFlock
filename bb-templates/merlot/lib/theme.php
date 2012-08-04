@@ -15,11 +15,11 @@ function merlot_header_breadcrumb() {
         return;
 
     if (is_view())
-        gs_view_breadcrumb();
+        merlot_view_breadcrumb();
     if (is_topic() or is_forum())
         gs_forum_breadcrumb();
     if (is_bb_profile())
-        gs_profile_breadcrumb();
+        merlot_profile_breadcrumb();
     if (is_bb_tags())
         gs_tag_breadcrumb();
 }
@@ -51,7 +51,7 @@ function merlot_page_header() {
         
     else if (is_bb_search()) {
         global $q;
-        gs_search_header($q);
+        merlot_search_header($q);
     }
     
     else if (is_front())
@@ -64,7 +64,9 @@ function merlot_page_header() {
         gs_login_header();
         
     else if (is_view())
-        gs_view_header();
+        merlot_view_header();
+    else if (is_user_view())
+        merlot_user_view_header();
     else
         do_action('merlot_custom_page_header');
         
@@ -168,21 +170,26 @@ function merlot_sidebar() {
         topic_tags();
     }
     
-    
-    
     if (is_bb_tag()) {
         gs_manage_tags_form();
     }
     
     if (is_user_view()) {
         printf('<h3>%s</h3>', __('Views'));
-        gs_user_views_tabs();
+        merlot_user_views_tabs();
     }
     
+    /*
     // display on site pages, but not on plugin pages.
     if (!is_bb_profile() && !is_topic() && !is_user_view() && bb_get_location() != '') {  
         printf('<h3>%s</h3>', __('Views'));
-        gs_views_tabs();
+        merlot_views_tabs();
+    }
+    */
+    
+    if (is_front()) {  
+        printf('<h3>%s</h3>', __('Views'));
+        merlot_views_tabs();
     }
     
     do_action('merlot_after_sidebar');
@@ -248,24 +255,11 @@ function merlot_navigation() {
 	
 	$links[] = '<li class="divider-vertical"></li>';
 
-    gs_nav_search_form();
+    merlot_nav_search_form();
 
 	printf('<ul class="nav pull-right">%s</ul>', implode('', apply_filters('gs_user_navigation_menu', $links)));
 
     do_action('merlot_after_navigation');
-}
-
-function gs_nav_search_form() {
-	$search_value = '';
-    
-    if (is_bb_search()) {
-        global $q;
-        $search_value = $q;
-    }
-
-    $search = '<form class="navbar-search pull-right" id="searchform" method="get" action="search.php"><input type="text" class="input-medium search-query" name="search" id="s" size="15" placeholder="' . attribute_escape(__('Search')) . '" value="' . attribute_escape($search_value) . '"/></form>';
-	
-	printf('%s', $search);
 }
 
 function merlot_front_page_header() {
