@@ -343,3 +343,13 @@ function bb_get_photo($id) {
 }
 
 
+// plugin support
+
+function profile_form_user_photo() {
+    global $user; 
+    userphoto_display_selector_fieldset($user->ID);
+}
+
+if (function_exists('userphoto_display_selector_fieldset')) 
+	add_action('gs_profile_edit_form', 'profile_form_user_photo');
+
