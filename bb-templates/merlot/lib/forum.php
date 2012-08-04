@@ -13,15 +13,12 @@ function gs_forum_breadcrumb() {
 
 function gs_forum_header() {
 ?>
-<div class="page-header">
 <h2><?php forum_name(); ?></h2>
 <?php do_action('forum_page_after_forum_name'); ?>
 <?php if ($desc = get_forum_description()) { ?>
     <p><?php echo $desc; ?></p>
 <?php } ?>
 <?php do_action('forum_page_after_forum_description'); ?>
-
-</div>
 <?php
 }
 

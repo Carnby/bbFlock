@@ -39,8 +39,6 @@ function gs_view_breadcrumb() {
 
 function gs_view_header() {
 ?>
-<div class="page-header">
     <h2><?php view_name(); ?></h2>
-</div>
 <?php
 }

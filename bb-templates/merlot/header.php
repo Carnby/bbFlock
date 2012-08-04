@@ -23,41 +23,36 @@
         
     </head>
 
-    <body id="<?php bb_location(); ?>" class="<?php gs_body_classes(); ?>">
-	
-	    <?php do_action('before_header'); ?>
-	        <?php do_action('before_navbar'); ?>
-	            
-            <div class="navbar navbar-fixed-top">
-                <div class="navbar-inner">
-                    <div class="container-fluid">
-                        <?php do_action('before_navigation'); ?>
-			            <?php gs_navigation(); ?>
-			            <?php do_action('after_navigation'); ?>
-                    </div>
-                </div>
-                   
-            </div>
+    <body id="<?php bb_location(); ?>" class="<?php merlot_body_classes(); ?>">
             
-            <?php do_action('after_navbar'); ?>
-         
-        <?php do_action('after_header'); ?>
-        
-        <div class="merlot-page-header container-fluid">
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+		            <?php merlot_navigation(); ?>
+                </div>
+            </div>
+               
+        </div>
+
+        <div class="merlot-header container-fluid">
             <div class="row-fluid">
-	            <div class="span12">
-		            <?php gs_header_breadcrumb(); ?>
+	            <div class="site-header span12">
+	                <?php merlot_site_header(); ?>
+	                <div class="clearfix"></div>
 		        </div>
 	        </div>
         </div>
 
 	    <div class="merlot-page-content container-fluid">	
 		    <div class="row-fluid">
-		        <?php if (!gs_do_full_width()) { ?>
+		        <?php if (!merlot_do_full_width()) { ?>
 		        <div class="span9">
 		        <?php } else { ?>
 		        <div class="span12">
 		        <?php } ?>
 		        
-		        <?php gs_page_header(); ?>
+		        <div class="page-header">
+		            <?php merlot_page_header(); ?>
+		            <div class="clearfix"></div>
+		        </div>
 		        

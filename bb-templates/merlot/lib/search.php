@@ -21,8 +21,6 @@ function gs_search_results(&$query, &$results) {
 
 function gs_search_header(&$query) {
 ?>
-<div class="page-header">
-
     <h2><?php topic_title(); ?><?php 
     if ($query) {
         printf(__('Search for &#8220;%s&#8221;'), wp_specialchars($query));
@@ -33,7 +31,6 @@ function gs_search_header(&$query) {
     <?php if ($query) { ?>
     <p><?php printf(__('You may also try your <a href="http://google.com/search?q=site:%1$s&%2$s">search at Google</a>'), bb_get_option('uri'), urlencode($query)) ?></p>    
     <?php } ?>
-</div>
 <?php
 }
 

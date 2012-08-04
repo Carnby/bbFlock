@@ -1,12 +1,13 @@
 <?php
 
-function human_filesize($size) {
-      $sizes = array("", "K", "M", "G", "T", "P", "E", "Z", "Y");
-      if ($size == 0) { return('n/a'); } else {
-      return (round($size/pow(1000, ($i = floor(log($size, 1000)))), $i > 1 ? 2 : 0) . $sizes[$i]); }
+function merlot_site_header() {
+    do_action('merlot_before_site_header');
+    do_action('merlot_site_header');
+    merlot_header_breadcrumb();
+    do_action('merlot_after_site_header');
 }
 
-function gs_header_breadcrumb() {
+function merlot_header_breadcrumb() {
 
     do_action('bb_header_breadcrumb');
 
@@ -23,48 +24,51 @@ function gs_header_breadcrumb() {
         gs_tag_breadcrumb();
 }
 
-function gs_page_header() {
+function merlot_page_header() {
     //if (is_view())
     //    gs_view_breadcrumb();
-    
-    do_action('bb_page_header');
-    
     if (apply_filters('bb_page_header_override', false))
         return;
+        
+    do_action('merlot_before_page_header');
     
     if (is_topic())
         gs_topic_header();
     
-    if (is_bb_profile()) {
+    else if (is_bb_profile()) {
         if (isset($_GET['tab']) and $_GET['tab'] == 'favorites')
             gs_favorites_header();
         else 
             gs_profile_header();
     }
     
-    if (is_forum())
+    else if (is_forum())
         gs_forum_header();
     //if (is_bb_tag())
     //    gs_tag_breadcrumb();
-    if (is_bb_tags())
+    else if (is_bb_tags())
         gs_tags_header();
         
-    if (is_bb_search()) {
+    else if (is_bb_search()) {
         global $q;
         gs_search_header($q);
     }
     
-    if (is_front())
-        gs_front_page_header();
+    else if (is_front())
+        merlot_front_page_header();
         
-    if (bb_get_location() == 'register-page')
-        gs_registration_header();
+    else if (bb_get_location() == 'register-page')
+        merlot_registration_header();
         
-    if (bb_get_location() == 'login-page')
+    else if (bb_get_location() == 'login-page')
         gs_login_header();
         
-    if (is_view())
+    else if (is_view())
         gs_view_header();
+    else
+        do_action('merlot_custom_page_header');
+        
+    do_action('merlot_after_page_header');
 }
 
 function gs_breadcrumb($links) {
@@ -77,7 +81,7 @@ function gs_breadcrumb($links) {
     echo '</ul>';
 }
 
-function gs_body_classes() {
+function merlot_body_classes() {
 	$classes = array();
 
 	if (bb_is_user_logged_in())
@@ -87,42 +91,28 @@ function gs_body_classes() {
 		
 	$classes[] = sprintf('merlot-%s', bb_get_location());
 	
-	if (gs_do_full_width())
+	if (merlot_do_full_width())
 	    $classes[] = 'merlot-content-full-width';
 	else 
 	    $classes[] = 'merlot-content-non-full-width';
 		
-	echo implode(' ', apply_filters('gs_body_classes', $classes));
+	echo implode(' ', apply_filters('merlot_body_classes', $classes));
 }
 
-function gs_credits() {
+function merlot_credits() {
 	echo '<p>';
 	printf(__('%1$s is proudly powered by <strong><a href="%2$s">Merlot</a></strong>.'), bb_get_option('name'), "http://github.com/Carnby/bbFlock");
 	echo '</p>';
 }
 
 
-function gs_do_full_width() {
+function merlot_do_full_width() {
     $do = in_array(bb_get_location(), array('register-page', 'login-page', 'password-reset'));    
-    return apply_filters('gs_do_full_width', $do);
+    return apply_filters('merlot_do_full_width', $do);
 }
 
-function gs_rss_link() {
-	if (is_forum()) {
-	    global $forum_id;
-		$link = '<a class="feed" href="' . bb_get_forum_topics_rss_link($forum_id) . '">' . __('RSS feed for this forum') . '</a>';
-	} else if (is_topic()) {
-		$link = '<a href="' . get_topic_rss_link() . '" class="feed">' . __('RSS feed for this topic') . '</a>';	 
-	} else if (is_bb_tag()) {
-		$link = '<a href="' . bb_get_tag_rss_link() . '" class="feed">' . __('RSS feed for this tag') . '</a>';
-	} else {
-	    $link = '<a href="' . bb_get_topics_rss_link() . '" class="feed">' . __('RSS feed for this site') . '</a>';
-    }
-    
-    echo $link;
-}
 
-function gs_sidebar_buttons() {
+function merlot_sidebar_buttons() {
     $buttons = array();
     
     if (!bb_is_user_logged_in()) {
@@ -157,7 +147,7 @@ function gs_sidebar_buttons() {
     }
 }
 
-function gs_sidebar() {
+function merlot_sidebar() {
     do_action('merlot_before_sidebar');
     
     if (is_bb_profile()) {
@@ -165,7 +155,7 @@ function gs_sidebar() {
         gs_profile_data();
     }
     
-    gs_sidebar_buttons();
+    merlot_sidebar_buttons();
         
     if (is_topic()) {      
         $topic = get_topic(get_topic_id(0));
@@ -206,9 +196,7 @@ function gs_login_form() {
 
 function gs_login_header() {
 ?>
-<div class="page-header">
 <h2><?php _e('Log in'); ?></h2>
-</div>
 <?php
 }
 
@@ -232,7 +220,9 @@ function gs_nav_link_wrap($link, $context = '') {
     return sprintf('<li %s>%s</li>', $class, $link); 
 }
 
-function gs_navigation() {
+function merlot_navigation() {
+    do_action('merlot_before_navigation');
+    
 	$links = array();
 	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-home icon-white"></i> %s</a>', bb_get_uri(), __('Front Page', 'genealogies')), 'front-page');
 	
@@ -262,6 +252,7 @@ function gs_navigation() {
 
 	printf('<ul class="nav pull-right">%s</ul>', implode('', apply_filters('gs_user_navigation_menu', $links)));
 
+    do_action('merlot_after_navigation');
 }
 
 function gs_nav_search_form() {
@@ -277,30 +268,19 @@ function gs_nav_search_form() {
 	printf('%s', $search);
 }
 
-function gs_site_title() {
-	printf('<a class="brand" href="%s">%s</a>', bb_get_option('uri'), bb_get_option('name'));
-}
-
-
-function gs_front_page_header() {
+function merlot_front_page_header() {
     ?>
-    <div class="page-header">
     <h1><?php bb_option('name'); ?></h1>
     <p><?php bb_option('description'); ?></p>
-    </div>
     <?php
 }
 
-function gs_registration_header() {
+function merlot_registration_header() {
 ?>
-<div class="page-header">
 <h2><?php _e('Registration'); ?></h2>
-</div>
 <?php
 
 }
-
-
 
 function merlot_bootstrap_css() {
     $css_url = bb_get_option('uri') . '/bb-vendors/bootstrap/css/bootstrap.min.css';
@@ -313,21 +293,6 @@ function merlot_bootstrap_responsive_css() {
     $css_url = apply_filters('merlot_bootstrap_responsive_css', $css_url);
     printf('<link rel="stylesheet" href="%s" type="text/css" />', $css_url);
 }
-
-// auxiliary funcs
-// source: http://stackoverflow.com/questions/834303/php-startswith-and-endswith-functions
-
-function starts_with($haystack, $needle) {
-    $length = strlen($needle);
-    return (substr($haystack, 0, $length) === $needle);
-}
-
-function ends_with($haystack, $needle) {
-    $length = strlen($needle);
-    $start  = $length * -1; //negative
-    return (substr($haystack, $start) === $needle);
-}
-
 
 function gs_pagination_links($page_links) {
     if (!$page_links)
@@ -345,7 +310,7 @@ function gs_pagination_links($page_links) {
     echo '</div>';
 }
 
-function gs_modal_login() {
+function merlot_modal_login() {
     gs_login_form(); 
     ?>
     <script type="text/javascript">
@@ -355,7 +320,7 @@ function gs_modal_login() {
     <?php 
 }
 
-function gs_footer_system_info() {
+function merlot_footer_system_info() {
     global $bbdb;
     ?>
 	<p>Made <em><?php echo $bbdb->num_queries; ?></em> queries on <em><?php bb_timer_stop(1); ?></em> seconds.</p>

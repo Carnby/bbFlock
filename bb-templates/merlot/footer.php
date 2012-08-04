@@ -1,7 +1,7 @@
 		    </div>
-		    <?php if (!gs_do_full_width()) { ?>
+		    <?php if (!merlot_do_full_width()) { ?>
 		    <div class="span3">
-		        <?php gs_sidebar(); ?>
+		        <?php merlot_sidebar(); ?>
 		    </div>
 		    <?php } ?>
 		</div><!-- div.row -->  

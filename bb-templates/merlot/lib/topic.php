@@ -147,16 +147,9 @@ function gs_topic_loop_end() {
 
 function gs_topic_header() {
 ?>
-<div class="page-header">
-
     <h2 <?php topic_class('topictitle title' ); ?>><?php topic_title(); ?><?php gs_topic_labels(); ?></h2>
     <?php do_action('under_title', ''); ?>
-  
     <?php do_action('topicmeta'); ?>
-    
-    <div class="clearfix"></div>
-    
-</div>
 <?php
 }
 

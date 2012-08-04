@@ -64,7 +64,6 @@ function gs_manage_tags_form() {
 
 function gs_tags_header() {
 ?>
-<div class="page-header">
 <?php if (!is_bb_tag()) { ?>
 <h2><?php _e('Tags'); ?></h2>
 
@@ -72,7 +71,6 @@ function gs_tags_header() {
 <?php } else {
     printf('<h2>%s: <strong>%s</strong></h2>', __('Tag'), bb_get_tag_name());
 } ?>
-</div>
 <?php
 }
 
