@@ -15,6 +15,42 @@ $bb_image_valid_types = array(
 	"image/x-png" => true
 );
 
+function bb_image_check_error($field_name) {
+    global $bb_image_valid_types;
+    $error = false;
+    
+	if($_FILES[$field_name]['error']){
+		switch($_FILES[$field_name]['error']){
+			case UPLOAD_ERR_INI_SIZE:
+			case UPLOAD_ERR_FORM_SIZE:
+				$error = __("The uploaded file exceeds the max upload size.", 'image-upload');
+				break;
+			case UPLOAD_ERR_PARTIAL:
+				$error = __("The uploaded file was only partially uploaded.", 'image-upload');
+				break;
+			case UPLOAD_ERR_NO_FILE:
+				$error = __("No file was uploaded.", 'image-upload');
+				break;
+			case UPLOAD_ERR_NO_TMP_DIR:
+				$error = __("Missing a temporary folder.", 'image-upload');
+				break;
+			case UPLOAD_ERR_CANT_WRITE:
+				$error = __("Failed to write file to disk.", 'image-upload');
+				break;
+			case UPLOAD_ERR_EXTENSION:
+				$error = __("File upload stopped by extension.", 'image-upload');
+				break;
+			default:
+				$error = __("File upload failed due to unknown error.", 'image-upload');
+		}
+	} else if(!$_FILES[$field_name]['size'])
+		$error = sprintf(__("The file &ldquo;%s&rdquo; was not uploaded. Did you provide the correct filename?", 'image-upload'), $_FILES[$field_name]['name']);
+	else if(@!$bb_image_valid_types[$_FILES[$field_name]['type']]) 
+		$error = sprintf(__("The uploaded file type &ldquo;%s&rdquo; is not allowed.", 'image-upload'), $_FILES[$field_name]['type']);
+			
+	return $error;
+}
+
 function bb_image_resize($filename, $newFilename, $max_width, $max_height, &$error, $compression = 90){
 	if(!$newFilename)
 		$newFilename = $filename;
