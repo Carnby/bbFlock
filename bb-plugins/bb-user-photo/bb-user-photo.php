@@ -323,5 +323,5 @@ function profile_form_user_photo() {
 }
 
 if (function_exists('userphoto_display_selector_fieldset')) 
-	add_action('gs_profile_edit_form', 'profile_form_user_photo');
+	add_action('profile_edit_form', 'profile_form_user_photo');
 
