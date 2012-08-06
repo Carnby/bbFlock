@@ -37,7 +37,7 @@ function merlot_profile_data() {
 	global $user;
 		    
 	echo '<p>';
-	echo '<span class="label label-info">' . get_user_type($user->ID) . '</span>'
+	echo '<span class="label label-info">' . get_user_type($user->ID) . '</span>';
 	echo '</p>';
 	
 	bb_profile_data();
