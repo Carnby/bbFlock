@@ -27,6 +27,7 @@ class BB_Scripts {
 		));
 		
 		$this->add('bootstrap', '/bb-vendors/bootstrap/js/bootstrap.min.js', array('jquery'), '2.0');
+		$this->add('bootstrap-typeahead', '/bb-vendors/bootstrap-typeahead/typeahead.js', array('bootstrap'), '1.0');
 	}
 
 	/**
@@ -307,7 +308,7 @@ function bb_just_in_time_script_localization() {
 	bb_localize_script( 'topic', 'bbTopicJS', array(
 		'currentUserId' => bb_get_current_user_info( 'id' ),
 		'topicId' => get_topic_id(),
-		'confirmPostDelete' => __("Are you sure you wanna delete this post by '%author%'?"),
+		'confirmPostDelete' => __("Are you sure you want to delete this post by '%author%'?"),
 		'confirmTagDelete' => __("Are you sure you want to remove the '%tag%' tag?")
 	));
 }
