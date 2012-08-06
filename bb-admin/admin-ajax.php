@@ -209,6 +209,24 @@ case 'order-forums' :
 
 	die('1');
 	break;
+	
+case 'member-search':
+    if (!bb_is_user_logged_in() || empty($_POST['query']))
+        die('[]');
+
+    bb_check_ajax_referer($action);
+
+    $query = substr(trim($_POST['query']), 0, 15);
+    $results = bb_user_search(array('prefix' => $query, 'append_meta' => false, 'fields' => array('ID', 'user_login'), 'users_per_page' => 10, 'page' => 1));
+    if (empty($results))
+        die('[]');
+    
+    $user_results = array();
+    foreach ($results as &$u) {
+        $user_results[] = array('ID' => $u->ID, 'user_login' => $u->user_login);
+    }
+    die(json_encode($user_results));
+    break;
 
 default :
 	do_action( 'bb_ajax_' . $_POST['action'] );
