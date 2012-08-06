@@ -21,7 +21,7 @@ function merlot_profile_breadcrumb() {
     gs_breadcrumb($links);
 }
 
-function gs_profile_image() {
+function merlot_profile_image() {
     global $user;
 	
 	if (function_exists('bb_get_photo'))
@@ -33,36 +33,21 @@ function gs_profile_image() {
         printf('<p class="avatar">%s</p>', $avatar);
 }
 
-function gs_profile_data() {
+function merlot_profile_data() {
 	global $user;
 		    
 	echo '<p>';
-	gs_profile_labels();
+	echo '<span class="label label-info">' . get_user_type($user->ID) . '</span>'
 	echo '</p>';
 	
 	bb_profile_data();
 }
 
-function gs_profile_labels() {
-    global $user;
-    
-    $type = get_user_type($user->ID);
-    echo '<span class="label label-info">' . $type . '</span>';
-}
-
-function gs_profile_header() {
+function merlot_profile_header() {
     global $user;
     ?>
-    <div class="page-header">
-        <h2><?php echo esc_html($user->user_login); ?></h2>
-    </div>
+    <h2><?php echo esc_html($user->user_login); ?></h2>
     <?php
-}
-
-function gs_profile_actions() {
-    user_update_button();
-    echo '&nbsp';
-	user_delete_button();
 }
 
 

@@ -1540,7 +1540,7 @@ function profile_tab_edit() {
 	    </fieldset>
 	    <?php endif; ?>
 	
-	    <?php do_action('gs_profile_edit_form', $user->ID); ?>
+	    <?php do_action('profile_edit_form', $user->ID); ?>
 	
 	    <?php if ( bb_current_user_can( 'change_user_password', $user->ID ) ) : ?>
 	    <fieldset>
@@ -1551,7 +1551,10 @@ function profile_tab_edit() {
 	    <?php endif; ?>
 		
 	    <div class="form-actions">
-	        <?php gs_profile_actions(); ?>
+	        <?php 
+	        user_update_button();
+            echo '&nbsp';
+	        user_delete_button(); ?>
 	    </div>
     <?php bb_nonce_field( 'edit-profile_' . $user->ID ); ?>
     </form>

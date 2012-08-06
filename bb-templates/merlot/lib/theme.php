@@ -35,17 +35,12 @@ function merlot_page_header() {
     if (is_topic())
         gs_topic_header();
     
-    else if (is_bb_profile()) {
-        if (isset($_GET['tab']) and $_GET['tab'] == 'favorites')
-            gs_favorites_header();
-        else 
-            gs_profile_header();
-    }
+    else if (is_bb_profile())
+        merlot_profile_header();
     
     else if (is_forum())
         gs_forum_header();
-    //if (is_bb_tag())
-    //    gs_tag_breadcrumb();
+
     else if (is_bb_tags())
         gs_tags_header();
         
@@ -153,8 +148,8 @@ function merlot_sidebar() {
     do_action('merlot_before_sidebar');
     
     if (is_bb_profile()) {
-        gs_profile_image();
-        gs_profile_data();
+        merlot_profile_image();
+        merlot_profile_data();
     }
     
     merlot_sidebar_buttons();
