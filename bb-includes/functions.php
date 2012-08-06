@@ -3009,7 +3009,7 @@ function bb_user_search( $args = '' ) {
 	if ( $args && is_string($args) && false === strpos($args, '=') )
 		$args = array( 'query' => $args );
 
-	$defaults = array( 'query' => '', 'append_meta' => true, 'user_login' => true, 'display_name' => true, 'user_nicename' => false, 'user_url' => true, 'user_email' => false, 'user_meta' => false, 'meta_key' => false, 'meta' => false, 'users_per_page' => false, 'page' => false );
+	$defaults = array( 'query' => '', 'append_meta' => true, 'user_login' => true, 'display_name' => true, 'user_nicename' => false, 'user_url' => true, 'user_email' => false, 'user_meta' => false, 'meta_key' => false, 'meta' => false, 'prefix' => false, 'users_per_page' => false, 'page' => false );
 	
 	extract(wp_parse_args( $args, $defaults ), EXTR_SKIP);
 
@@ -3052,14 +3052,13 @@ function bb_user_search( $args = '' ) {
 	
 	if ( $meta_key ) {
 		$sql = $bbdb->prepare("SELECT user_id FROM $bbdb->usermeta WHERE meta_key = %s AND meta_value <> ''", $meta_key);
-		
+		$sql .= " LIMIT $limit";
 		$user_meta_ids = $bbdb->get_col($sql);
 		bb_cache_users( $user_meta_ids );
 		$users = array();
 		foreach( $user_meta_ids as $user_id )
 			$users[] = bb_get_user( $user_id );
 		return $users;
-		
 	}
 	
 	if ($meta) {
@@ -3099,6 +3098,10 @@ function bb_user_search( $args = '' ) {
 	$sql = "SELECT * FROM $bbdb->users";
 
 	$sql_terms = array();
+	
+	if ($prefix)
+	    $sql_terms[] = $bbdb->prepare("user_login LIKE ('%s')", $prefix . '%');
+	
 	if ( $query )
 		foreach ( $fields as $field )
 			$sql_terms[] = "$field LIKE ('%$likeit%')";
