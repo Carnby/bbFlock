@@ -10,12 +10,9 @@ Author URI: http://bbshowcase.org
 
 add_action('bb_init', 'bb_signatures_initialize');
 add_action('bb_head', 'bb_signatures_add_css');
-add_action('extra_profile_info', 'add_signature_to_profile_edit');
+add_action('profile_edit_form', 'add_signature_to_profile_edit');
 add_action('profile_edited', 'update_user_signature');
-add_action('bb_update_post', 'bb_signatures_exclude_posts_update');
-add_filter('post_text','add_signature_to_post',5);
-
-add_action('bb_post.php', 'bb_signatures_exclude_posts_update');
+add_filter('post_text','add_signature_to_post',50);
 
 
 if ((defined('BB_IS_ADMIN') && BB_IS_ADMIN) || !(strpos($_SERVER['REQUEST_URI'],"/bb-admin/")===false)) { 
@@ -50,9 +47,7 @@ function bb_signatures_initialize() {
 		    $bb_signatures['allow_html']=true ;  // not implemented yet, obeys post text rules
 		    $bb_signatures['allow_smilies']=true ;  // not implemented yet, obeys post text rules
 		    $bb_signatures['allow_images']=true ;  // not implemented yet, obeys post text rules
-		    $bb_signatures['signature_question']="Show your signature on this post?";
-		    $bb_signatures['signature_instructions']="You may enter a short signature which will be shown below your posts.";
-		    $bb_signatures['style']=".signature {padding:1em; border-top:1px solid #ccc; font-size:0.87em; color:#444;}";   // add clear:both; for very bottom		
+		    $bb_signatures['style']=".user-signature {color:#444;} .user-signature p { font-size: 0.9em; }";
 		}
 	}
 	$bb_signatures_type['max_length']="numeric";     // sanity 
@@ -61,10 +56,7 @@ function bb_signatures_initialize() {
 	$bb_signatures_type['allow_html']="binary";  // not implemented yet, obeys post text rules
 	$bb_signatures_type['allow_smilies']="binary";  // not implemented yet, obeys post text rules
 	$bb_signatures_type['allow_images']="binary";  // not implemented yet, obeys post text rules
-	$bb_signatures_type['signature_question']="input";
-	$bb_signatures_type['signature_instructions']="input";		
 	$bb_signatures_type['style']="textarea";
-	
 	$bb_signatures_extra['allow_html']="disabled";  // not implemented yet, obeys post text rules
 	$bb_signatures_extra['allow_smilies']="disabled" ;  // not implemented yet, obeys post text rules
 	$bb_signatures_extra['allow_images']="disabled" ;  // not implemented yet, obeys post text rules
@@ -80,50 +72,53 @@ function add_signature_to_post($text) {
     if (!is_bb_feed()) {
         global $bb_post,$bb_signatures;
 	    $user_id=$bb_post->poster_id;
-	    	    
+
 	    if ($signature = fetch_user_signature($user_id)) {
-		    $text.='<div class="signature">'.nl2br($signature).'</div>';
+		    $text.='<div class="user-signature"><hr />'.bb_autop($signature).'</div>';
 	    }
-        // endif;
     }
     
     return $text;
 }
 
-function add_signature_to_profile_edit() {
-    global $user_id, $bb_current_user, $bb_signatures;		
-    if (bb_current_user_can($bb_signatures['minimum_user_level']) && bb_is_user_logged_in() ) {
-	    $signature = fetch_user_signature($user_id);				
+function add_signature_to_profile_edit($user_id) {
+    global $bb_current_user, $bb_signatures;
+    if (bb_current_user_can($bb_signatures['minimum_user_level']) && bb_is_user_logged_in()) {
+	    $signature = fetch_user_signature($user_id);
         echo '<fieldset>
         <legend>'. __('Signature') .'</legend>
-        <p>' .$bb_signatures['signature_instructions'].'</p>
-        <table border=0 cellpadding=0 cellspacing=0 width="95%">
-        <tr class="extra-caps-row">
-        <td><textarea style="overflow:auto;height:5em;width:98%;" name="signature" id="signature" type="text"  rows="2" wrap="off"
-         onkeyup="if (this.value.length>'.$bb_signatures['max_length'].') {this.value=this.value.substring(0,'.$bb_signatures['max_length'].')}">
-        '.$signature.'</textarea></td>
-        </tr>
-        </table>
+        <div class="control-group">
+            <label class="control-label" for="signature">' .__('Signature', 'bb-signatures').'</label>
+            <div class="controls">
+                <textarea class="input-xxlarge" name="signature" id="signature" type="text"  rows="4"
+         onkeyup="if (this.value.length>'.$bb_signatures['max_length'].') {this.value=this.value.substring(0,'.$bb_signatures['max_length'].')}">'.$signature.'</textarea>
+                <p class="help-block">'.__("You may enter a short signature which will be shown below your posts.", 'bb-signatures').'</p>
+            </div>
+        </div>
         </fieldset>';
     }
 }
 
-function update_user_signature() {
-	global $user_id, $bb_signatures;
-	$signature = trim(substr($_POST['signature'],0,$bb_signatures['max_length']));
-	if ($signature) {
-	    $signature = bb_filter_kses(stripslashes(balanceTags(bb_code_trick(bb_encode_bad($signature)),true)));
+function bb_signature_prepare($signature) {
+    global $bb_signatures;
+    $signature = trim(substr($signature,0,$bb_signatures['max_length']));
+    $signature = bb_filter_kses(stripslashes(balanceTags(bb_code_trick(bb_encode_bad($signature)),true)));
 	    
-	    if (!$bb_signatures['allow_html']) {
-	        if ($bb_signatures['allow_images']) {
-	            $allowed="<img>";
-	        } else {
-	            $allowed="";
-	        }
-		    $signature = strip_tags($signature,$allowed);
-	    }
-	    
-	    $signature = implode("\n",array_slice (explode("\n",$signature), 0, $bb_signatures['max_lines']));
+    if (!$bb_signatures['allow_html']) {
+        if ($bb_signatures['allow_images']) {
+            $allowed="<img>";
+        } else {
+            $allowed="";
+        }
+	    $signature = strip_tags($signature,$allowed);
+    }
+    
+    $signature = implode("\n",array_slice (explode("\n",$signature), 0, $bb_signatures['max_lines']));
+    return trim(make_clickable($signature));
+}
+
+function update_user_signature($user_id) {	
+	if ($signature = bb_signature_prepare($_POST['signature'])) {
 	    bb_update_usermeta($user_id, "signature",$signature);
 	} else {
 	    bb_delete_usermeta($user_id, "signature");
@@ -132,58 +127,10 @@ function update_user_signature() {
 
 function fetch_user_signature($user_id) {
 	$user = bb_get_user($user_id);
-	$signature = $user->signature;
-	if ($signature) {
+	if ($signature = $user->signature)
 	    return $signature;
-	} else {
+	else
 	    return "";
-	}
-}
-
-function bb_signatures_exclude_posts_update($post_id) {
-    if ($post_id ) {
-        if (isset($_POST['signature_disable'])) {
-            global $bb_post,$bb_signatures,$bb_signatures_on_page;
-            if (bb_current_user_can($bb_signatures['minimum_user_level']) ) {    
-	            $disable=$_POST['signature_disable'];
-	            $user_id=get_post_author_id($post_id);
-	            $user = bb_get_user( $user_id );  
-	            if ($user->bb_signatures_exclude_posts) {
-	                $bb_signatures_exclude_posts=explode(",",$user->bb_signatures_exclude_posts);
-	            }
-	            
-	            if (is_array($bb_signatures_exclude_posts)) {
-	                $inarray=in_array($post_id,$bb_signatures_exclude_posts);
-	            } else {
-	                $inarray=false;
-	            }
-	            
-	            if ($disable==0)  {
-	                if (!$inarray) {
-	                    return;
-	                } else { 
-	                    unset($bb_signatures_exclude_posts[array_search( $post_id, $bb_signatures_exclude_posts)]); 
-	                }  
-	            }
-	            
-	            if ($disable==1) {
-	                if  ($inarray) {
-	                    return;
-	                } else {
-	                    $bb_signatures_exclude_posts[]=$post_id;
-	                } 
-	            }	
-	            bb_update_usermeta( $user_id, 'bb_signatures_exclude_posts', implode(",",$bb_signatures_exclude_posts));
-            }
-        }
-    }	
-}
-
-function bb_signatures_exclude_posts_check($post_id) {
-    $user_id=get_post_author_id($post_id);
-    $user = bb_get_user( $user_id );  
-    $bb_signatures_exclude_posts = (isset($user->bb_signatures_exclude_posts) ? explode(",",$user->bb_signatures_exclude_posts) : array() );
-    return  in_array($post_id,$bb_signatures_exclude_posts);
 }
 
 

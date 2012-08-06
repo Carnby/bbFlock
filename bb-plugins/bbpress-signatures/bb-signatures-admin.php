@@ -3,7 +3,7 @@
 add_action( 'bb_admin-header.php','bb_signatures_process_post');
 
 function bb_signatures_process_post() {
-global $bb_signatures;
+    global $bb_signatures;
 	if (bb_current_user_can('administrate')) {
 		if (isset($_REQUEST['bb_signatures_reset'])) {
 			unset($bb_signatures); 		
@@ -17,8 +17,7 @@ global $bb_signatures;
 			foreach(array_keys( $bb_signatures) as $key) {
 				if (isset($_POST[$key])) {$bb_signatures[$key]=$_POST[$key];}
 			}	
-		bb_update_option('bb_signatures',$bb_signatures);
-		// unset($GLOBALS['bb_signatures']); $bb_signatures = bb_get_option('bb_signatures');
+		    bb_update_option('bb_signatures',$bb_signatures);
 		}
 	}
 }
