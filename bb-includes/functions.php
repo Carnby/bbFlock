@@ -2286,6 +2286,8 @@ function bb_repermalink() {
 				$id = $_GET['view'];
 			else
 				$id = get_path();
+			if (empty($id))
+			    $id = 'all';
 			$_original_id = $id;
 			global $user_view;
 			$user_view = $id;
