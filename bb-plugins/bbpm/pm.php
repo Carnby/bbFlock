@@ -9,33 +9,6 @@ bb_auth( 'logged_in' ); // Is the user logged in?
 global $bbpm, $bb_current_user;
 
 if (strtoupper( $_SERVER['REQUEST_METHOD'] ) == 'POST') {
-    // Don't throttle searches.
-    if ( !empty( $_POST['search'] ) ) {
-	    header( 'Content-Type: application/json' );
-
-	    if ( !bb_verify_nonce( $_POST['_wpnonce'], 'bbpm-user-search' ) )
-		    exit( '[]' );
-
-	    $name = $_POST['search'];
-	    if ( function_exists( 'get_magic_quotes_gpc' ) && get_magic_quotes_gpc() )
-		    $name = stripslashes( $name );
-	    $name = str_replace( array( '%', '?' ), array( '\\%', '\\?' ), substr( $name, 0, $_POST['pos'] ) ) . '%' . str_replace( array( '%', '?' ), array( '\\%', '\\?' ), substr( $name, $_POST['pos'] ) );
-
-	    $not = array( bb_get_current_user_info( 'ID' ) );
-
-	    if ( !empty( $_POST['thread'] ) && $bbpm->can_read_thread( $_POST['thread'] ) )
-		    $not = $bbpm->get_thread_members( (int)$_POST['thread'] );
-
-	    global $bbdb;
-	    $results = $bbdb->get_col( $bbdb->prepare( 'SELECT `user_nicename` FROM `' . $bbdb->users . '` WHERE ( `user_login` LIKE %s ) AND `ID` NOT IN (' . implode( ', ', $not ) . ') ORDER BY LENGTH(`user_nicename`) ASC LIMIT 15', $name, $name, $name, $_POST['text'] ) );
-
-	    if ( !$results )
-		    exit( '[]' );
-
-	    exit( '["' . implode( '","', array_map( 'addslashes', $results ) ) . '"]' );
-    }
-
-
     if (!bb_current_user_can( 'write_posts' ) || ( function_exists( 'bb_current_user_is_bozo' ) && bb_current_user_is_bozo() ) ) 
         bb_die( __( 'You are not allowed to write private messages.  Are you logged in?', 'bbpm' ) );
 
@@ -116,6 +89,9 @@ if ( isset( $_GET['unsubscribe'] ) && bb_verify_nonce( $_GET['_wpnonce'], 'bbpm-
 	if ($bbpm->unsubscribe((int) $_GET['unsubscribe']))
 	    wp_redirect( $bbpm->get_link() );
 	else 
-	    bb_die('Wrong Unsubscribe ID.', 'bbpm');
+	    bb_die(__('Wrong Unsubscribe ID.', 'bbpm'));
 	exit;
+} else {
+    bb_die(__('Wrong Unsubscribe ID.', 'bbpm'));
 }
+

@@ -75,6 +75,7 @@ switch ($action) {
         else 
             $recipient = '';
         
+        bb_enqueue_script('bootstrap-typeahead');
         break;
             
     default:
@@ -91,6 +92,8 @@ switch ($action) {
         }
         
         $bbpm->mark_read($action);
+        
+        bb_enqueue_script('bootstrap-typeahead');
         break;
 }
       
