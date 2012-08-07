@@ -85,6 +85,10 @@ function bbpm_thread_label($before = '', $after = '') {
 
 
 function bbpm_thread_title() {
+    echo bbpm_get_thread_title();
+}
+
+function bbpm_get_thread_title(){
     global $bbpm, $action;
     
     if ($action == 'viewall') {
@@ -95,8 +99,8 @@ function bbpm_thread_title() {
  
     $thread = $bbpm->retrieve_thread($thread_id);
     if ($thread)
-        echo apply_filters('topic_title', $thread->title, 0);
-    
+        return apply_filters('topic_title', $thread->title, 0);
+    return false;
 }
 
 

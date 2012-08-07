@@ -1,13 +1,5 @@
 <?php bb_get_header(); ?>
 
-<div class="page-header">
-
-    <h2><?php _e( 'Private Messages', 'bbpm' ); ?> <?php if ( $page > 1 ){ 
-        printf('<small>%s</small>', sprintf(__( '(Page %s)', 'bbpm' ), bb_number_format_i18n($page)));
-    } ?></h2>
-
-</div>
-
 <?php if ($bbpm->have_pm($start, $end)) { ?>
 <table id="bbpm-message-table" class="table table-striped">
     <thead>
@@ -38,7 +30,7 @@
 <?php bbpm_thread_list_pagination(); ?>
 
 <?php } else { 
-    gs_no_discussions();    
+    bb_no_discussions_message();    
 } ?>
 
 <?php bb_get_footer(); ?>

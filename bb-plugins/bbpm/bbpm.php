@@ -101,7 +101,6 @@ function bbpm_configure() {
         return;
         
     // configure templates
-    add_filter('bb_page_header_override', 'bbpm_override_page_header'); 
     add_filter('bb_header_breadcrumb', 'bbpm_breadcrumb');
     add_filter('bb_header_breadcrumb_override', 'bbpm_override_page_header');
 

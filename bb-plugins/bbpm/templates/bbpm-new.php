@@ -1,7 +1,5 @@
 <?php bb_get_header(); ?>
 
-<h2><?php _e( 'Send a Private Message', 'bbpm' ); ?></h2>
-
 <?php do_action('pre_post_form'); ?>
 
 <form class="form form-vertical" id='bbpm' method="post" action="<?php bbpm_form_handler_url(); ?>">

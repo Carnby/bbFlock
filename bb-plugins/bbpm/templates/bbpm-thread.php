@@ -1,9 +1,5 @@
 <?php bb_get_header(); ?>
 
-<div class="page-header">
-    <h2><?php bbpm_thread_title(); ?></h2>
-</div>
-
 <?php
 foreach ( $messages as $i => $the_pm ) { ?>
 

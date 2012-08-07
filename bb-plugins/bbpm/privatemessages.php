@@ -60,6 +60,9 @@ switch ($action) {
         $start = $bbpm->threads_per_page() * max( $page - 1, 0 );
         $end = $start + $bbpm->threads_per_page();
         
+        $bb->static_title = __( 'Private Messages', 'bbpm' ); 
+        if ( $page > 1 )
+            $bb->static_title .= sprintf('<small>%s</small>', sprintf(__( '(Page %s)', 'bbpm' ), bb_number_format_i18n($page)));
         break;
         
     case 'new':
@@ -74,6 +77,8 @@ switch ($action) {
             $recipient = sanitize_user($_GET['to']);
         else 
             $recipient = '';
+            
+        $bb->static_title = __( 'Send a Private Message', 'bbpm' );
         
         bb_enqueue_script('bootstrap-typeahead');
         break;
@@ -93,6 +98,7 @@ switch ($action) {
         
         $bbpm->mark_read($action);
         
+        $bb->static_title = bbpm_get_thread_title();
         bb_enqueue_script('bootstrap-typeahead');
         break;
 }
