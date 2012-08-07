@@ -25,6 +25,7 @@ function merlot_header_breadcrumb() {
 }
 
 function merlot_page_header() {
+    global $bb;
     //if (is_view())
     //    gs_view_breadcrumb();
     if (apply_filters('bb_page_header_override', false))
@@ -62,6 +63,8 @@ function merlot_page_header() {
         merlot_view_header();
     else if (is_user_view())
         merlot_user_view_header();
+    else if (isset($bb->static_title) && !empty($bb->static_title))
+        printf('<h2>%s</h2>', $bb->static_title);
     else
         do_action('merlot_custom_page_header');
         
