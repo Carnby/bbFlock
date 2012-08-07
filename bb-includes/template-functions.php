@@ -154,7 +154,7 @@ function post_form( $h2 = '' ) {
 	do_action('pre_post_form');
 
 	if ( ( is_topic() && bb_current_user_can( 'write_post', $topic->topic_id ) ) || ( !is_topic() && bb_current_user_can( 'write_topic', $forum->forum_id ) ) ) {
-		echo '<form class="postform post-form form form-vertical" id="postform" method="post" action="' . bb_get_option('uri') . 'bb-post.php">' . "\n";
+		echo '<form class="postform post-form form form-vertical" id="postform" method="post" action="' . bb_get_uri('bb-post.php') . '">' . "\n";
 		echo "<fieldset>\n";
 		bb_load_template( 'post-form.php', array('h2' => $h2) );
 		bb_nonce_field( is_topic() ? 'create-post_' . $topic->topic_id : 'create-topic' );
@@ -166,7 +166,7 @@ function post_form( $h2 = '' ) {
 		echo "\n</fieldset>\n</form>\n";
 	} elseif ( !bb_is_user_logged_in() ) {
 		echo '<p>';
-		printf(__('You must <a href="%s">log in</a> to post.'), attribute_escape( bb_get_option('uri') . 'bb-login.php' ));
+		printf(__('You must <a href="%s">log in</a> to post.'), attribute_escape(bb_get_uri('bb-login.php')));
 		echo '</p>';
 	}
 	do_action('post_post_form');
@@ -175,7 +175,7 @@ function post_form( $h2 = '' ) {
 function edit_form() {
 	global $bb_post;
 	do_action('pre_edit_form');
-	echo "<form class='postform edit-form' method='post' action='" . bb_get_option('uri')  . "bb-edit.php'>\n";
+	echo "<form class='postform edit-form' method='post' id='postform' action='" . bb_get_uri('bb-edit.php') ."'>\n";
 	echo "<fieldset>\n";
 	bb_load_template( 'edit-form.php', array('topic_title') );
 	bb_nonce_field( 'edit-post_' . $bb_post->post_id );

@@ -35,6 +35,8 @@ function merlot_page_header() {
     
     if (is_topic())
         gs_topic_header();
+    else if (is_topic_edit())
+        printf('<h2>%s</h2>', __('Edit Post'));
     
     else if (is_bb_profile())
         merlot_profile_header();
@@ -107,7 +109,7 @@ function merlot_credits() {
 
 
 function merlot_do_full_width() {
-    $do = in_array(bb_get_location(), array('register-page', 'login-page', 'password-reset'));    
+    $do = in_array(bb_get_location(), array('register-page', 'login-page', 'password-reset', 'topic-edit-page'));    
     return apply_filters('merlot_do_full_width', $do);
 }
 

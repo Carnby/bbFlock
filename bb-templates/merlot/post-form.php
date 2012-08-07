@@ -1,31 +1,34 @@
 
 
-<?php if ( is_bb_tag() || is_front() ) { ?>
+<?php 
+/* // no longer needed. commented because in the future it might be optional
+if ( is_bb_tag() || is_front() ) { ?>
     <div class="control-group">
         <label for="forum-id"><i class="icon icon-folder-open"></i> <?php _e('Pick a section:'); ?></label>
         <div class="controls">
             <?php bb_new_topic_forum_dropdown(); ?>
         </div>
     </div>
+<?php 
+} 
+*/
+?>
+
+<?php if (!is_topic()) { ?>
+<div class="control-group">
+    <label for="topic"><i class="icon icon-file"></i> <?php _e('Topic title: (be brief and descriptive)'); ?></label>
+	<div class="controls">
+	    <input name="topic" type="text" id="topic-title" class="input-xxlarge" size="50" maxlength="80" tabindex="1" />
+    </div>
+</div>
 <?php } ?>
-
-<?php if ( !is_topic() ) : ?>
-
-    <div class="control-group">
-	    <label for="topic"><i class="icon icon-file"></i> <?php _e('Topic title: (be brief and descriptive)'); ?></label>
-		<div class="controls">
-		    <input name="topic" type="text" id="topic" class="input-xlarge" size="50" maxlength="80" tabindex="1" />
-	    </div>
-	</div>
-
-    <?php endif; ?>
 
 
     <div class="control-group">
 	    <label for="post_content"><i class="icon icon-pencil"></i> <?php _e('Post:'); ?></label>
 	    <div class="controls">
 	        <?php do_action( 'post_form_pre_post' ); ?>
-		    <textarea class="span10" name="post_content" cols="50" rows="12" id="post_content" tabindex="3" class="input-xlarge"></textarea>
+		    <textarea name="post_content" cols="50" rows="12" id="post_content" tabindex="3" class="input-xxlarge"></textarea>
 		    <?php do_action('post_form_after_post'); ?>
 	    </div>
     </div>
@@ -45,6 +48,7 @@
         <?php do_action('post_form_buttons'); ?>
     </div>
   
+<?php merlot_js_post_form_validation(); ?>
   
 
 

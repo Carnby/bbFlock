@@ -64,3 +64,56 @@ function gs_post_form_help() {
 <?php
 }
 
+function merlot_js_post_form_validation() {
+    global $topic_title;
+?>
+<script type="text/javascript">
+$('#post_content').on('keyup', function() {
+    $(this).parents('.control-group').removeClass('error');
+});
+
+<?php if(is_forum() || (is_topic_edit() && !empty($topic_title))) { ?>
+$('#topic-title').on('keyup', function() {
+    $(this).parents('.control-group').removeClass('error');
+});
+<?php } ?>
+
+$('#postform').on('submit', function() {
+    //console.log(this);
+    var self = $('#postform');
+    //console.log(self.children('#message'));
+    
+    //var title = $.trim(self.find('#title').attr('value'));
+    var message = $.trim(self.find('#post_content').val());
+    var abort_form = false;
+    <?php if(is_forum() || (is_topic_edit() && !empty($topic_title))) { ?>
+    var title = $.trim(self.find('#topic-title').attr('value'));
+    if (!title){
+        self.find('#topic-title').parents('.control-group').addClass('error');
+        abort_form = true;
+    } else
+        self.find('#topic-title').parents('.control-group').removeClass('error');
+    
+    <?php } ?>
+    /*
+    if (!title)
+        self.find('#message-title').addClass('error');
+    else
+        self.find('#message-title').removeClass('error');
+    */
+      
+    abort_form = abort_form || !message;
+      
+    if (!message)
+        self.find('#post_content').parents('.control-group').addClass('error');
+    else
+        self.find('#post_content').parents('.control-group').removeClass('error');
+      
+    if (abort_form)
+        return false;
+}
+);
+</script>
+<?php
+}
+
