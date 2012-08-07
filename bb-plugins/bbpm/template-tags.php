@@ -134,15 +134,30 @@ function bbpm_pm_members() {
     </ul>
     
     <?php if ( $bbpm->settings['users_per_thread'] == 0 || $bbpm->settings['users_per_thread'] > count($bbpm->get_thread_members($action)) ) { ?>
-        <form class="form form-vertical" action="<?php bbpm_form_handler_url(); ?>" method="post">
-            <p>
-                <input type="text" id="user_name" name="user_name"/>
-                <input type="hidden" id="thread_id" name="thread_id" value="<?php echo esc_attr($action); ?>"/>
-                <?php bb_nonce_field( 'bbpm-add-member-' . $action ); ?>
-                <button class="btn btn-primary" type="submit"><i class="icon icon-plus icon-white"></i> <?php _e( 'Add User' ); ?></button>
-            </p>
+        <form class="form form-vertical" id="add-user-form" action="<?php bbpm_form_handler_url(); ?>" method="post">
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text" id="user_name" name="user_name"/>
+                    <button class="btn btn-primary" type="submit"><i class="icon icon-plus icon-white"></i> <?php _e( 'Add User' ); ?></button>
+                </div>
+            </div>
+            <input type="hidden" id="thread_id" name="thread_id" value="<?php echo esc_attr($action); ?>"/>
+            <?php bb_nonce_field( 'bbpm-add-member-' . $action ); ?>
         </form>
+        
+        <script type="text/javascript">
+            $('#add-user-form').on('submit', function() {
+                var candidate =$('#user_name').attr('value');
+                
+                if (!candidate) {
+                    $('#add-user-form div.control-group').addClass('error');
+                    return false;
+                }
+            });
+            $('#user_name').on('keyup', function() { $('#add-user-form div.control-group').removeClass('error'); });
+        </script>
     <?php } 
+    bbpm_js_autocomplete_users('#user_name');
 }
 
 
@@ -199,5 +214,26 @@ function bbpm_header_link( $links ) {
 	array_splice($links, 1, 0, $link);
 	
 	return $links;
+}
+
+function bbpm_js_autocomplete_users($selector) {
+?>
+<script type="text/javascript">
+$("<?php echo $selector; ?>").typeahead({
+    ajax: { 
+        url: "<?php echo bb_nonce_url(bb_get_uri('/bb-admin/admin-ajax.php'), 'member-search'); ?>",
+        method: "post",
+        preProcess: function(data) {
+            var results = [];
+            $.each(data, function(i, elem) { results.push(elem.user_login); console.log(i, elem); });
+            return results;
+        },
+        preDispatch: function(data) {
+            return {action: 'member-search', query: data};
+        },
+    }
+});
+</script>
+<?php
 }
 

@@ -42,8 +42,8 @@ foreach ( $messages as $i => $the_pm ) { ?>
 
     <h2><?php _e('Reply', 'bbpm'); ?></h2>
     
-    <form class="postform pm-form form form-vertical" method="post" action="<?php bbpm_form_handler_url(); ?>">
-        <div class="controls">
+    <form class="postform pm-form form form-vertical" id="add-post-form" method="post" action="<?php bbpm_form_handler_url(); ?>">
+        <div class="control-group">
             <label class="control-label" for="message"><?php _e('Message:', 'bbom'); ?></label>
             <div class="controls">
                 <textarea name="message" cols="50" rows="12" id="message" tabindex="3" class="span10"></textarea>
@@ -61,6 +61,15 @@ foreach ( $messages as $i => $the_pm ) { ?>
     <?php do_action('post_post_form'); ?>
 </div>
 
-
+<script type="text/javascript">
+$('#add-post-form').on('submit', function() {
+    var post_content = $.trim($('#message').val());
+    if (!post_content) {
+        $('#add-post-form div.control-group').addClass('error');
+        return false;
+    }
+});
+$('#message').on('keyup', function() { $('#add-post-form div.control-group').removeClass('error'); });
+</script>
 
 <?php bb_get_footer(); ?>

@@ -42,8 +42,16 @@
 <?php do_action('post_post_form'); ?>
 
 <script type="text/javascript">
-$('#bbpm .control-group').on('keyup', function() {
-    $(this).removeClass('error');
+$('#title').on('keyup', function() {
+    $('#message-title').removeClass('error');
+});
+
+$('#message').on('keyup', function() {
+    $('#message-content').removeClass('error');
+});
+
+$('#recipient').on('keyup', function() {
+    $('#message-recipient').removeClass('error');
 });
 
 $('#bbpm').on('submit', function() {
@@ -51,9 +59,9 @@ $('#bbpm').on('submit', function() {
     var self = $('#bbpm');
     console.log(self.children('#message'));
     
-    var title = self.find('#title').text();
-    var message = self.find('#message').text();
-    var recipient = self.find('#recipient').text();
+    var title = $.trim(self.find('#title').attr('value'));
+    var message = $.trim(self.find('#message').val());
+    var recipient = $.trim(self.find('#recipient').attr('value'));
     
     if (!title)
         self.find('#message-title').addClass('error');
@@ -74,24 +82,6 @@ $('#bbpm').on('submit', function() {
         return false;
 }
 );
-
-$("#recipient").typeahead({
-    ajax: { 
-        url: "<?php echo bb_nonce_url(bb_get_uri('/bb-admin/admin-ajax.php'), 'member-search'); ?>",
-        method: "post",
-        preProcess: function(data) {
-            var results = [];
-            $.each(data, function(i, elem) { results.push(elem.user_login); console.log(i, elem); });
-            return results;
-        },
-        preDispatch: function(data) {
-            return {action: 'member-search', query: data};
-        },
-    }
-});
-
-
-
 </script>
-
+<?php bbpm_js_autocomplete_users('#recipient'); ?>
 <?php bb_get_footer(); ?>
