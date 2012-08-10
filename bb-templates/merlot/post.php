@@ -18,7 +18,7 @@
             </div>
         <?php } ?>
         
-        <div class="span<?php echo is_bb_profile() ? 9 : 12; ?>">
+        <div class="span<?php echo is_bb_profile() ? 9 : 10; ?>">
             <?php if (is_topic() || (is_bb_profile() && bb_current_user_can('moderate'))) { ?>            
             <div class="post_stuff pull-right">
                     <?php merlot_post_buttons(); ?>
