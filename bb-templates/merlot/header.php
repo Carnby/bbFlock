@@ -17,7 +17,7 @@
 	    <link rel="stylesheet" href="<?php bb_stylesheet_uri(); ?>" type="text/css" />
 	    <?php if ( 'rtl' == bb_get_option( 'text_direction' ) ) : ?>
 	    <link rel="stylesheet" href="<?php bb_stylesheet_uri( 'rtl' ); ?>" type="text/css" />
-    <?php endif; ?>
+        <?php endif; ?>
 
     <?php bb_head(); ?>
         
@@ -27,15 +27,15 @@
             
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
-                <div class="container-fluid">
+                <div class="container">
 		            <?php merlot_navigation(); ?>
                 </div>
             </div>
                
         </div>
 
-        <div class="merlot-header container-fluid">
-            <div class="row-fluid">
+        <div class="merlot-header container">
+            <div class="row">
 	            <div class="site-header span12">
 	                <?php merlot_site_header(); ?>
 	                <div class="clearfix"></div>
@@ -43,8 +43,8 @@
 	        </div>
         </div>
 
-	    <div class="merlot-page-content container-fluid">	
-		    <div class="row-fluid">
+	    <div class="merlot-page-content container">	
+		    <div class="row">
 		        <?php if (!merlot_do_full_width()) { ?>
 		        <div class="span9">
 		        <?php } else { ?>

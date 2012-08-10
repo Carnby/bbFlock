@@ -1,17 +1,20 @@
 <?php
 
-function gs_forum_breadcrumb() {
+function merlot_forum_breadcrumb() {
 ?>
 <ul class="breadcrumb">
   <li>
     <a href="<?php bb_option('uri'); ?>"><?php bb_option('name'); ?></a> 
     <?php bb_forum_bread_crumb(array('separator' => ' <span class="divider">/</span> </li><li>')); ?>
   </li>
+  <?php if (is_topic()) {
+    printf('<li><span class="divider">/</span> %s</li>', get_topic_title());
+  } ?>
 </ul>
 <?php
 }
 
-function gs_forum_header() {
+function merlot_forum_header() {
 ?>
 <h2><?php forum_name(); ?></h2>
 <?php do_action('forum_page_after_forum_name'); ?>

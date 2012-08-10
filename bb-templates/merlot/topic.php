@@ -4,13 +4,13 @@
 
 <div id="ajax-response"></div>
 
-<div id="thread" class="row-fluid start-<?php echo $list_start; ?>">
+<div id="thread">
     <?php foreach ($posts as $bb_post) {
 	    bb_post_template();
     } ?>
 </div>
 
-<?php gs_topic_pagination(); ?>
+<?php merlot_topic_pagination(); ?>
 
 <?php endif; ?>
 

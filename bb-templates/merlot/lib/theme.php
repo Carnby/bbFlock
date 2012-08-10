@@ -16,25 +16,26 @@ function merlot_header_breadcrumb() {
 
     if (is_view())
         merlot_view_breadcrumb();
-    if (is_topic() or is_forum())
-        gs_forum_breadcrumb();
-    if (is_bb_profile())
+    else if (is_user_view())
+        merlot_user_view_breadcrumb();
+    else if (is_topic() or is_forum())
+        merlot_forum_breadcrumb();
+    else if (is_bb_profile())
         merlot_profile_breadcrumb();
-    if (is_bb_tags())
+    else if (is_bb_tags())
         gs_tag_breadcrumb();
 }
 
 function merlot_page_header() {
     global $bb;
-    //if (is_view())
-    //    gs_view_breadcrumb();
+
     if (apply_filters('bb_page_header_override', false))
         return;
         
     do_action('merlot_before_page_header');
     
     if (is_topic())
-        gs_topic_header();
+        merlot_topic_header();
     else if (is_topic_edit())
         printf('<h2>%s</h2>', __('Edit Post'));
     
@@ -42,7 +43,7 @@ function merlot_page_header() {
         merlot_profile_header();
     
     else if (is_forum())
-        gs_forum_header();
+        merlot_forum_header();
 
     else if (is_bb_tags())
         gs_tags_header();
@@ -109,7 +110,7 @@ function merlot_credits() {
 
 
 function merlot_do_full_width() {
-    $do = in_array(bb_get_location(), array('register-page', 'login-page', 'password-reset', 'topic-edit-page'));    
+    $do = in_array(bb_get_location(), array('register-page', 'login-page', 'password-reset', 'topic-edit-page', 'forum-page', 'front-page', 'user-view-page', 'view-page', 'topic-page'));    
     return apply_filters('merlot_do_full_width', $do);
 }
 
@@ -159,39 +160,11 @@ function merlot_sidebar() {
     
     merlot_sidebar_buttons();
         
-    if (is_topic()) {      
-        $topic = get_topic(get_topic_id(0));
-                
-	    if (bb_current_user_can('move_topic', $topic->topic_id)) {
-            printf('<h3>%s</h3>', __('Move Topic to Another Forum'));
-            topic_move_dropdown();
-        }   
-      
-        topic_tags();
-    }
     
     if (is_bb_tag()) {
         gs_manage_tags_form();
     }
-    
-    if (is_user_view()) {
-        printf('<h3>%s</h3>', __('Views'));
-        merlot_user_views_tabs();
-    }
-    
-    /*
-    // display on site pages, but not on plugin pages.
-    if (!is_bb_profile() && !is_topic() && !is_user_view() && bb_get_location() != '') {  
-        printf('<h3>%s</h3>', __('Views'));
-        merlot_views_tabs();
-    }
-    */
-    
-    if (is_front()) {  
-        printf('<h3>%s</h3>', __('Views'));
-        merlot_views_tabs();
-    }
-    
+        
     do_action('merlot_after_sidebar');
 }
 
@@ -231,7 +204,9 @@ function merlot_navigation() {
     do_action('merlot_before_navigation');
     
 	$links = array();
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-home icon-white"></i> %s</a>', bb_get_uri(), __('Front Page', 'genealogies')), 'front-page');
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-home icon-white"></i> %s</a>', bb_get_uri(), __('Forums')), 'front-page');
+	
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-comment icon-white"></i> %s</a>', get_view_link('all-discussions'), __('Discussions')), 'view-page');
 	
 	if ($admin_link = bb_get_admin_link(array('text' => sprintf('<i class="icon icon-wrench icon-white"></i> %s', __('Admin'))))) {
         $links[] = gs_nav_link_wrap($admin_link, 'admin');		
@@ -239,7 +214,7 @@ function merlot_navigation() {
 	
 	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-tags icon-white"></i> %s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
 	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-th icon-white"></i> %s</a>', get_user_view_link('all'), __('Members')), 'members');
+	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-th icon-white"></i> %s <span class="caret"></span></a>', get_user_view_link('all'), __('Members')), 'members');
 	
 	printf('<ul class="nav">%s</ul>', implode('', apply_filters('gs_navigation_menu', $links)));
 	

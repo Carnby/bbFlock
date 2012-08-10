@@ -16,7 +16,7 @@ margin: 18px 0;
 border-bottom: 1px solid #EEE;}
 div.post_text { clear: both; margin-top: 1em; }
 div.post_stuff { margin-bottom: 0.5em; }
-form.form_topic_move { margin-top: 1em; }
+
 td img.avatar { float: left; padding: 3px;}
 table.forum-topics td { vertical-align: middle; }
 td.topic-title a.page-numbers { font-weight: bold; text-decoration: underline; }
@@ -26,9 +26,6 @@ td.topic-title a.page-numbers { font-weight: bold; text-decoration: underline; }
 div.post_author_info { margin: 0.25em; }
 h4.profile_topic_title { margin-bottom: 0.5em; }
 
-
-
-body.merlot-content-full-width div.merlot-page-content { max-width: 740px; margin: auto; }
 
 div.merlot-tag-cloud ul { list-style-type: none; margin: 0; margin-bottom: 1em; }
 

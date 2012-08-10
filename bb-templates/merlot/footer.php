@@ -7,9 +7,9 @@
 		</div><!-- div.row -->  
 	</div><!-- div.container -->
 	
-	<div class="container-fluid merlot-page-footer">
+	<div class="container merlot-page-footer">
 	    <hr />
-	    <div id="footer" class="row-fluid">
+	    <div id="footer" class="row">
 	        <div class="span10">
 	            <?php do_action('bb_foot', ''); ?>
 	        </div>

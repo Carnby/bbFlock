@@ -944,7 +944,7 @@ function get_topic_delete_link( $args = '' ) {
 }
 
 function topic_delete_link( $args = '' ) {
-    if ($link = get_topic_delete_link())
+    if ($link = get_topic_delete_link($args))
         echo $link;
 }
 
@@ -1492,7 +1492,7 @@ function profile_tab_posts() {
     ?>
     
     <?php if ($posts) { ?>
-        <div class="row-fluid" id="profile-replies">
+        <div id="profile-replies">
             <?php foreach ($posts as $bb_post) { 
                 $topic = get_topic($bb_post->topic_id);
 	            bb_post_template();

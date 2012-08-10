@@ -2,6 +2,8 @@
 
 <?php if ($members) { ?>
 
+<?php merlot_user_views_tabs(); ?>
+
 <div class="members">
 
 <?php foreach ($members as $member) { ?>

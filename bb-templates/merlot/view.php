@@ -1,5 +1,7 @@
 <?php bb_get_header(); ?>
 
+<?php merlot_views_tabs(); ?>
+
 <?php 
 
 if ($stickies and $topics)

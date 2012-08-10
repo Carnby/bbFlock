@@ -10,33 +10,26 @@ function bb_post_admin_links($post_id = 0, $class = 'admin_link') {
         return $links;
     
     $post_time = bb_get_post_time(array('id' => $post_id));
+    
     if (!$post_time) {
         $topic = get_topic($bb_post->topic_id);
         $post_time = _bb_time_function_return($topic->topic_start_time, _bb_parse_time_function_args());
     }
 
-    $links[] = sprintf('<a href="#" class="%s">%s</a>', $class, sprintf(__('Posted %s ago'), $post_time));
+    $links[] = sprintf('<a href="%s" class="%s">%s</a>', post_anchor_link(), $class, sprintf(__('Posted %s ago'), $post_time));
     
     if ($ip_link = post_ip_link($bb_post->post_id, $class))
 		$links[] = $ip_link;
 		
-    $links[] = '<a class="' . $class . ' btn-success" href="' . post_anchor_link() . '">#</a>';
-
-	if ($edit_link = post_edit_link($bb_post->post_id, "$class btn-warning")) {
+	if ($edit_link = post_edit_link($bb_post->post_id, $class)) {
 	    $links[] = $edit_link;
 	}
 	
 	if ($bb_post->post_position > 1) {
-	    if ($del_link = post_delete_link($bb_post->post_id, "$class btn-danger"))
+	    if ($del_link = post_delete_link($bb_post->post_id, $class))
 	        $links[] = $del_link;
 	} else {
-	    $links[] = get_topic_delete_link(array('before' => ' ', 'after' => ' ', 'class' => "$class btn-danger"));
-	    
-	    if ($sticky_link = get_topic_sticky_link(array('before' => ' ', 'after' => ' ', 'class' => "$class btn-primary")))
-	        $links[] = $sticky_link;
-	        
-	    if ($close_link = get_topic_close_link(array('before' => ' ', 'after' => ' ', 'class' => "$class btn-inverse")))
-	        $links[] = $close_link;
+	    $links[] = get_topic_delete_link(array('before' => ' ', 'after' => ' ', 'class' => $class));
 	}
 	
 	
@@ -44,8 +37,7 @@ function bb_post_admin_links($post_id = 0, $class = 'admin_link') {
 	return apply_filters('bb_post_admin', $links, $class);	
 }
 
-
-function gs_post_info($post_id = 0) {
+function merlot_post_buttons($post_id = 0) {
     $links = bb_post_admin_links($post_id, 'btn btn-small');
     
 	echo '<div class="btn-group">';

@@ -1,5 +1,6 @@
 <?php
 
+
 function gs_topic_labels() {
     global $topic;
     
@@ -69,7 +70,6 @@ function gs_topic_link() {
     } else {
         topic_link();
     }
-    
 }
 
 function gs_topic_loop(&$discussions) { 
@@ -145,16 +145,57 @@ function gs_topic_loop_end() {
 	echo '</tbody></table>';
 }
 
-function gs_topic_header() {
+function merlot_topic_header() {
 ?>
     <h2 <?php topic_class('topictitle title' ); ?>><?php topic_title(); ?><?php gs_topic_labels(); ?></h2>
-    <?php do_action('under_title', ''); ?>
-    <?php do_action('topicmeta'); ?>
-<?php
+    <?php 
+    do_action('under_title', '');
+    do_action('topicmeta');
+    topic_tags();
+    
+    merlot_topic_moderation();
 }
 
-function gs_topic_pagination() {
+function merlot_topic_pagination() {
     gs_pagination_links(get_topic_pages());
 }
 
+function merlot_topic_moderation() {
+    if (!bb_current_user_can('moderate'))
+        return;
+    
+    $topic = get_topic(get_topic_id(0));
+    
+    ?>
+    <div class="well">
+        <div class="row">
+            <div class="span4">
+                <?php
+                printf('<h3>%s</h3>', __('Move Topic to Another Forum'));
+                topic_move_dropdown();
+                ?>
+            </div>
+            
+            <div class="span4">
+                <?php
+                printf('<h3>%s</h3>', __('Add Tag'));
+                tag_form();
+                ?>
+            </div>
+            
+            <div class="span3">
+                <h3><?php _e('Topic Actions'); ?></h3>
+                
+                <?php
+                topic_delete_link(array('before' => '<p>', 'after' => '</p>', 'class' => "btn btn-danger"));
+	    
+	            topic_sticky_link(array('before' => '<p>', 'after' => '</p>', 'class' => "btn btn-primary"));
+	        
+	            topic_close_link(array('before' => '<p>', 'after' => '</p>', 'class' => "btn btn-inverse"));
+                ?>
+            </div>
+    </div>
+    <?php
+    
+}
 
