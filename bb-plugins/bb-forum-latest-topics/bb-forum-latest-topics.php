@@ -127,7 +127,7 @@ add_action('bb_post.php', 'bb_latest_forum_topics_update_from_post');
 
 // updates meta for a forum when a topic is deleted 
 
-function bb_latest_forum_topics_update_from_topic_delete($topic_id, $new_status, $old_status) {
+function bb_latest_forum_topics_update_from_topic_delete($topic_id, $new_status = 1, $old_status = 0) {
     $topic = get_topic($topic_id);
     remove_filter('get_topic_where', 'no_where');
     bb_latest_forum_topics_update_forum($topic->forum_id);
@@ -137,7 +137,7 @@ add_action('bb_delete_topic', 'bb_latest_forum_topics_update_from_topic_delete',
 
 // updates meta for a forum when a post is deleted
 
-function bb_latest_forum_topics_update_from_post_delete($post_id, $new_status, $old_status) {
+function bb_latest_forum_topics_update_from_post_delete($post_id, $new_status = 1, $old_status = 0) {
     $post = bb_get_post($post_id);
     remove_filter('get_topic_where', 'no_where');
     bb_latest_forum_topics_update_forum($post->forum_id);
