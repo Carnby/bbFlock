@@ -194,8 +194,11 @@ function merlot_topic_moderation() {
 	            topic_close_link(array('before' => '<p>', 'after' => '</p>', 'class' => "btn btn-inverse"));
                 ?>
             </div>
+        </div>
     </div>
     <?php
+    
+    do_action('merlot_after_topic_moderation', $topic->topic_id);
     
 }
 

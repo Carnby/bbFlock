@@ -34,7 +34,7 @@ function bb_post_admin_links($post_id = 0, $class = 'admin_link') {
 	
 	
 	
-	return apply_filters('bb_post_admin', $links, $class);	
+	return apply_filters('bb_post_admin_links', $links, $bb_post->post_id, $class);	
 }
 
 function merlot_post_buttons($post_id = 0) {
