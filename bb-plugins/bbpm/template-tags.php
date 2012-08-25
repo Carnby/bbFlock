@@ -210,9 +210,9 @@ function bbpm_header_link( $links ) {
     $link = $bbpm->get_link();
         
 	if ($count = $bbpm->count_pm( bb_get_current_user_info( 'ID' ), true )) {
-		$link = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-inbox icon-white"></i> %s <span class="badge badge-warning">%s</span></a>', $bbpm->get_messages_url(), __('Inbox', 'bbpm'), bb_number_format_i18n($count)));
+		$link = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-inbox"></i> %s <span class="badge badge-warning">%s</span></a>', $bbpm->get_messages_url(), __('Inbox', 'bbpm'), bb_number_format_i18n($count)));
 	} else {
-	    $link = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-inbox icon-white"></i> %s</a>', $bbpm->get_messages_url(), __('Inbox', 'bbpm')));
+	    $link = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-inbox"></i> %s</a>', $bbpm->get_messages_url(), __('Inbox', 'bbpm')));
 	}
 	
 	array_splice($links, 1, 0, $link);
