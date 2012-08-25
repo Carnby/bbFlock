@@ -8,7 +8,7 @@
         
         $tag_link = sprintf('<span><a href="%s" rel="tag"><i class="icon-tag icon-white"></i> %s</a></span>', bb_get_tag_link(), bb_get_tag_name()); 
             
-        if ($remove_link = bb_get_tag_remove_link('label label-important')) {
+        if ($remove_link = bb_get_tag_remove_link('close')) {
             $tag_link .= '&nbsp' . $remove_link;
             
         }

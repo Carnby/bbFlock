@@ -15,7 +15,7 @@ function gs_hot_tags() {
 
 function gs_tag_breadcrumb() {
     $links = array();
-    $links[] = sprintf('<a href="%s">%s</a>', bb_get_uri(), bb_get_option('name'));
+    $links[] = sprintf('<a href="%s">%s</a>', bb_get_uri(), __('Home'));
     $links[] = sprintf('<a href="%s">%s</a>', bb_get_tag_page_link(), __('Tags'));
     
     if (is_bb_tag())

@@ -110,7 +110,7 @@ function merlot_credits() {
 
 
 function merlot_do_full_width() {
-    $do = in_array(bb_get_location(), array('register-page', 'login-page', 'password-reset', 'topic-edit-page', 'forum-page', 'front-page', 'user-view-page', 'view-page', 'topic-page'));    
+    $do = !in_array(bb_get_location(), array('profile-page', 'search-page'));
     return apply_filters('merlot_do_full_width', $do);
 }
 
@@ -125,11 +125,6 @@ function merlot_sidebar_buttons() {
         $buttons[] = sprintf('<a class="btn btn-primary pull-left" href="%s"><i class="icon icon-plus-sign"></i> %s</a>', bb_get_uri('register.php'), __('Register'));
         $buttons[] = sprintf(__('<a class="btn btn-primary" href="%1$s"><i class="icon icon-user"></i> Login</a>'), bb_get_option('uri').'bb-login.php');
     } else {
-        if (is_forum()) {                    
-            if (bb_current_user_can('write_topics')) { 
-                $buttons[] = get_new_topic_link(array('class' => 'btn btn-primary btn-large', 'text' => sprintf('<i class="icon icon-comment"></i> %s', __('Add New Topic')))); 
-            } 
-        }
         
         if (is_topic()) {
             if ($link = merlot_toggle_favorite_link())
@@ -204,15 +199,25 @@ function merlot_navigation() {
     do_action('merlot_before_navigation');
     
 	$links = array();
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-home"></i> %s</a>', bb_get_uri(), __('Forums')), 'front-page');
 	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-comment"></i> %s</a>', get_view_link('all-discussions'), __('Discussions')), 'view-page');
+	$sections = array();
+	$sections[] = sprintf('<li><a href="%s"><i class="icon icon-home"></i> %s</a></li>', bb_get_uri(), __('Forums'));
+	$sections[] = sprintf('<li><a href="%s"><i class="icon icon-comment"></i> %s</a></li>', get_view_link('all-discussions'), __('Discussions'));
+	$sections[] = sprintf('<li><a href="%s"><i class="icon icon-tags"></i> %s</a></li>', bb_get_tag_page_link(), __('Tags'));
+	
+	$dropdown = sprintf('<a href="#" class="dropdown-toggle brand" data-toggle="dropdown">%s <b class="caret"></b></a><ul class="dropdown-menu">%s</ul>', bb_get_option('name'), implode("\n", $sections));
+	
+	$links[] = gs_nav_link_wrap($dropdown, 'front-page');
+	
+	//$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-home"></i> %s</a>', bb_get_uri(), __('Forums')), 'front-page');
+	
+	//$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-comment"></i> %s</a>', get_view_link('all-discussions'), __('Discussions')), 'view-page');
 	
 	if ($admin_link = bb_get_admin_link(array('text' => sprintf('<i class="icon icon-wrench"></i> %s', __('Admin'))))) {
         $links[] = gs_nav_link_wrap($admin_link, 'admin');		
     }
 	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-tags"></i> %s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
+	//$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-tags"></i> %s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
 	
 	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-th"></i> %s</a>', get_user_view_link('all'), __('Members')), 'members');
 	
@@ -221,7 +226,7 @@ function merlot_navigation() {
 	$links = array();
 	
 	if (!bb_is_user_logged_in()) {
-	    $links[] = gs_nav_link_wrap(sprintf(__('<a class="register_link" href="%1$s"><i class="icon icon-plus-sign"></i> Register</a>'), bb_get_option('uri').'register.php'), 'register');
+	    $links[] = gs_nav_link_wrap(sprintf(__('<a class="register_link" href="%1$s"><i class="icon icon-plus-sign"></i> Register</a>'), bb_get_uri('register.php')), 'register');
 	    $links[] = gs_nav_link_wrap(sprintf('<a class="login_link" data-toggle="modal" href="#modalLogin"><i class="icon icon-user"></i> %s</a>', __('Login')), 'login');
 	} else {
 	    $links[] = gs_nav_link_wrap(bb_get_profile_link(array('text' => sprintf('<i class="icon icon-user"></i> %s', bb_get_current_user_info( 'name' )))), 'profile');				
@@ -239,9 +244,13 @@ function merlot_navigation() {
 
 function merlot_front_page_header() {
     ?>
-    <h1><?php bb_option('name'); ?></h1>
-    <p><?php bb_option('description'); ?></p>
+    <h1><?php 
+        bb_option('name'); 
+        if ($desc = bb_get_option('description'))
+            printf(' <small>%s</small>', $desc); 
+    ?></h1>
     <?php
+    do_action('merlot_after_front_page_title');
 }
 
 function merlot_registration_header() {
@@ -252,13 +261,13 @@ function merlot_registration_header() {
 }
 
 function merlot_bootstrap_css() {
-    $css_url = bb_get_option('uri') . '/bb-vendors/bootstrap/css/bootstrap.min.css';
+    $css_url = bb_get_uri('/bb-vendors/bootstrap/css/bootstrap.min.css');
     $css_url = apply_filters('merlot_bootstrap_css', $css_url);
     printf('<link rel="stylesheet" href="%s" type="text/css" />', $css_url);
 }
 
 function merlot_bootstrap_responsive_css() {
-    $css_url = bb_get_option('uri') . '/bb-vendors/bootstrap/css/bootstrap-responsive.min.css';
+    $css_url = bb_get_uri('/bb-vendors/bootstrap/css/bootstrap-responsive.min.css');
     $css_url = apply_filters('merlot_bootstrap_responsive_css', $css_url);
     printf('<link rel="stylesheet" href="%s" type="text/css" />', $css_url);
 }

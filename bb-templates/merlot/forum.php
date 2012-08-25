@@ -16,7 +16,13 @@ else
     $merged = NULL;
 
 ?>
-<h3><?php _e('Latest Discussions'); ?></h3>
+<h3><?php _e('Latest Discussions'); 
+
+if (bb_is_user_logged_in() && bb_current_user_can('write_topics')) { 
+    $button = get_new_topic_link(array('class' => 'btn btn-primary btn-large', 'text' => sprintf('<i class="icon icon-comment icon-white"></i> %s', __('Add New Topic')))); 
+    printf('<div class="pull-right">%s</div>', $button);
+}
+?></h3>
 
 <?php gs_topic_loop($merged); ?>
 

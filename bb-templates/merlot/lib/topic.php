@@ -51,7 +51,7 @@ function gs_topic_class($classes, $topic_id) {
 
 function gs_topic_loop_start($id = "latest") {
 	?>
-	<table id="<?php echo $id; ?>" class="forum-topics table table-striped">
+	<table id="<?php echo $id; ?>" class="forum-topics table">
 	<thead>
 	    <tr>
 	        <th class="span8"><?php _e('Title'); ?></th>

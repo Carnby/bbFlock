@@ -4,7 +4,7 @@ function merlot_profile_breadcrumb() {
     global $user;
     $links = array();
     
-    $links[] = '<a href="' . bb_get_uri() . '">' . bb_get_option('name') . '</a>';
+    $links[] = '<a href="' . bb_get_uri() . '">' . __('Home') . '</a>';
     $links[] = '<a href="' . bb_get_uri('members.php') . '">' . __('Members') . '</a>';
     $links[] = '<a href="' . get_user_profile_link($user->ID) . '">' . get_user_name($user->ID) . '</a>';
 
