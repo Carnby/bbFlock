@@ -1218,9 +1218,14 @@ function post_link( $post_id = 0 ) {
 }
 
 function get_post_link( $post_id = 0 ) {
-	$bb_post = bb_get_post( get_post_id( $post_id ) );
-	$page = get_page_number( $bb_post->post_position );
-	return apply_filters( 'get_post_link', get_topic_link( $bb_post->topic_id, $page ) . "#post-$bb_post->post_id", $bb_post->post_id );
+    global $bb_post;
+    $post_id = (int) $post_id;
+    if ($post_id)
+	    $post = bb_get_post($post_id);
+	else
+	    $post =& $bb_post;
+	$page = get_page_number($bb_post->post_position);
+	return apply_filters( 'get_post_link', get_topic_link($bb_post->topic_id, $page ) . "#post-$bb_post->post_id", $bb_post->post_id );
 }
 
 function post_anchor_link( $force_full = false ) {
@@ -1278,11 +1283,16 @@ function bb_post_time( $args = '' ) {
 }
 
 function bb_get_post_time( $args = '' ) {
+    global $bb_post;
 	$args = _bb_parse_time_function_args( $args );
 
-	$bb_post = bb_get_post( get_post_id( $args['id'] ) );
+    $post_id = $args['id'];
+    if ($post_id)
+	    $post = bb_get_post($post_id);
+	else
+	    $post =& $bb_post;
 
-	$time = apply_filters( 'bb_get_post_time', $bb_post->post_time, $args );
+	$time = apply_filters( 'bb_get_post_time', $post->post_time, $args );
 
 	return _bb_time_function_return( $time, $args );
 }

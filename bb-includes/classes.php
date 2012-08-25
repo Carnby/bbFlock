@@ -293,7 +293,7 @@ class BB_Query {
 
 			$group_by = 't.topic_id';
 
-			$fields .= ", MIN(p.post_id) as post_id";
+			$fields .= ", MIN(p.post_id) as post_id, MIN(p.post_position) as post_position";
 
 			if ( $bbdb->has_cap( 'GROUP_CONCAT', $bbdb->posts ) )
 				$fields .= ", GROUP_CONCAT(p.post_text SEPARATOR ' ') AS post_text";
