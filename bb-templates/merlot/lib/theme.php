@@ -204,10 +204,11 @@ function merlot_navigation() {
 	$sections[] = sprintf('<li><a href="%s"><i class="icon icon-home"></i> %s</a></li>', bb_get_uri(), __('Forums'));
 	$sections[] = sprintf('<li><a href="%s"><i class="icon icon-comment"></i> %s</a></li>', get_view_link('all-discussions'), __('Discussions'));
 	$sections[] = sprintf('<li><a href="%s"><i class="icon icon-tags"></i> %s</a></li>', bb_get_tag_page_link(), __('Tags'));
+	$sections[] = sprintf('<li><a href="%s"><i class="icon icon-th"></i> %s</a></li>', get_user_view_link('all'), __('Members'));
 	
 	$dropdown = sprintf('<a href="#" class="dropdown-toggle brand" data-toggle="dropdown">%s <b class="caret"></b></a><ul class="dropdown-menu">%s</ul>', bb_get_option('name'), implode("\n", $sections));
 	
-	$links[] = gs_nav_link_wrap($dropdown, 'front-page');
+	$links[] = $dropdown;
 	
 	//$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-home"></i> %s</a>', bb_get_uri(), __('Forums')), 'front-page');
 	
@@ -219,7 +220,7 @@ function merlot_navigation() {
 	
 	//$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-tags"></i> %s</a>', bb_get_tag_page_link(), __('Tags')), 'tags');
 	
-	$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-th"></i> %s</a>', get_user_view_link('all'), __('Members')), 'members');
+	//$links[] = gs_nav_link_wrap(sprintf('<a href="%s"><i class="icon icon-th"></i> %s</a>', get_user_view_link('all'), __('Members')), 'members');
 	
 	printf('<ul class="nav">%s</ul>', implode('', apply_filters('gs_navigation_menu', $links)));
 	
