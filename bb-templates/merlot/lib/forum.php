@@ -27,7 +27,7 @@ function merlot_forum_loop() {
 ?>
 	<h3><?php 
 	    _e('Forums'); 
-	    if (bb_current_user_can('write_topics')) { 
+	    if (is_forum() && bb_current_user_can('write_topics')) { 
             $button = get_new_topic_link(array('class' => 'btn btn-primary btn-large', 'text' => sprintf('<i class="icon icon-comment icon-white"></i> %s', __('Add New Topic')))); 
             printf('<div class="pull-right">%s</div>', $button);
         }    
