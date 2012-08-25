@@ -1,9 +1,10 @@
 <?php bb_get_header(); ?>
 
 
-<?php if ( bb_forums( array('child_of' => $forum_id, 'depth' => 2 ) ) ) { ?>
-	<?php gs_forum_loop(); ?>
-<?php }
+<?php 
+if ( bb_forums( array('child_of' => $forum_id, 'depth' => 2 ) ) ) {
+    merlot_forum_loop();
+}
 
 if ($stickies and $topics)
     $merged = array_merge($stickies, $topics);
@@ -13,7 +14,6 @@ else if ($topics)
     $merged = $topics;
 else 
     $merged = NULL;
-
 
 ?>
 <h3><?php _e('Latest Discussions'); ?></h3>

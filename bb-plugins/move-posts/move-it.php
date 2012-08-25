@@ -1,10 +1,11 @@
 <?php
 /*
- * Plugin Name: Move It
- * Plugin Description: This plugin allows you to move, merge & split posts and topics in bbPress. Based on ideas by _ck_and gh3 for the bbPress Move-it plugin.
- * Author: Eduardo Graells
- * Author URI: http://about.me/egraells
- * Version: 1.0
+Plugin Name: Move It
+Description: This plugin allows you to move posts between topics in bbPress.
+Author: Eduardo Graells
+Author URI: http://about.me/egraells
+Version: 1.0
+License: GPL3
 */
 
 add_filter('bb_post_admin_links', 'move_it_add_move_button', 10, 3);
@@ -102,12 +103,12 @@ $('a.btn-move-it').on('click', function(e) {
 $('#move-it').on('show', function (e) {
     console.log(this);
     console.log(e);
-})
+});
 
 $('#move-it').on('hidden', function (e) {
     alert_box.text('');
     alert_box.addClass('hide');
-})
+});
 
 $('#move-it-form').submit(function (e) {
     e.preventDefault();
@@ -127,11 +128,9 @@ $('#move-it-form').submit(function (e) {
         } else {
             alert_box.text(data.error);
         }
-    }, 'json')
-    .error(function() {
-        alert('<?php _e('We could not connect to the server. Try again later.', 'move-it'); ?>');
-    });
-    return null;
+    }, 'json');
+);
+return null;
 });
 
 };

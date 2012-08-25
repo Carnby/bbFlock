@@ -1,14 +1,13 @@
 <?php
 
 function merlot_search_results(&$query, &$results) {
+    global $bb_post;
     ?>
 <ol class="search-results">
 <?php foreach ( $results as $bb_post ) { ?>
     <li><p><strong><a href="<?php post_link(); ?>"><?php topic_title($bb_post->topic_id); ?></a></strong></p>
-    <blockquote>
-        <p><?php echo bb_show_context($query, $bb_post->post_text); ?></p>
-        <cite><em><?php _e('Posted') ?> <?php echo bb_datetime_format_i18n( bb_get_post_time( array( 'format' => 'timestamp' ) ) ); ?></em></cite>
-    </blockquote>
+    <p><?php echo bb_show_context($query, $bb_post->post_text); ?></p>
+    <p><small><?php _e('Posted') ?> <?php echo bb_datetime_format_i18n( bb_get_post_time( array( 'format' => 'timestamp' ) ) ); ?></em></small></p>
     </li>
 <?php } ?>
 </ol>

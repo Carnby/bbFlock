@@ -1,7 +1,7 @@
 <?php bb_get_header(); ?>
 
 
-<?php if ( !empty ( $q ) ) { ?>
+<?php if (!empty($q) && $relevant) { ?>
 
 <h3><?php _e('Relevant Posts')?></h3>
 

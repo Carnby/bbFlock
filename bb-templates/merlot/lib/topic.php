@@ -54,10 +54,11 @@ function gs_topic_loop_start($id = "latest") {
 	<table id="<?php echo $id; ?>" class="forum-topics table table-striped">
 	<thead>
 	    <tr>
-	        <th><?php _e('Title'); ?></th>
-	        <th><?php _e('Author'); ?></th>
-	        <th><?php _e('Last Reply'); ?></th>
-	        <th><?php _e('Comments'); ?></th>
+	        <th class="span8"><?php _e('Title'); ?></th>
+	        <?php if (!is_bb_profile()) { ?>
+	            <th class="span3"><?php _e('Last Reply'); ?></th>
+	        <?php } ?>
+	        <th class="span1"><?php _e('Comments'); ?></th>
 	    </tr>
 	</thead>
 	<tbody>
@@ -87,27 +88,22 @@ function gs_topic_loop(&$discussions) {
 			        
 			        <h4><a href="<?php gs_topic_link(); ?>"><?php topic_title(); ?></a></h4>
 			        <?php gs_topic_labels(); ?>
-			        <?php // gs_topic_page_links(); ?>
 			        
 			        <?php if (!is_forum()) { ?>
 			            <span><?php _e('In', 'genealogies'); ?> </span><?php gs_topic_forum_link(); ?>
 			        <?php } ?>
+			        
+			        <?php _e('Started by'); ?> <?php merlot_topic_author_profile_link(); ?>, <?php topic_start_time(); ?> <?php _e('ago'); ?>
 			    </td>
-			
-            
-			    <td class="topic-author">
-			        <?php gs_topic_author_avatar(); ?>
-			        <?php gs_topic_author_profile_link(); ?>
-			        <br />
-			        <?php topic_start_time(); ?>
-			    </td>
-			
-			    <td class="topic-last-post">
-			        <?php gs_topic_last_poster_avatar(); ?>
-			        <?php gs_topic_last_poster_profile_link(); ?>
-			        <br />
-			        <a href="<?php topic_last_post_link(); ?>"><?php topic_time(); ?></a>
-			    </td>
+
+                <?php if (!is_bb_profile()) { ?>
+			        <td class="topic-last-post">
+			            <?php gs_topic_last_poster_avatar(); ?>
+			            <?php gs_topic_last_poster_profile_link(); ?>
+			            <br />
+			            <a href="<?php topic_last_post_link(); ?>"><?php topic_time(); ?></a>
+			        </td>
+			    <?php } ?>
 			
 			    <td class="topic-posts">
 			        <?php echo human_filesize(get_topic_posts()); ?>

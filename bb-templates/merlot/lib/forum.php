@@ -25,16 +25,15 @@ function merlot_forum_header() {
 <?php
 }
 
-function gs_forum_loop($not_used = 0) { 
+function merlot_forum_loop() { 
 ?>
 	<h3><?php _e('Forums'); ?></h3>
 	
 	<table id="forumlist" class="forum-list table table-striped">
 	    <thead>
-	        <th><?php _e('Forum'); ?></th>
-	        <?php do_action('template_after_forum_title_header'); ?>
-	        <th><?php _e('Topics'); ?></th>
-	        <th><?php _e('Posts'); ?></th>
+	        <th class="span10"><?php _e('Forum'); ?></th>
+	        <th class="span1"><?php _e('Topics'); ?></th>
+	        <th class="span1"><?php _e('Posts'); ?></th>
 	    </thead>
         <tbody>
 	<?php 
@@ -62,6 +61,8 @@ function gs_forum_loop($not_used = 0) {
 			<td class="forum-description">
 			    <h4><a href="<?php forum_link($forum_id); ?>"><?php forum_name($forum_id); ?></a></h4>
 			    <?php forum_description(array('id' => $forum_id, 'before' => '<p class="forum-description">', 'after' => '</p>')); ?>
+			    
+			    <?php do_action('merlot_after_forum_title', $forum_id); ?>
 			
 			    <?php  
 
@@ -75,10 +76,8 @@ function gs_forum_loop($not_used = 0) {
 				}
 			?>	
 			</td>
-			<?php do_action('template_after_forum_title', $forum_id); ?>
 			<td class="forum-topics"><?php echo human_filesize(get_forum_topics($forum_id)); ?></td>
 			<td class="forum-posts"><?php echo human_filesize(get_forum_posts($forum_id)); ?></td>
-				
 		</tr>
 	<?php } ?>
 	    </tbody>

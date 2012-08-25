@@ -161,22 +161,14 @@ function bb_latest_forum_topics_get_last_topic($forum_id) {
 	
 	if (!$topic)
 	    return;
+	    
+	$title = sprintf('<a href="%s">%s</a>', get_topic_last_post_link($topic->topic_id), $topic->topic_title);
+	$author = sprintf('<a href="%s">%s</a>', get_user_profile_link($topic->topic_last_poster), $topic->topic_last_poster_name);
+
+	printf('<p><small>%s: <strong>%s</strong> %s %s, %s</small></p>', __('Latest Post', 'bb-forum-latest-topics'), $title, __('by'), $author, sprintf(__('%s ago'), get_topic_time(array('id' => $topic_id))));
 	
-	printf('<strong><a href="%s">%s</a></strong><br /><a href="%s">%s</a> %s', get_topic_last_post_link($topic->topic_id), $topic->topic_title, get_user_profile_link($topic->topic_last_poster), $topic->topic_last_poster_name, get_topic_time(array('id' => $topic_id)));
-	
 }
 
-function bb_latest_forum_topics_loop_header() {
-    printf('<th class="forum_latest_topics_header">%s</th>', __('Latest Post', 'bb-forum-latest-topics'));
-}
-
-function bb_latest_forum_topics_loop($forum_id) {
-    printf('<td class="forum_latest_topics_loop">');
-    bb_latest_forum_topics_get_last_topic($forum_id);
-    printf('</td>');
-}
-
-add_action('template_after_forum_title_header', 'bb_latest_forum_topics_loop_header');
-add_action('template_after_forum_title', 'bb_latest_forum_topics_loop');
+add_action('merlot_after_forum_title', 'bb_latest_forum_topics_get_last_topic');
 
 

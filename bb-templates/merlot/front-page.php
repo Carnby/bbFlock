@@ -15,7 +15,7 @@ if (!empty($merged)) {
 }
 
 if ( bb_forums("depth=2") ) 
-    gs_forum_loop();
+    merlot_forum_loop();
 
 ?>
 

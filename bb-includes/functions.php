@@ -1157,7 +1157,7 @@ function bb_get_top_tags( $recent = true, $limit = 40 ) {
 function bb_precache_users($not_used = 0) {
     global $topics;
     $ids = array();
-    foreach ($topics as &$topic) {
+    if ($topics) foreach ($topics as &$topic) {
         $ids[$topic->topic_poster] = true;
         $ids[$topic->topic_last_poster] = true;
     }
@@ -1174,7 +1174,7 @@ function bb_precache_users($not_used = 0) {
         $ids[$topic->topic_last_poster] = true;
     }
     
-    if ($ids)
+    if ((array) apply_filters('bb_cache_user_ids', $ids))
         bb_cache_users(array_keys($ids));
 }
 

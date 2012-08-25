@@ -1,6 +1,6 @@
 <?php
 
-function gs_topic_author_profile_link() {
+function merlot_topic_author_profile_link() {
 	global $topic;
 	if ($topic) {
 		echo '<a href="' . get_user_profile_link($topic->topic_poster) . '">' . $topic->topic_poster_name . '</a>';

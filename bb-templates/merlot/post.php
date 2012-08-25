@@ -5,21 +5,19 @@
                 
     <div class="row">
         <?php if (!is_bb_profile()) { ?>
-            <div class="span2">
-                <div class="well">
-                    <div class="author_avatar">
-                        <?php post_author_avatar(100); ?>
-                    </div>
-                    <div class="pauthor_info">
-                        <strong><a href="<?php user_profile_link(get_post_author_id()); ?>"><?php post_author(); ?></a></strong>
-                        <br /><span class="label label-info"><?php echo get_post_author_title(); ?></span>
-                    </div>   
-                </div>     
+            <div class="span1">
+                <div class="author_avatar">
+                    <?php post_author_avatar(64); ?>
+                </div>
             </div>
         <?php } ?>
         
-        <div class="span<?php echo is_bb_profile() ? 9 : 10; ?>">
+        <div class="span<?php echo is_bb_profile() ? 9 : 11; ?>">
             <?php if (is_topic() || (is_bb_profile() && bb_current_user_can('moderate'))) { ?>            
+            <div class="pauthor_info pull-left">
+                <strong><a href="<?php user_profile_link(get_post_author_id()); ?>"><?php post_author(); ?></a></strong> <span class="label label-info"><?php echo get_post_author_title(); ?></span>
+            </div>      
+            
             <div class="post_stuff pull-right">
                     <?php merlot_post_buttons(); ?>
             </div>

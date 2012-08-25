@@ -21,15 +21,5 @@ load_theme_textdomain('merlot');
 
 bb_enqueue_script('bootstrap');
 
-add_action('bb_init', 'merlot_tag_input_setup');
-function merlot_tag_input_setup(){
-    if (bb_is_user_logged_in() && is_topic()) {
-        bb_enqueue_script('xoxco-tags-input');
-        add_action('bb_head', 'merlot_tag_input_css');
-    }
-}
 
-function merlot_tag_input_css() {
-    printf('<link rel="stylesheet" href="%s" type="text/css" />', bb_get_uri('bb-vendors/xoxco-jquery-tags-input/jquery.tagsinput.css'));
-}
 

@@ -6,7 +6,7 @@
     
     foreach ( $public_tags as $tag ) {
         
-        $tag_link = sprintf('<span><a href="%s" rel="tag"><i class="icon-tag"></i> %s</a></span>', bb_get_tag_link(), bb_get_tag_name()); 
+        $tag_link = sprintf('<span><a href="%s" rel="tag"><i class="icon-tag icon-white"></i> %s</a></span>', bb_get_tag_link(), bb_get_tag_name()); 
             
         if ($remove_link = bb_get_tag_remove_link('label label-important')) {
             $tag_link .= '&nbsp' . $remove_link;

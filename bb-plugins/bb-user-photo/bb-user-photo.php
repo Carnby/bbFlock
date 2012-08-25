@@ -13,10 +13,10 @@ define('USERPHOTO_URL', bb_get_uri() . '/bb-uploads/avatars/');
 
 define('USE_GRAVATARS_IF_NO_PHOTO', 1);	
 
-define('USERPHOTO_FULL_WIDTH', 220);
+define('USERPHOTO_FULL_WIDTH', 210);
 define('USERPHOTO_FULL_HEIGHT', 440);
 define('USERPHOTO_THUMBNAIL_SIZE', 64);
-define('USERPHOTO_JPEG_COMPRESSION', 90);
+define('USERPHOTO_JPEG_COMPRESSION', 95);
 
 
 bb_register_activation_hook(__FILE__, 'userphoto_activation');
@@ -234,9 +234,9 @@ function original_bb_get_avatar( $id_or_email, $size = 80, $default = '' ) {
 		$size = 80;
 
 	if ( $email = bb_get_user_email($id_or_email) ) {
-		$class = 'photo ';
+		$class = 'img-polaroid photo ';
 	} else {
-		$class = '';
+		$class = 'img-polaroid';
 		$email = $id_or_email;
 	}
 
@@ -296,7 +296,7 @@ function bb_get_avatar($id, $size = 0) {
 	        $size = "width=\"$size\"";
         else
             $size = USERPHOTO_THUMBNAIL_SIZE;
-		return '<img class="avatar" ' . $size . ' src="' . USERPHOTO_URL . $avatar . '" alt="" />';
+		return '<img class="avatar img-polaroid" ' . $size . ' src="' . USERPHOTO_URL . $avatar . '" alt="" />';
 	} else if (USE_GRAVATARS_IF_NO_PHOTO)
 		return original_bb_get_avatar($id, $size);
 		
@@ -307,7 +307,7 @@ endif;
 function bb_get_photo($id) {
 		
 	if ($avatar = bb_get_usermeta($id, 'userphoto_image_file'))
-		return '<img class="avatar" src="' . USERPHOTO_URL . $avatar . '" alt="" />';
+		return '<img class="avatar img-polaroid" src="' . USERPHOTO_URL . $avatar . '" alt="" width=' . USERPHOTO_FULL_WIDTH . '/>';
 	else if (USE_GRAVATARS_IF_NO_PHOTO)
 		return original_bb_get_avatar($id, USERPHOTO_FULL_WIDTH);
 		

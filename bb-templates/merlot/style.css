@@ -31,15 +31,19 @@ div.merlot-tag-cloud ul { list-style-type: none; margin: 0; margin-bottom: 1em; 
 
 div.merlot-tag-cloud li {
    display: inline-block;
-   background: #F7F7F7;
+   background: #31B5F4;
    padding: 4px;
    line-height: 100%;
    -moz-border-radius: 3px;
    -webkit-border-radius: 3px;
    border-radius: 3px;
-   border: solid 1px #CCCCCC;
    margin: 2px;
    margin-bottom: 5px;
+}
+
+div.merlot-tag-cloud li a{
+   color: white;
+    
 }
 
 .members .member hr {
@@ -62,4 +66,5 @@ div.header-image img {
     max-height: 150px;
     margin: 1em;
 }
+
 
