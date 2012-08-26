@@ -81,7 +81,7 @@ function bb_register_default_views() {
     if (bb_is_user_logged_in()) {
         $user_info = bb_get_current_user_info();
         bb_register_view('my-discussions', __('My Discussions'), array('topic_author' => (int) $user_info->data->ID));
-        bb_register_view('my-favorites', __('My Favorites'), array('favorites' => (int) $user_info->data->ID));
+        //bb_register_view('my-favorites', __('My Favorites'), array('favorites' => (int) $user_info->data->ID));
     }    
     
 	// no posts (besides the first one), older than 2 hours
