@@ -164,24 +164,26 @@ function bbpm_pm_members() {
     bbpm_js_autocomplete_users('#user_name');
 }
 
-
-function bbpm_add_sidebar_buttons($links) {
-    global $action, $bbpm;
-    
-    if (is_numeric($action) && intval($action) > 0) {
-        $links[] = sprintf('<a class="btn btn-danger" href="%s"><i class="icon icon-remove icon-white"></i> %s</a>',  $bbpm->get_thread_unsubscribe_url($action), __( 'Unsubscribe', 'bbpm' ));
-    } else {
-        if (bb_current_user_can('write_posts')) {
-            $links[] = sprintf('<a class="btn btn-primary" href="%s"><i class="icon icon-envelope icon-white"></i> %s</a>', $bbpm->get_new_pm_link(), __( 'Send New Message &raquo;', 'bbpm' ));
-        }
+function bbpm_get_new_message_button() {
+    global $bbpm;
+    if (bb_current_user_can('write_posts')) {
+            return sprintf('<a class="btn btn-primary" href="%s"><i class="icon icon-envelope icon-white"></i> %s</a>', $bbpm->get_new_pm_link(), __( 'Send New Message', 'bbpm' ));
     }
     
-    return $links;
+    return false;
 }
 
+function bbpm_get_message_unsubscribe_button() {
+    global $bbpm, $action;
+    return sprintf('<a class="btn btn-danger" href="%s"><i class="icon icon-remove icon-white"></i> %s</a>',  $bbpm->get_thread_unsubscribe_url($action), __( 'Unsubscribe', 'bbpm' ));
+}
 
 function bbpm_do_full_width($do) {
-    return $do || (isset($_GET['pm']) && $_GET['pm'] == 'new');
+    global $action;
+    if ($action == 'viewall')
+        return true;
+        
+    return (isset($_GET['pm']) && $_GET['pm'] == 'new');
 }
 
 
@@ -240,4 +242,14 @@ $("<?php echo $selector; ?>").typeahead({
 </script>
 <?php
 }
+
+function bbpm_page_header_button() {
+    global $action;
+    if ($action == 'viewall') {
+        printf('<div class="pull-right">%s</div>', bbpm_get_new_message_button());
+    } else if (isset($_GET['pm']) && is_numeric($_GET['pm'])) {
+        printf('<div class="pull-right">%s</div>', bbpm_get_message_unsubscribe_button());
+    }
+}
+
 

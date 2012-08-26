@@ -105,8 +105,8 @@ function bbpm_configure() {
     add_filter('bb_header_breadcrumb_override', 'bbpm_override_page_header');
 
     add_action('merlot_after_sidebar', 'bbpm_pm_members');
-    add_filter('merlot_sidebar_buttons', 'bbpm_add_sidebar_buttons');
     add_filter('merlot_do_full_width', 'bbpm_do_full_width');
+    add_action('merlot_after_static_page_title', 'bbpm_page_header_button');
 }
 
 function bbpm_configure_admin() {
