@@ -25,15 +25,6 @@
 
     <body id="<?php bb_location(); ?>" class="<?php merlot_body_classes(); ?>">
             
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-		            <?php merlot_navigation(); ?>
-                </div>
-            </div>
-               
-        </div>
-
         <div class="merlot-header container">
             <div class="row">
 	            <div class="site-header span12">
@@ -41,6 +32,15 @@
 	                <div class="clearfix"></div>
 		        </div>
 	        </div>
+	        
+	        <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="container">
+		                <?php merlot_navigation(); ?>
+                    </div>
+                </div>
+                   
+            </div>
         </div>
 
 	    <div class="merlot-page-content container">	
