@@ -3,6 +3,9 @@ require('./bb-load.php');
 
 require_once( BB_PATH . BB_INC . 'registration-functions.php');
 
+if (!bb_get_option('allow_registrations'))
+    wp_redirect(bb_get_uri());
+
 $profile_info_keys = get_profile_info_keys();
 
 $user_login = $user_safe = true;

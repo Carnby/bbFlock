@@ -6,7 +6,7 @@
         <h3><?php _e('Log in &raquo;') ?></h3>
     </div>
     
-<form class="form form-horizontal" method="post" action="<?php bb_option('uri'); ?>bb-login.php">
+<form class="form form-horizontal" method="post" action="<?php bb_uri('bb-login.php'); ?>">
     <div class="modal-body">
 
         <div class="control-group">

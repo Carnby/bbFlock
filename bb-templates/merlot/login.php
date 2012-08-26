@@ -28,7 +28,7 @@
 		<label class="control-label"><?php _e('Username:'); ?></label>
 		<div class="controls">
 		    <input name="user_login" type="text" value="<?php echo $user_login; ?>" />
-		    <span class="help-inline"><?php _e('This username does not exist.'); ?> <a class="btn btn-small btn-success" href="<?php bb_option('uri'); ?>register.php?user=<?php echo $user_login; ?>"><?php _e('Register it?'); ?></a></span>
+		    <span class="help-inline"><?php _e('This username does not exist.'); ?> <?php if (bb_get_option('allow_registrations')) { ?><a class="btn btn-small btn-success" href="<?php bb_option('uri'); ?>register.php?user=<?php echo $user_login; ?>"><?php _e('Register it?'); ?></a><?php } ?></span>
 		</div>
 	</div>
 	<div class="control-group">

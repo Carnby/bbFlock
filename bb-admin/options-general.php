@@ -121,6 +121,19 @@ bb_get_admin_header();
 			    <p class="help-block"><?php _e('A user can edit a post for this many minutes after submitting.') ?></p>
 		    </div>
 		</div>
+		
+		<div class="control-group">
+		    <label class="control-label" for="allow_registrations">
+			    <?php _e('Registration:') ?>
+		    </label>
+		    <div class="controls">
+		        <label class="radio">
+			        <input type="radio" name="allow_registrations" id="allow_registrations" value="1" <?php if (bb_get_option('allow_registrations')) echo 'checked'; ?> /> <?php _e('Enabled.'); ?><br />
+			        <input type="radio" name="allow_registrations" id="allow_registrations" value="0" <?php if (!bb_get_option('allow_registrations')) echo 'checked'; ?> /> <?php _e('Disabled.'); ?>
+			    </label>
+			    <p class="help-block"><?php _e('If enabled, new users can register using the registration form by providing an e-mail and username.') ?></p>
+		    </div>
+		</div>
 	</fieldset>
 	
 	<fieldset>

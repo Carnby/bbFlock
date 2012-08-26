@@ -121,19 +121,7 @@ function merlot_do_full_width() {
 function merlot_sidebar_buttons() {
     $buttons = array();
     
-    if (!bb_is_user_logged_in()) {
-        printf('<h3>%s</h3>', __('Hi, Stranger!'));
-        printf('<p>%s</p>', __('It looks like you\'re new here. If you want to get involved, click one of these buttons!'));
-        
-        $buttons[] = sprintf('<a class="btn btn-primary pull-left" href="%s"><i class="icon icon-plus-sign"></i> %s</a>', bb_get_uri('register.php'), __('Register'));
-        $buttons[] = sprintf(__('<a class="btn btn-primary" href="%1$s"><i class="icon icon-user"></i> Login</a>'), bb_get_option('uri').'bb-login.php');
-    } else {
-        
-        if (is_topic()) {
-            if ($link = merlot_toggle_favorite_link())
-                $buttons[] = $link;
-        }
-        
+    if (bb_is_user_logged_in()) {        
         if (is_bb_profile()) {
             if (bb_current_user_can('edit_user', $user->ID)) {
 		        $buttons[] = sprintf('<a class="btn btn-primary" href="%s"><i class="icon-pencil"></i> %s</a>', attribute_escape(get_profile_tab_link($user->ID, 'edit')), __('Edit Profile'));
@@ -230,7 +218,9 @@ function merlot_navigation() {
 	$links = array();
 	
 	if (!bb_is_user_logged_in()) {
-	    $links[] = gs_nav_link_wrap(sprintf(__('<a class="register_link" href="%1$s"><i class="icon icon-plus-sign"></i> Register</a>'), bb_get_uri('register.php')), 'register');
+	    if (bb_get_option('allow_registrations'))
+	        $links[] = gs_nav_link_wrap(sprintf(__('<a class="register_link" href="%1$s"><i class="icon icon-plus-sign"></i> Register</a>'), bb_get_uri('register.php')), 'register');
+	        
 	    $links[] = gs_nav_link_wrap(sprintf('<a class="login_link" data-toggle="modal" href="#modalLogin"><i class="icon icon-user"></i> %s</a>', __('Login')), 'login');
 	} else {
 	    $links[] = gs_nav_link_wrap(bb_get_profile_link(array('text' => sprintf('<i class="icon icon-user"></i> %s', bb_get_current_user_info( 'name' )))), 'profile');				
