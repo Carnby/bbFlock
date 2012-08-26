@@ -67,3 +67,12 @@ div.header-image img {
 }
 
 .row-subforums ul.nav { margin-bottom: 0; }
+
+.post blockquote {
+   padding: 1ex 16px;
+   font-size: reset;
+   margin: 1em 0;
+   background: #f3f3f3;
+   background: rgba(0, 0, 0, 0.05);
+   border-left: 4px solid rgba(0, 0, 0, 0.1);
+}
