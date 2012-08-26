@@ -65,9 +65,13 @@ function merlot_page_header() {
         merlot_view_header();
     else if (is_user_view())
         merlot_user_view_header();
-    else if (isset($bb->static_title) && !empty($bb->static_title))
-        printf('<h2>%s</h2>', $bb->static_title);
-    else
+    else if (isset($bb->static_title) && !empty($bb->static_title)) {
+        echo '<h2>';
+        do_action('merlot_before_static_page_title');
+        echo apply_filters('merlot_static_page_title', $bb->static_title);
+        do_action('merlot_after_static_page_title');
+        echo '</h2>';
+    } else
         do_action('merlot_custom_page_header');
         
     do_action('merlot_after_page_header');
