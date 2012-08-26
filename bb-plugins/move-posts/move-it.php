@@ -52,87 +52,89 @@ function move_it_js() {
 <script type="text/javascript">
 var move_it_setup = function() {
 
-var recent_topics = <?php
+    var recent_topics = <?php
 
-$args = array(
-    'append_meta' => false,
-    'index_hint' => 'USE INDEX (`forum_time`)',
-    'forum_id' => false,
-    'page' => 1,
-    'per_page' => 100
-);
-
-$query = new BB_Query('topic', $args, 'move_it_latest_topics');
-
-$results = array();
-foreach ($query->results as $result) {
-    $results[] = array(
-        'topic_id' => $result->topic_id,
-        'title' => sprintf('%s: %s', get_forum_name($result->forum_id),$result->topic_title) 
+    $args = array(
+        'append_meta' => false,
+        'index_hint' => 'USE INDEX (`forum_time`)',
+        'forum_id' => false,
+        'page' => 1,
+        'per_page' => 100
     );
-}
 
-echo json_encode($results);
+    $query = new BB_Query('topic', $args, 'move_it_latest_topics');
 
-?>;
+    $results = array();
+    foreach ($query->results as $result) {
+        $results[] = array(
+            'topic_id' => $result->topic_id,
+            'title' => sprintf('%s: %s', get_forum_name($result->forum_id),$result->topic_title) 
+        );
+    }
 
-console.log(recent_topics);
+    echo json_encode($results);
 
-var select = $('#move-it').find('select#to_topic_id');
+    ?>;
 
-for (var i = 0; i < recent_topics.length; ++i) {
-    var topic = recent_topics[i];
-    select.append('<option value="' + topic.topic_id  + '">' + topic.title + '</option>')
-}
+    console.log(recent_topics);
 
-var form_url = '<?php echo bb_nonce_url(bb_get_uri('/bb-admin/admin-ajax.php'), 'move-post-from-topic-' . get_topic_id()); ?>';
+    var select = $('#move-it').find('select#to_topic_id');
 
-var post_id = 0;
+    for (var i = 0; i < recent_topics.length; ++i) {
+        var topic = recent_topics[i];
+        select.append('<option value="' + topic.topic_id  + '">' + topic.title + '</option>')
+    }
 
-var alert_box = $('#move-it').find('div.alert');
+    var form_url = '<?php echo bb_nonce_url(bb_get_uri('/bb-admin/admin-ajax.php'), 'move-post-from-topic-' . get_topic_id()); ?>';
 
-$('a.btn-move-it').on('click', function(e) { 
-    console.log(this, e, $(this).data()) 
-    post_id = $(this).data().postId;
-    console.log(post_id);
-    $('#move-it').find('#move-it-post-number').text(post_id);
-    $('#move-it').find('input#move_post_id').val(post_id);
-    $('#move-it').modal('show');    
-});
+    var post_id = 0;
 
-$('#move-it').on('show', function (e) {
-    console.log(this);
-    console.log(e);
-});
+    var alert_box = $('#move-it').find('div.alert');
 
-$('#move-it').on('hidden', function (e) {
-    alert_box.text('');
-    alert_box.addClass('hide');
-});
+    $('a.btn-move-it').on('click', function(e) { 
+        console.log(this, e, $(this).data()) 
+        post_id = $(this).data().postId;
+        console.log(post_id);
+        $('#move-it').find('#move-it-post-number').text(post_id);
+        $('#move-it').find('input#move_post_id').val(post_id);
+        $('#move-it').modal('show');    
+    });
 
-$('#move-it-form').submit(function (e) {
-    e.preventDefault();
-    console.log(form_url);
-    $.post(form_url, {
-        action: 'move_post_from_topic',
-        from_topic_id: <?php echo get_topic_id(); ?>,
-        post_id: post_id,
-        to_topic_id: select.val()
-    }, function(data) {
-        console.log(data);
-        alert_box.removeClass('hide');
-        if (!data.error) {
-            alert_box.text('Post moved!');
-            $('div#post-' + post_id).addClass('fade');
-            $('div#post-' + post_id).remove();
-        } else {
-            alert_box.text(data.error);
-        }
-    }, 'json');
-);
-return null;
-});
+    $('#move-it').on('show', function (e) {
+        console.log(this);
+        console.log(e);
+    });
 
+    $('#move-it').on('hidden', function (e) {
+        alert_box.text('');
+        alert_box.addClass('hide');
+    });
+
+    $('#move-it-form').submit(function (e) {
+        e.preventDefault();
+        console.log(form_url);
+        
+        $.post(form_url, {
+            action: 'move_post_from_topic',
+            from_topic_id: <?php echo get_topic_id(); ?>,
+            post_id: post_id,
+            to_topic_id: select.val()
+        }, function(data) {
+            console.log(data);
+            alert_box.removeClass('hide');
+            if (!data.error) {
+                alert_box.text('Post moved!');
+                $('div#post-' + post_id).addClass('fade');
+                $('div#post-' + post_id).remove();
+            } else {
+                alert_box.text(data.error);
+            }
+        }, 'json');
+        
+        return null;
+        
+    });
+        
 };
 
 move_it_setup();
