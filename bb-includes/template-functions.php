@@ -1659,11 +1659,15 @@ function bb_profile_data( $id = 0 ) {
 	echo "\t<dt>" . __('Member Since') . "</dt>\n";
 	echo "\t<dd>" . bb_datetime_format_i18n($reg_time, 'date') . ' (' . bb_since($reg_time) . ")</dd>\n";
 	
-	echo "\t<dt>" . __('Discussions Created') . "</dt>\n";
-	echo "\t<dd>" . $user->user_topic_count . "</dd>\n";
+	if ($user->user_topic_count) {
+	    echo "\t<dt>" . __('Discussions Created') . "</dt>\n";
+	    echo "\t<dd>" . $user->user_topic_count . "</dd>\n";
+	}
 	
-	echo "\t<dt>" . __('Replies') . "</dt>\n";
-	echo "\t<dd>" . $user->user_post_count . "</dd>\n";
+	if ($user->user_post_count) {
+	    echo "\t<dt>" . __('Replies') . "</dt>\n";
+	    echo "\t<dd>" . $user->user_post_count . "</dd>\n";
+	}
 	
 	if ( is_array( $profile_info_keys ) ) {
 		foreach ( $profile_info_keys as $key => $label ) {
