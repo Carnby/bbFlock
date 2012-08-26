@@ -157,8 +157,8 @@ function bb_quote_tags($tags) {
 	return $tags;
 }
 
-add_filter('bb_post_admin', 'bb_quote_post_link', 10, 2);
-function bb_quote_post_link($post_links, $class) {
+add_filter('bb_post_admin_links', 'bb_quote_post_link', 10, 3);
+function bb_quote_post_link($post_links, $post_id, $class) {
         if ( $link = bb_quote_link($class) )
                 $post_links[] = $link;
         return $post_links;
