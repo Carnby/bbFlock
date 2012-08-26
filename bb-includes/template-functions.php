@@ -1206,7 +1206,7 @@ function post_id( $post_id = 0 ) {
 function get_post_id( $post_id = 0 ) {
 	global $bb_post;
 	$post_id = (int) $post_id;
-	if ( $post_id )
+	if ( $post_id || !$bb_post )
 		$post = bb_get_post( $post_id );
 	else
 		$post =& $bb_post;
@@ -1220,12 +1220,12 @@ function post_link( $post_id = 0 ) {
 function get_post_link( $post_id = 0 ) {
     global $bb_post;
     $post_id = (int) $post_id;
-    if ($post_id)
+    if ($post_id || !$bb_post)
 	    $post = bb_get_post($post_id);
 	else
 	    $post =& $bb_post;
 	$page = get_page_number($bb_post->post_position);
-	return apply_filters( 'get_post_link', get_topic_link($bb_post->topic_id, $page ) . "#post-$bb_post->post_id", $bb_post->post_id );
+	return apply_filters( 'get_post_link', get_topic_link($post->topic_id, $page ) . "#post-$post->post_id", $post->post_id );
 }
 
 function post_anchor_link( $force_full = false ) {
