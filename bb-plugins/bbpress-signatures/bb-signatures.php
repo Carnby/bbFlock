@@ -69,7 +69,7 @@ function bb_signatures_add_css() {
 } 
 
 function add_signature_to_post($text) {
-    if (!is_bb_feed()) {
+    if (!is_bb_feed() && is_topic()) {
         global $bb_post,$bb_signatures;
 	    $user_id=$bb_post->poster_id;
 
