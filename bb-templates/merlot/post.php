@@ -1,6 +1,6 @@
 <div class="post" id="post-<?php post_id(); ?>" <?php alt_class('post', post_del_class() . ' post'); ?>>
     <?php if (is_bb_profile()) { ?>
-        <h3 class="profile_topic_title"><a href="<?php topic_link(); ?>"><?php topic_title(); ?></a></h3>
+        <h4 class="profile_topic_title"><a href="<?php topic_link(); ?>"><?php topic_title(); ?></a> <small><?php bb_post_time(); ?></small></h4>
     <?php } ?>
                 
     <div class="row">
