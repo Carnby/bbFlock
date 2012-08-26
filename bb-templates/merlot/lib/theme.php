@@ -3,7 +3,6 @@
 function merlot_site_header() {
     do_action('merlot_before_site_header');
     do_action('merlot_site_header');
-    merlot_header_breadcrumb();
     do_action('merlot_after_site_header');
 }
 

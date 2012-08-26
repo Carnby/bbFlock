@@ -41,6 +41,8 @@
                 </div>
                    
             </div>
+            
+            <?php merlot_header_breadcrumb(); ?>
         </div>
 
 	    <div class="merlot-page-content container">	

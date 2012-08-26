@@ -26,6 +26,7 @@ td.topic-title a.page-numbers { font-weight: bold; text-decoration: underline; }
 div.post_author_info { margin: 0.25em; }
 h4.profile_topic_title { margin-bottom: 0.5em; }
 
+ul.breadcrumb { margin-bottom: 0; }
 
 div.merlot-tag-cloud ul { list-style-type: none; margin: 0; margin-bottom: 1em; }
 
