@@ -105,7 +105,8 @@ function bb_allowed_tags() {
 		'strong' => array(),
 		'ul' => array(),
 		'ol' => array(),
-		'li' => array()
+		'li' => array(),
+		'del' => array()
 	);
 	return apply_filters( 'bb_allowed_tags', $tags );
 }
