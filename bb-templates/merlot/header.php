@@ -13,7 +13,7 @@
 	    <title><?php bb_title(); ?></title>
 	    <?php bb_feed_head(); ?> 
 	    <?php merlot_bootstrap_css(); ?>
-	    <?php merlot_bootstrap_responsive_css(); ?>
+	    <?php //merlot_bootstrap_responsive_css(); ?>
 	    <link rel="stylesheet" href="<?php bb_stylesheet_uri(); ?>" type="text/css" />
 	    <?php if ( 'rtl' == bb_get_option( 'text_direction' ) ) : ?>
 	    <link rel="stylesheet" href="<?php bb_stylesheet_uri( 'rtl' ); ?>" type="text/css" />
