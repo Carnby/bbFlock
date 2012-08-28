@@ -4,12 +4,37 @@ if (php_sapi_name() != "cli")
     die(); 
 
 set_time_limit(0);
+ini_set('memory_limit','64M');
 
 require_once('../bb-load.php');
+
+// RESET DB
+
+$reset_steps = array(
+"truncate table {$bbdb->prefix}users;",
+"truncate table {$bbdb->prefix}usermeta;",
+"truncate table {$bbdb->prefix}posts;",
+"truncate table {$bbdb->prefix}postmeta;",
+"truncate table {$bbdb->prefix}utplugin_log;",
+"truncate table {$bbdb->prefix}bbpm_messages;",
+"truncate table {$bbdb->prefix}bbpm_threads;",
+"truncate table {$bbdb->prefix}bbpm_thread_members;",
+"truncate table {$bbdb->prefix}tagged;",
+"truncate table {$bbdb->prefix}tags;",
+"truncate table {$bbdb->prefix}topics;",
+"delete from {$bbdb->prefix}topicmeta where topic_id > 0;",
+"update {$bbdb->prefix}forums set topics = 0, posts = 0;",
+"delete from {$bbdb->prefix}forummeta where meta_key in ('bb_latest_forum_topic', 'moderators');"
+);
+
+foreach ($reset_steps as $reset_sql)
+    $bbdb->query($reset_sql);
 
 //  USERS
 
 $wordpress_prefix = 'rk_wp_test_1_';
+
+$user_map = array();
 
 foreach ($bbdb->get_results("SELECT * from GDN_User") as $vanilla_user) {
     
@@ -69,6 +94,8 @@ foreach ($bbdb->get_results("SELECT * from GDN_User") as $vanilla_user) {
 	} else {
 	    echo "user already exists $user_id $vanilla_user->Name\n";
 	}
+	
+	$user_map[$vanilla_id] = $user_id;
 }
 
 // FORUMS
@@ -86,6 +113,7 @@ foreach($bbdb->get_results("SELECT * FROM GDN_Category where CategoryID > 0") as
     
     if ($forum_id) {
         echo $forum_name . ' already exists' . "\n";
+        $forum_map[$vanilla_id] = $forum_id;
         continue;
     }
 
@@ -120,7 +148,8 @@ foreach ($bbdb->get_results("SELECT *  FROM GDN_Discussion") as $discussion) {
     
     $vanilla_id = $discussion->DiscussionID;
     $forum_id = $forum_map[$discussion->CategoryID];
-    $author_id = $bbdb->get_var("SELECT user_id FROM $bbdb->usermeta WHERE meta_key = 'vanilla_id' AND meta_value = $discussion->InsertUserID");
+    //$author_id = $bbdb->get_var("SELECT user_id FROM $bbdb->usermeta WHERE meta_key = 'vanilla_id' AND meta_value = $discussion->InsertUserID");
+    $author_id = $user_map[$discussion->InsertUserID];
     $title = $discussion->Name;
     $views = $discussion->CountViews;
     $closed = $discussion->Closed;
@@ -159,7 +188,8 @@ foreach ($bbdb->get_results("SELECT *  FROM GDN_Discussion") as $discussion) {
 	foreach ((array) $bbdb->get_results("SELECT * from GDN_Comment where DiscussionID = $vanilla_id and DeleteUserID IS NULL and CommentID > $last_post_vanilla_id") as $comment) {
 	    //var_dump($comment);
 	    
-	    $poster_id = $bbdb->get_var("SELECT user_id FROM $bbdb->usermeta WHERE meta_key = 'vanilla_id' AND meta_value = $comment->InsertUserID");
+	    //$poster_id = $bbdb->get_var("SELECT user_id FROM $bbdb->usermeta WHERE meta_key = 'vanilla_id' AND meta_value = $comment->InsertUserID");
+	    $poster_id = $user_map[$comment->InsertUserID];
 	    
 	    if (!$poster_id)
 	        continue;
