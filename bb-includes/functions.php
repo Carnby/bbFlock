@@ -373,10 +373,12 @@ function bb_move_topic( $topic_id, $forum_id ) {
 	global $bbdb, $bb_cache;
 	$topic = get_topic( $topic_id );
 	$forum = get_forum( $forum_id );
-	$topic_id = (int) $topic->topic_id;
-	$forum_id = (int) $forum->forum_id;
 
 	if ( $topic && $forum && $topic->forum_id != $forum_id ) {
+	    $topic_id = (int) $topic->topic_id;
+	    $forum_id = (int) $forum->forum_id;
+	    $old_forum_id = (int) $topic->forum_id;
+	
 		$bbdb->update( $bbdb->posts, compact( 'forum_id' ), compact( 'topic_id' ) );
 		$bbdb->update( $bbdb->topics, compact( 'forum_id' ), compact( 'topic_id' ) );
 		$bbdb->query( $bbdb->prepare(
@@ -385,6 +387,9 @@ function bb_move_topic( $topic_id, $forum_id ) {
 		$bbdb->query( $bbdb->prepare( 
 			"UPDATE $bbdb->forums SET topics = topics - 1, posts = posts - %d WHERE forum_id = %d", $topic->topic_posts, $topic->forum_id
 		) );
+		
+		do_action('bb_move_topic', $topic_id, $old_forum_id, $forum_id);
+		
 		$bb_cache->flush_one( 'topic', $topic_id );
 		$bb_cache->flush_many( 'forum', $forum_id );
 		return $forum_id;

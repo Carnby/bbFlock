@@ -115,15 +115,27 @@ bb_register_plugin_activation_hook(__FILE__, 'bb_latest_forum_topics_update_all'
 
 // updates meta for a forum when user posts
 
-function bb_latest_forum_topics_update_from_post($post_id) {
+function bb_latest_forum_topics_update_from_post($post_id, $args, $key_args) {
     $post = bb_get_post($post_id);
     if (!$post)
         return;
         
-    bb_update_forummeta($post->forum_id, 'bb_latest_forum_topic', $post->topic_id);
+    $timestamp = (int) bb_get_post_time(array('id' => $post_id, 'format' => 'timestamp'));
+    
+    $current_latest_id = bb_get_forummeta($post->forum_id, 'bb_latest_forum_topic');
+    
+    if (!$current_latest_id) {
+        bb_update_forummeta($post->forum_id, 'bb_latest_forum_topic', $post->topic_id);
+        return;
+    }
+    
+    $current_timestamp = (int) bb_get_post_time(array('id' => $current_latest_id, 'format' => 'timestamp'));
+    
+    if ($current_timestamp <= $timestamp)
+        bb_update_forummeta($post->forum_id, 'bb_latest_forum_topic', $post->topic_id);
 }
 
-add_action('bb_post.php', 'bb_latest_forum_topics_update_from_post');
+add_action('bb_insert_post', 'bb_latest_forum_topics_update_from_post', 10, 3);
 
 // updates meta for a forum when a topic is deleted 
 
@@ -134,6 +146,17 @@ function bb_latest_forum_topics_update_from_topic_delete($topic_id, $new_status 
 }
 
 add_action('bb_delete_topic', 'bb_latest_forum_topics_update_from_topic_delete', 3);
+
+// updates meta for a forum when a topic is moved 
+
+function bb_latest_forum_topics_update_from_topic_move($topic_id, $old_forum_id, $new_forum_id) {
+    $topic = get_topic($topic_id);
+    remove_filter('get_topic_where', 'no_where');
+    bb_latest_forum_topics_update_forum($old_forum_id);
+    bb_latest_forum_topics_update_forum($new_forum_id);
+}
+
+add_action('bb_move_topic', 'bb_latest_forum_topics_update_from_topic_move', 3);
 
 // updates meta for a forum when a post is deleted
 
