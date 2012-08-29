@@ -87,8 +87,8 @@ function merlot_forum_loop() {
 			            
 			            <?php do_action('merlot_after_forum_title', $subforum_id); ?>
 			        </td>
-			        <td class="forum-topics"><?php echo human_filesize(get_forum_topics($forum_id)); ?></td>
-			        <td class="forum-posts"><?php echo human_filesize(get_forum_posts($forum_id)); ?></td>
+			        <td class="forum-topics"><?php echo human_filesize(get_forum_topics($subforum_id)); ?></td>
+			        <td class="forum-posts"><?php echo human_filesize(get_forum_posts($subforum_id)); ?></td>
 		        </tr>
 		        <?php
 			}
