@@ -182,10 +182,11 @@ foreach ($bbdb->get_results("SELECT *  FROM GDN_Discussion") as $discussion) {
 	$last_post_vanilla_id = 0;
 			
 	bb_insert_post($post_data);
-	
+	unset($post_data);
 	print $title . "...";
 	
-	foreach ((array) $bbdb->get_results("SELECT * from GDN_Comment where DiscussionID = $vanilla_id and DeleteUserID IS NULL and CommentID > $last_post_vanilla_id") as $comment) {
+	$comments = $bbdb->get_results("SELECT * from GDN_Comment where DiscussionID = $vanilla_id and DeleteUserID IS NULL and CommentID > $last_post_vanilla_id");
+	foreach ((array) $comments as $comment) {
 	    //var_dump($comment);
 	    
 	    //$poster_id = $bbdb->get_var("SELECT user_id FROM $bbdb->usermeta WHERE meta_key = 'vanilla_id' AND meta_value = $comment->InsertUserID");
@@ -204,8 +205,11 @@ foreach ($bbdb->get_results("SELECT *  FROM GDN_Discussion") as $discussion) {
 		
 		//var_dump($post_data);
 		bb_insert_post($post_data);
+		unset($post_data);
 		$last_post_vanilla_id = $comment->CommentID;
 	}
+	
+	unset($comments);
 	
 	bb_update_topicmeta($topic_id, 'vanilla_last_post_id', $last_post_vanilla_id);
 	
