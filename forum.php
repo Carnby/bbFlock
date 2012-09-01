@@ -10,15 +10,15 @@ if ( !$forum )
 	bb_die(__('Forum not found.'));
 
 $bb_db_override = false;
-do_action( 'bb_forum.php_pre_db', $forum_id );
+do_action('bb_forum.php_pre_db', $forum_id);
 
-if ( !$bb_db_override ) :
-	$topics   = get_latest_topics( $forum_id, $page );
-	$stickies = get_sticky_topics( $forum_id, $page );
+if (!$bb_db_override && !forum_is_category($forum_id)) :
+	$topics   = get_latest_topics($forum_id, $page);
+	$stickies = get_sticky_topics($forum_id, $page);
 endif;
 
-do_action( 'bb_forum.php', $forum_id );
+do_action('bb_forum.php', $forum_id);
 
-bb_load_template( 'forum.php', array('bb_db_override', 'stickies') );
+bb_load_template('forum.php', array('bb_db_override', 'stickies'));
 
 ?>

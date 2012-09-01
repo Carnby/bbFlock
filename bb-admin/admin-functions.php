@@ -492,7 +492,7 @@ function bb_update_forum( $args ) {
 	if ( !bb_current_user_can( 'manage_forums' ) )
 		return false;
 
-	$defaults = array( 'forum_id' => 0, 'forum_name' => '', 'forum_desc' => '', 'forum_parent' => 0, 'forum_order' => 0 );
+	$defaults = array('forum_id' => 0, 'forum_name' => '', 'forum_desc' => '', 'forum_parent' => 0, 'forum_order' => 0, 'is_category' => 0);
 	$args = wp_parse_args( $args, $defaults );
 	if ( 1 < func_num_args() ) : // For back compat
 		$args['forum_id']    = func_get_arg(0);
@@ -511,6 +511,8 @@ function bb_update_forum( $args ) {
 	$forum_name = apply_filters( 'bb_pre_forum_name', stripslashes($forum_name) );
 	$forum_desc = apply_filters( 'bb_pre_forum_desc', stripslashes($forum_desc) );
 	$forum_name = bb_trim_for_db( $forum_name, 150 );
+	
+	$is_category = intval((bool) $is_category);
 
 	if ( strlen($forum_name) < 1 )
 		return false;
@@ -518,7 +520,7 @@ function bb_update_forum( $args ) {
 	$bb_cache->flush_many( 'forum', $forum_id );
 	$bb_cache->flush_one( 'forums' );
 
-	return $bbdb->update( $bbdb->forums, compact( 'forum_name', 'forum_desc', 'forum_parent', 'forum_order' ), compact( 'forum_id' ) );
+	return $bbdb->update($bbdb->forums, compact('forum_name', 'forum_desc', 'forum_parent', 'forum_order', 'is_category'), compact('forum_id'));
 }
 
 // When you delete a forum, you delete *everything*
@@ -623,6 +625,15 @@ function bb_forum_form( $forum_id = 0 ) {
 		        <input type="text" name="forum_order" id="forum-order" value="<?php if ( $forum_id ) echo get_forum_position( $forum_id ); ?>" tabindex="12" maxlength="10" class="widefat" />
 		    </div>
         </div>
+        
+		<div class="control-group">
+		    <label for="forum-order" class="control-label"><?php _e('Status:'); ?></label>
+		    <div class="controls">
+		        <label class="checkbox">
+		            <input type="checkbox" name="is_category" id="is_category" value="1"  <?php if ( $forum_id && forum_is_category($forum_id)) echo 'checked '; ?> tabindex="13" /> <?php _e('Forum is a category (it cannot contain discussions, only sub-forums).'); ?>
+		    </div>
+        </div>
+        
 <?php endif; ?>     
 
     <?php do_action('bb_forum_form', $forum_id); ?>
@@ -634,7 +645,7 @@ function bb_forum_form( $forum_id = 0 ) {
 		<?php bb_nonce_field( 'order-forums', 'order-nonce' ); ?>
 		<?php bb_nonce_field( "$action-forum" ); ?>
 		<input type="hidden" name="action" value="<?php echo $action; ?>" />
-		<input class="btn btn-primary" name="Submit" type="submit" value="<?php if ( $forum_id ) _e('Update Forum &#187;'); else _e('Add Forum &#187;'); ?>" tabindex="13" />
+		<input class="btn btn-primary" name="Submit" type="submit" value="<?php if ( $forum_id ) _e('Update Forum &#187;'); else _e('Add Forum &#187;'); ?>" tabindex="14" />
 	</div>
 	</fieldset> 
 </form>

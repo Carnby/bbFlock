@@ -23,11 +23,33 @@ function merlot_forum_header() {
     do_action('merlot_forum_page_after_forum_name'); 
 }
 
+function merlot_forum_row($forum_id) {
+    ?>
+	<tr <?php bb_forum_class($forum_id); ?>>
+	    <?php if (!forum_is_category($forum_id)) { ?>
+		    <td class="forum-description">
+		        <h5><a href="<?php forum_link($forum_id); ?>"><?php forum_name($forum_id); ?></a><?php forum_description(array('id' => $forum_id, 'before' => ' <small class="forum-description">', 'after' => '</small>')); ?></h5>
+		        
+		        <?php do_action('merlot_after_forum_title', $forum_id); ?>
+		    </td>
+		    <td class="forum-topics"><?php echo human_filesize(get_forum_topics($forum_id)); ?></td>
+		    <td class="forum-posts"><?php echo human_filesize(get_forum_posts($forum_id)); ?></td>
+		  <?php } else { ?>
+		    <td class="forum-category" colspan="3">
+		        <h5><a href="<?php forum_link($forum_id); ?>"><?php forum_name($forum_id); ?></a><?php forum_description(array('id' => $forum_id, 'before' => ' <small class="forum-description">', 'after' => '</small>')); ?></h5>
+		        
+		        <?php do_action('merlot_after_forum_category_title', $forum_id); ?>
+		    </td>
+		  <?php } ?>
+	</tr>
+	<?php
+}
+
 function merlot_forum_loop() { 
 ?>
 	<h3><?php 
 	    _e('Forums'); 
-	    if (is_forum() && bb_current_user_can('write_topics')) { 
+	    if (is_forum() && !forum_is_category() && bb_current_user_can('write_topics')) { 
             $button = get_new_topic_link(array('class' => 'btn btn-primary btn-large', 'text' => sprintf('<i class="icon icon-comment icon-white"></i> %s', __('Add New Topic')))); 
             printf('<div class="pull-right">%s</div>', $button);
         }    
@@ -37,66 +59,28 @@ function merlot_forum_loop() {
 	
 	$forum_ids = array();
 	$parent = 0;
+	
+	$total_subforums = 0;
+	
+	?>
+	    
+    <table id="forumlist" class="forum-list table table-condensed">
+    <thead>
+        <th class="span10"><?php _e('Title'); ?></th>
+        <th class="span1"><?php _e('Topics'); ?></th>
+        <th class="span1"><?php _e('Posts'); ?></th>
+    </thead>
+    <tbody>
+    
+    <?php
+	// we only display two levels
 	while ($depth = bb_forum()) {
-	    
-	    if (apply_filters('merlot_skip_forum_in_forum_loop', false))
-	        continue;
-	    
-	    if ($depth == 1) {
-	        $parent = get_forum_id();
-	        $forum_ids[$parent] = array();
-	    } else if ($depth == 2) {
-	        if (isset($forum_ids[$parent]))
-	            $forum_ids[$parent][] = get_forum_id();
-	    } 
-	}
-
-
-    foreach ($forum_ids as $forum_id => $subforums) {
-	    ?>
-	    
-	    <table id="forumlist" class="forum-list table table-bordered table-striped">
-	    <thead>
-	        <th class="span10"><?php _e('Title'); ?></th>
-	        <th class="span1"><?php _e('Topics'); ?></th>
-	        <th class="span1"><?php _e('Posts'); ?></th>
-	    </thead>
-        <tbody>
-        
-		<tr <?php bb_forum_class($forum_id); ?>>
-			<td class="forum-description">
-			    <h4><a href="<?php forum_link($forum_id); ?>"><?php forum_name($forum_id); ?></a><?php forum_description(array('id' => $forum_id, 'before' => ' <small class="forum-description">', 'after' => '</small>')); ?></h4>
-			    
-			    <?php do_action('merlot_after_forum_title', $forum_id); ?>
-			</td>
-			<td class="forum-topics"><?php echo human_filesize(get_forum_topics($forum_id)); ?></td>
-			<td class="forum-posts"><?php echo human_filesize(get_forum_posts($forum_id)); ?></td>
-		</tr>
-		
-		<?php  
-
-		if (!empty($subforums)) {
-		    
-			$forum_links = array();
-			foreach ($subforums as $subforum_id) {
-				//$forum_link = sprintf('<a href="%s">%s <span class="label">%s</span></a></li>', get_forum_link($subforum_id), get_forum_name($subforum_id), get_forum_topics($subforum_id));
-			    ?>
-		        <tr <?php bb_forum_class($subforum_id); ?>>
-			        <td class="forum-description">
-			            <h5><a href="<?php forum_link($subforum_id); ?>"><?php forum_name($subforum_id); ?></a><?php forum_description(array('id' => $subforum_id, 'before' => ' <small class="forum-description">', 'after' => '</small>')); ?></h5>
-			            
-			            <?php do_action('merlot_after_forum_title', $subforum_id); ?>
-			        </td>
-			        <td class="forum-topics"><?php echo human_filesize(get_forum_topics($subforum_id)); ?></td>
-			        <td class="forum-posts"><?php echo human_filesize(get_forum_posts($subforum_id)); ?></td>
-		        </tr>
-		        <?php
-			}
-		}
-		?>
-	    </tbody>
-	</table>		
-	<?php }
+        merlot_forum_row(get_forum_id());
+    } ?>
+    
+    </tbody>
+	</table>	
+	<?php
 }
 
 function gs_forum_pages() { 

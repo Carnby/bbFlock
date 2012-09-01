@@ -30,7 +30,10 @@ if ( !isset($_GET['action']) )
 bb_get_admin_header();
 ?>
 
-<h2><?php _e('Forum Management'); ?></h2>
+<div class="page-header">
+    <h2><?php _e('Forum Management'); ?></h2>
+</div>
+
 <?php switch ( @$_GET['action'] ) : ?>
 <?php case 'edit' : ?>
 <h3><?php _e('Update Forum'); ?></h3>
