@@ -1191,8 +1191,9 @@ function bb_no_discussions_message() {
     }
     
     ?>
-    <div class="well">
-        <h2><?php echo esc_html(apply_filters('bb_no_discussions_message', $text)); ?></h2>
+    <div class="alert alert-block">
+        <h4><?php _e('Nothing found.'); ?></h4>
+        <p><?php echo esc_html(apply_filters('bb_no_discussions_message', $text)); ?></p>
     </div>
     <?php
 }
@@ -2547,8 +2548,8 @@ function get_user_view_link( $_view = false, $page = 1 ) {
 function bb_no_users_found_message() {
     $text = __('No users found.');
 ?>
-<div class="well">
-<h2><?php echo $text; ?></h2>
+<div class="alert alert-block">
+<h4><?php echo $text; ?></h4>
 </div>
 <?php
 }
