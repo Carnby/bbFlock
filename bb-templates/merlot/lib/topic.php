@@ -51,7 +51,7 @@ function gs_topic_class($classes, $topic_id) {
 
 function gs_topic_loop_start($id = "latest") {
 	?>
-	<table id="<?php echo $id; ?>" class="forum-topics table">
+	<table id="<?php echo $id; ?>" class="forum-topics table table-condensed">
 	<thead>
 	    <tr>
 	        <th class="span8"><?php _e('Title'); ?></th>
@@ -86,14 +86,14 @@ function gs_topic_loop(&$discussions) {
 
 			    <td class="topic-title">
 			        
-			        <h4><a href="<?php gs_topic_link(); ?>"><?php topic_title(); ?></a></h4>
-			        <?php gs_topic_labels(); ?>
-			        
+			        <h5><a href="<?php gs_topic_link(); ?>"><?php topic_title(); ?></a></h5>
+			        <p><small><?php gs_topic_labels(); ?>
 			        <?php if (!is_forum()) { ?>
-			            <span><?php _e('In', 'genealogies'); ?> </span><?php gs_topic_forum_link(); ?>
+			            <span><?php printf(_('In %s'), '<a href="' . get_forum_link($topic->forum_id) . '">' . get_forum_name($topic->forum_id) . '</a>'); ?> </span>
 			        <?php } ?>
 			        
 			        <?php _e('Started by'); ?> <?php merlot_topic_author_profile_link(); ?>, <?php topic_start_time(); ?> <?php _e('ago'); ?>
+			        </small></p>
 			    </td>
 
                 <?php if (!is_bb_profile()) { ?>
