@@ -32,6 +32,11 @@ $bb_queries['forums'] = "CREATE TABLE $bbdb->forums (
   forum_order int(10) NOT NULL default '0',
   topics bigint(20) NOT NULL default '0',
   posts bigint(20) NOT NULL default '0',
+  child_topics bigint(20) NOT NULL default '0',
+  child_posts bigint(20) NOT NULL default '0',
+  topics bigint(20) NOT NULL default '0',
+  posts bigint(20) NOT NULL default '0',
+  is_category TINYINT(1) NOT NULL default '0',
   PRIMARY KEY  (forum_id),
   KEY forum_slug (forum_slug)
 ) $charset_collate;";

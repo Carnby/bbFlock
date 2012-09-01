@@ -130,6 +130,11 @@ function get_forum( $id ) {
 	return $bb_cache->get_forum( $id );
 }
 
+function forum_is_category( $forum_id = 0 ) {
+	$forum = get_forum( get_forum_id( $forum_id ) );
+	return (bool) $forum->is_category;
+}
+
 /* Topics */
 
 function get_topic( $id, $cache = true ) {
@@ -1496,7 +1501,7 @@ function bb_get_option( $option ) {
 		return '0.9.0.7'; // Don't filter
 		break;
 	case 'bb_db_version' :
-		return '1468'; // Don't filter
+		return '1469'; // Don't filter
 		break;
 	case 'html_type' :
 		$r = 'text/html';
